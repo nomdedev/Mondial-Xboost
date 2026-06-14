@@ -448,11 +448,8 @@ La base de datos SQLite se crea automáticamente al inicio, y los datos seed se 
 Settings en `MondialXboost.Web/appsettings.json` bajo la sección `Mondial-Xboost`:
 
 - `SimulationCount` y `SimulationSeed`
-- `RecentResultCount`
-- `GoalModelYearsWindow`
-- `RankingRefreshOnStartup`
-- `FifaRankingsRawUrl`
-- `EloRankingsBaseUrl`
+- `XGBoostPredictorEnabled`
+- `XGBoostBridgeUrl`
 - `ApiFootballApiKey`
 - `OpenRouterApiKey`
 - `AvailabilitySourceUrls`

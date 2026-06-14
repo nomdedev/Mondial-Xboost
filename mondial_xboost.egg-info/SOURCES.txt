@@ -16,6 +16,7 @@ predictors/feature_engineering.py
 predictors/llm_analysis_service.py
 predictors/model_manifest.py
 predictors/player_weights.py
+predictors/random_forest_engine.py
 predictors/xgboost_engine.py
 scrapers/__init__.py
 scrapers/flashscore_scraper.py
@@ -41,4 +42,5 @@ scripts/verify_gates.py
 tests/__init__.py
 tests/test_api.py
 tests/test_feature_engineering.py
+tests/test_random_forest_engine.py
 tests/test_xgboost_engine.py

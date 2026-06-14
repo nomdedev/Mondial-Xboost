@@ -34,6 +34,8 @@ from predictors.feature_engineering import (
     compute_elo_ratings,
     load_historical_results,
 )
+from predictors.random_forest_engine import MODELS_DIR as RF_MODELS_DIR
+from predictors.random_forest_engine import RandomForestFootballPredictor
 from predictors.xgboost_engine import MODELS_DIR, XGBoostFootballPredictor
 
 C = {
@@ -189,7 +191,7 @@ def build_features_for_prediction(historical: pd.DataFrame, fixtures: pd.DataFra
     return fixtures
 
 
-def load_model(name: str = "xgboost_football", blend: bool = False, cold_start_only: bool = False):
+def load_model(name: str = "xgboost_football", blend: bool = False, cold_start_only: bool = False, engine: str = "xgboost"):
     if cold_start_only:
         path = MODELS_DIR / f"{name}.pkl"
         if not path.exists():
@@ -199,6 +201,11 @@ def load_model(name: str = "xgboost_football", blend: bool = False, cold_start_o
         canonical_name = "xgboost_football"
         cold_name = name if name != "xgboost_football" else "cold_start"
         return BlendedFootballPredictor.load(canonical_name=canonical_name, cold_start_name=cold_name)
+    if engine == "random_forest":
+        path = RF_MODELS_DIR / f"{name}_meta.json"
+        if not path.exists():
+            raise FileNotFoundError(f"No se encontró el modelo RF '{name}'. Entrenalo primero con: python scripts/train.py --engine random_forest")
+        return RandomForestFootballPredictor.load(name)
     path = MODELS_DIR / f"{name}_meta.json"
     if not path.exists():
         raise FileNotFoundError(f"No se encontró el modelo '{name}'. Entrenalo primero con: python scripts/train.py")
@@ -238,7 +245,7 @@ def main() -> int:
 
     try:
         print(f"{C['dim']}Cargando modelo '{args.model}'...{C['reset']}")
-        predictor = load_model(args.model, blend=args.blend, cold_start_only=args.cold_start_only)
+        predictor = load_model(args.model, blend=args.blend, cold_start_only=args.cold_start_only, engine=args.engine)
 
         print(f"{C['dim']}Cargando datos históricos...{C['reset']}")
         historical = load_historical_results()
@@ -263,7 +270,7 @@ def main() -> int:
         features = build_features_for_prediction(historical, fixtures)
         predictions = predictor.predict(features)
 
-        print(f"\n{C['bold']}{C['cyan']}Predicciones — {args.model}{C['reset']}")
+        print(f"\n{C['bold']}{C['cyan']}Predicciones — {args.engine}/{args.model}{C['reset']}")
         print_predictions(predictions)
         return 0
 

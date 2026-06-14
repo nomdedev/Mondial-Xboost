@@ -2,12 +2,12 @@
 @inject MondialXboostDbContext Db
 @inject IOptions<MondialXboostConfig> Options
 
-<PageTitle>Oloráculo</PageTitle>
+<PageTitle>MondialXboost</PageTitle>
 
 <MudStack Spacing="3">
     <div class="page-head">
-        <MudText Typo="Typo.h3">Oloráculo</MudText>
-        <MudText Typo="Typo.body1" Color="Color.Secondary">Funciona como huele</MudText>
+        <MudText Typo="Typo.h3">MondialXboost</MudText>
+        <MudText Typo="Typo.body1" Color="Color.Secondary">Predicciones de Mundial 2026 con ML</MudText>
     </div>
 
     <MudGrid Spacing="2">
@@ -24,8 +24,7 @@
                 <ol class="clean-list">
                     <li>Los CSV crean el mundo futbolero.</li>
                     <li>API-Football puede enriquecer partidos cuando hay datos.</li>
-                    <li>La escalera predice un partido por vez.</li>
-                    <li>El Oráculo final elige el escalón usable más alto.</li>
+                    <li>El motor ML predice 1X2 y goles esperados.</li>
                     <li>Monte Carlo juega muchas veces el torneo oficial 2026.</li>
                     <li>Las predicciones guardadas se evalúan cuando llegan resultados.</li>
                 </ol>
@@ -35,7 +34,7 @@
 
         <MudItem xs="12" md="6">
             <MudPaper Class="surface-card" Elevation="0">
-                <MudText Typo="Typo.h6">Escalera</MudText>
+                <MudText Typo="Typo.h6">Motor</MudText>
                 <MudTable Items="_ladder" Dense="true" Hover="true" Elevation="0">
                     <RowTemplate>
                         <MudTd DataLabel="Nivel"><MudChip T="string" Size="Size.Small" Color="Color.Primary" Variant="Variant.Outlined">@context.Level</MudChip></MudTd>
@@ -54,13 +53,8 @@
     private int _results;
     private readonly List<LadderRow> _ladder =
     [
-        new("L0", "Base", "probabilidad uniforme"),
-        new("L1", "Ranking FIFA", "puntos externos"),
-        new("L2", "Elo", "fortaleza de largo plazo"),
-        new("L3", "Forma reciente", "resultados de corto plazo"),
-        new("L4", "Goles", "marcadores Poisson"),
-        new("L5", "Contexto", "ajuste con fuentes"),
-        new("Final", "Oráculo final", "escalón usable más alto")
+        new("ML", "XGBoost", "ensemble de árboles con gradient boosting"),
+        new("Sim", "Monte Carlo", "miles de torneos simulados")
     ];
 
     protected override async Task OnInitializedAsync()

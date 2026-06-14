@@ -9,7 +9,6 @@ using MondialXboost.Web.Helpers;
 using MondialXboost.Web.Models;
 using MondialXboost.Web.Models.ApiFootballModels;
 using MondialXboost.Web.Models.CsvModels;
-using MondialXboost.Web.Predictors;
 using MondialXboost.Web.Probability;
 using MondialXboost.Web.Services;
 using MondialXboost.Web.Services.Simulation;
@@ -467,58 +466,6 @@ public class AvailabilityNewsServiceTests : TestFixtures
         Assert.Equal(0.18, clamped.Defense);
     }
 
-    [Fact]
-    public void ContextModel_AttackerAbsenceReducesOwnXgMoreThanDefenderAbsence()
-    {
-        var goal = new GoalModel(
-        [
-            Result("a", "b", 2, 0),
-            Result("a", "b", 1, 0),
-            Result("b", "a", 1, 2)
-        ]);
-        var attackerContext = TestContext(fixtureContext: new FixtureContext
-        {
-            FixtureId = "test",
-            UnavailableHomePlayers = 1,
-            UnavailableHomeAttackImpact = AvailabilityNewsService.ImpactForPosition("Attacker").Attack,
-            UnavailableHomeDefenseImpact = AvailabilityNewsService.ImpactForPosition("Attacker").Defense
-        });
-        var defenderContext = TestContext(fixtureContext: new FixtureContext
-        {
-            FixtureId = "test",
-            UnavailableHomePlayers = 1,
-            UnavailableHomeAttackImpact = AvailabilityNewsService.ImpactForPosition("Defender").Attack,
-            UnavailableHomeDefenseImpact = AvailabilityNewsService.ImpactForPosition("Defender").Defense
-        });
-
-        var attackerPrediction = new GoalPlusRecentContextModel(goal).Predict(attackerContext);
-        var defenderPrediction = new GoalPlusRecentContextModel(goal).Predict(defenderContext);
-
-        Assert.True(attackerPrediction.ExpectedHomeGoals < defenderPrediction.ExpectedHomeGoals);
-    }
-
-    [Fact]
-    public void ContextModel_DefenderAbsenceRaisesOpponentXg()
-    {
-        var goal = new GoalModel(
-        [
-            Result("a", "b", 2, 0),
-            Result("a", "b", 1, 0),
-            Result("b", "a", 1, 2)
-        ]);
-        var baseline = new GoalPlusRecentContextModel(goal).Predict(TestContext());
-        var defenderContext = TestContext(fixtureContext: new FixtureContext
-        {
-            FixtureId = "test",
-            UnavailableHomePlayers = 1,
-            UnavailableHomeAttackImpact = AvailabilityNewsService.ImpactForPosition("Defender").Attack,
-            UnavailableHomeDefenseImpact = AvailabilityNewsService.ImpactForPosition("Defender").Defense
-        });
-
-        var prediction = new GoalPlusRecentContextModel(goal).Predict(defenderContext);
-
-        Assert.True(prediction.ExpectedAwayGoals > baseline.ExpectedAwayGoals);
-    }
 
 
     [Fact]

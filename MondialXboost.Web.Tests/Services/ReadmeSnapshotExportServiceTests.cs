@@ -93,14 +93,11 @@ public class ReadmeSnapshotExportServiceTests : TestFixtures
             {
                 SimulationCount = 1,
                 SimulationSeed = 1,
-                RecentResultCount = 8,
-                GoalModelYearsWindow = 3,
                 ApiFootballBaseUrl = "https://api.test/",
                 ApiFootballLeagueId = 1,
                 ApiFootballSeason = 2026,
                 OpenRouterBaseUrl = "https://openrouter.test/",
-                AvailabilitySourceUrls = [],
-                EloRefreshMaxLookbackDays = 0
+                AvailabilitySourceUrls = []
             });
             var importer = new CsvImportService(db, environment);
             await importer.ImportAllAsync();
@@ -138,13 +135,12 @@ public class ReadmeSnapshotExportServiceTests : TestFixtures
             var exporter = new ReadmeSnapshotExportService(
                 db,
                 importer,
-                new RankingRefreshService(new HttpClient(new FakeHttpMessageHandler(new Dictionary<string, string>())), environment, options),
                 api,
                 availability,
                 prediction,
                 new EvaluationService(db),
                 snapshots,
-                new SimulationService(db, prediction, snapshots, options),
+                new SimulationService(db, snapshots, options),
                 environment,
                 NullLogger<ReadmeSnapshotExportService>.Instance);
 

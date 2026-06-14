@@ -1,8 +1,8 @@
 """
-FastAPI bridge for the C# app to call the Python XGBoost predictor.
+FastAPI bridge for the C# app to call the Python ML predictor.
 
 Endpoints:
-  POST /health
+  GET  /health
   POST /train
   POST /predict
 """
@@ -17,28 +17,37 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
 from predictors.feature_engineering import build_features, load_historical_results
+from predictors.random_forest_engine import RandomForestFootballPredictor
 from predictors.xgboost_engine import XGBoostFootballPredictor, train_and_save
 
 app = FastAPI(title="Mondial-Xboost ML Bridge")
 
 # Cache the latest trained model in memory
-_predictor: XGBoostFootballPredictor | None = None
+_predictors: dict[str, XGBoostFootballPredictor | RandomForestFootballPredictor] = {}
 
 
-def _get_predictor() -> XGBoostFootballPredictor:
-    global _predictor
-    if _predictor is None:
-        model_name = os.getenv("XGBOOST_MODEL_NAME", "xgboost_football")
-        try:
-            _predictor = XGBoostFootballPredictor.load(model_name)
-        except Exception as exc:
-            raise HTTPException(status_code=503, detail=f"No trained model available: {exc}") from exc
-    return _predictor
+def _get_predictor(engine: str = "xgboost") -> XGBoostFootballPredictor | RandomForestFootballPredictor:
+    global _predictors
+    if engine in _predictors:
+        return _predictors[engine]
+
+    model_name = os.getenv("MODEL_NAME", f"{engine}_football")
+    try:
+        if engine == "random_forest":
+            predictor = RandomForestFootballPredictor.load(model_name)
+        else:
+            predictor = XGBoostFootballPredictor.load(model_name)
+    except Exception as exc:
+        raise HTTPException(status_code=503, detail=f"No trained model available for engine={engine}: {exc}") from exc
+
+    _predictors[engine] = predictor
+    return predictor
 
 
 class HealthResponse(BaseModel):
     status: str
     model_loaded: bool
+    engine: str
 
 
 class TrainResponse(BaseModel):
@@ -57,34 +66,38 @@ class PredictResponse(BaseModel):
 
 
 @app.get("/health", response_model=HealthResponse)
-async def health() -> HealthResponse:
+async def health(engine: str = "xgboost") -> HealthResponse:
     loaded = False
     try:
-        _get_predictor()
+        _get_predictor(engine)
         loaded = True
     except HTTPException:
         pass
-    return HealthResponse(status="ok", model_loaded=loaded)
+    return HealthResponse(status="ok", model_loaded=loaded, engine=engine)
 
 
 @app.post("/train", response_model=TrainResponse)
-async def train(min_date: str = "2010-01-01") -> TrainResponse:
+async def train(min_date: str = "2010-01-01", engine: str = "xgboost") -> TrainResponse:
     try:
-        result = train_and_save(min_date=min_date)
-        global _predictor
-        _predictor = XGBoostFootballPredictor.load()
+        if engine == "random_forest":
+            from predictors.random_forest_engine import train_and_save as rf_train
+            result = rf_train(min_date=min_date)
+            _predictors["random_forest"] = RandomForestFootballPredictor.load()
+        else:
+            result = train_and_save(min_date=min_date)
+            _predictors["xgboost"] = XGBoostFootballPredictor.load()
         return TrainResponse(status="trained", metrics=result["metrics"], paths=result["paths"])
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc)) from exc
 
 
 @app.post("/predict", response_model=PredictResponse)
-async def predict(req: PredictRequest) -> PredictResponse:
+async def predict(req: PredictRequest, engine: str = "xgboost") -> PredictResponse:
     try:
         historical = load_historical_results(req.historical_path)
         fixtures = pd.DataFrame(req.fixtures)
         features = build_features(historical, fixtures)
-        predictor = _get_predictor()
+        predictor = _get_predictor(engine)
         predictions = predictor.predict(features)
         return PredictResponse(predictions=predictions)
     except Exception as exc:

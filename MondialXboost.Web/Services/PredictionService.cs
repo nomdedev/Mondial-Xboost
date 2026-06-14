@@ -2,7 +2,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using MondialXboost.Web.DAL;
 using MondialXboost.Web.Models;
-using MondialXboost.Web.Predictors;
 
 namespace MondialXboost.Web.Services
 {
@@ -10,13 +9,13 @@ namespace MondialXboost.Web.Services
     {
         private readonly MondialXboostDbContext _db;
         private readonly MondialXboostConfig _config;
-        private readonly XGBoostBridgeService? _xgboostBridge;
+        private readonly XGBoostBridgeService? _bridge;
 
-        public PredictionService(MondialXboostDbContext db, IOptions<MondialXboostConfig> config, XGBoostBridgeService? xgboostBridge = null)
+        public PredictionService(MondialXboostDbContext db, IOptions<MondialXboostConfig> config, XGBoostBridgeService? bridge = null)
         {
             _db = db;
             _config = config.Value;
-            _xgboostBridge = xgboostBridge;
+            _bridge = _config.XGBoostPredictorEnabled ? bridge : null;
         }
 
         public async Task<MatchPredictionResult?> PredictFixtureAsync(string fixtureId, CancellationToken ct = default)
@@ -34,33 +33,26 @@ namespace MondialXboost.Web.Services
         public async Task<IReadOnlyList<MatchPredictionResult>> PredictFixturesAsync(IEnumerable<Fixture> fixtures, CancellationToken ct = default)
         {
             var fixtureList = fixtures.ToList();
-            var predictors = await BuildPredictorsAsync(ct);
             var results = new List<MatchPredictionResult>(fixtureList.Count);
 
             foreach (var fixture in fixtureList)
-                results.Add(await PredictAsync(fixture, predictors, ct));
+                results.Add(await PredictAsync(fixture, ct));
 
             return results;
         }
 
         public async Task<MatchPredictionResult> PredictAsync(Fixture fixture, CancellationToken ct = default)
         {
-            var predictors = await BuildPredictorsAsync(ct);
-            return await PredictAsync(fixture, predictors, ct);
-        }
-
-        private async Task<MatchPredictionResult> PredictAsync(Fixture fixture, IReadOnlyList<IPredictor> predictors, CancellationToken ct)
-        {
             var context = await BuildContextAsync(fixture, ct);
-            var ladder = predictors.Select(p => p.Predict(context)).ToList();
+            var prediction = await MatchPredictionBuilder.BuildAsync(context, _bridge, ct);
 
             return new MatchPredictionResult
             {
                 Fixture = fixture,
                 HomeTeamName = context.HomeTeam.Name,
                 AwayTeamName = context.AwayTeam.Name,
-                Predictions = ladder,
-                BestPrediction = FinalPredictionSelector.Select(ladder)
+                Predictions = [prediction],
+                BestPrediction = prediction
             };
         }
 
@@ -74,56 +66,8 @@ namespace MondialXboost.Web.Services
                 Fixture = fixture,
                 HomeTeam = home,
                 AwayTeam = away,
-                HomeElo = await LatestRatingAsync(fixture.HomeTeamId, RatingTypeEnum.Elo, ct),
-                AwayElo = await LatestRatingAsync(fixture.AwayTeamId, RatingTypeEnum.Elo, ct),
-                HomeFifaRank = await LatestRatingAsync(fixture.HomeTeamId, RatingTypeEnum.Fifa, ct),
-                AwayFifaRank = await LatestRatingAsync(fixture.AwayTeamId, RatingTypeEnum.Fifa, ct),
-                HomeRecentMatchHistory = await RecentResultsAsync(fixture.HomeTeamId, ct),
-                AwayRecentMatchHistory = await RecentResultsAsync(fixture.AwayTeamId, ct),
                 FixtureContext = await _db.FixtureContexts.FindAsync([fixture.Id], ct)
             };
-        }
-
-        public async Task<IReadOnlyList<IPredictor>> BuildPredictorsAsync(CancellationToken ct = default)
-        {
-            var results = await _db.Results.AsNoTracking().ToListAsync(ct);
-            var goal = new GoalModel(results, _config.GoalModelYearsWindow);
-
-            var ladder = new List<IPredictor>
-            {
-                new NullModel(),
-                new FifaRankingModel(),
-                new EloModel(),
-                new RecentFormModel(),
-                goal,
-                new GoalPlusRecentContextModel(goal)
-            };
-
-            if (_config.XGBoostPredictorEnabled && _xgboostBridge is not null)
-            {
-                ladder.Add(new XGBoostPredictor(_xgboostBridge));
-            }
-
-            return ladder;
-        }
-
-        private async Task<Rating?> LatestRatingAsync(string teamId, RatingTypeEnum type, CancellationToken ct)
-        {
-            return (await _db.Ratings.AsNoTracking()
-                .Where(r => r.TeamId == teamId && r.Type == type)
-                .ToListAsync(ct))
-                .OrderByDescending(r => r.AsOf)
-                .FirstOrDefault();
-        }
-
-        private async Task<IReadOnlyList<MatchResult>> RecentResultsAsync(string teamId, CancellationToken ct)
-        {
-            return (await _db.Results.AsNoTracking()
-                .Where(r => r.HomeTeamId == teamId || r.AwayTeamId == teamId)
-                .ToListAsync(ct))
-                .OrderByDescending(r => r.Date)
-                .Take(_config.RecentResultCount)
-                .ToList();
         }
     }
 }

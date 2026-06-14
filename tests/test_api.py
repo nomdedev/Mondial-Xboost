@@ -18,24 +18,34 @@ def test_health_endpoint(client):
     assert response.status_code == 200
     data = response.json()
     assert data["status"] == "ok"
-    # May be true or false depending on whether a model was trained in this env
+    assert data["engine"] == "xgboost"
     assert "model_loaded" in data
 
 
-def test_predict_endpoint(client, tmp_path, monkeypatch):
-    # If no model is available, train a tiny one on the fly
-    # Use a dedicated test model name to avoid overwriting the canonical production model.
+def _train_test_model(client, engine: str, model_name: str):
     import predictors.api as api_module
     from predictors.feature_engineering import build_training_dataset
-    from predictors.xgboost_engine import XGBoostFootballPredictor
 
-    monkeypatch.setenv("XGBOOST_MODEL_NAME", "test_api_model")
-    api_module._predictor = None
+    if engine == "random_forest":
+        from predictors.random_forest_engine import RandomForestFootballPredictor as Predictor
+    else:
+        from predictors.xgboost_engine import XGBoostFootballPredictor as Predictor
+
+    api_module._predictors = {}
 
     train = build_training_dataset(min_date="2018-01-01")
-    predictor = XGBoostFootballPredictor(random_state=2026, n_estimators=10, max_depth=2)
+    predictor = Predictor(random_state=2026, n_estimators=10, max_depth=2)
     predictor.fit(train, calibrate=False)
-    predictor.save("test_api_model")
+    predictor.save(model_name)
+
+
+def test_predict_endpoint(client, tmp_path, monkeypatch):
+    import predictors.api as api_module
+
+    monkeypatch.setenv("MODEL_NAME", "test_api_model")
+    api_module._predictors = {}
+
+    _train_test_model(client, "xgboost", "test_api_model")
 
     fixtures = [
         {"date": "2026-06-15", "home_team": "Argentina", "away_team": "Brazil", "neutral": True},
@@ -54,3 +64,27 @@ def test_predict_endpoint(client, tmp_path, monkeypatch):
         assert p["top_pick"] in {"Home", "Draw", "Away"}
         assert p["expected_home_goals"] >= 0
         assert p["expected_away_goals"] >= 0
+
+
+def test_predict_endpoint_random_forest(client, tmp_path, monkeypatch):
+    import predictors.api as api_module
+
+    monkeypatch.setenv("MODEL_NAME", "test_api_rf_model")
+    api_module._predictors = {}
+
+    _train_test_model(client, "random_forest", "test_api_rf_model")
+
+    fixtures = [
+        {"date": "2026-06-15", "home_team": "Argentina", "away_team": "Brazil", "neutral": True},
+    ]
+    response = client.post("/predict?engine=random_forest", json={"fixtures": fixtures})
+    assert response.status_code == 200, response.text
+
+    data = response.json()
+    predictions = data["predictions"]
+    assert len(predictions) == 1
+
+    p = predictions[0]
+    total = p["prob_away_win"] + p["prob_draw"] + p["prob_home_win"]
+    assert 0.99 <= total <= 1.01
+    assert p["top_pick"] in {"Home", "Draw", "Away"}

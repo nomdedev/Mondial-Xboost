@@ -5,12 +5,6 @@
         public required Fixture Fixture { get; init; }
         public required Team HomeTeam { get; init; }
         public required Team AwayTeam { get; init; }
-        public Rating? HomeElo { get; set; }
-        public Rating? AwayElo { get; set; }
-        public Rating? HomeFifaRank { get; set; }
-        public Rating? AwayFifaRank { get; set; }
-        public IReadOnlyList<MatchResult> HomeRecentMatchHistory { get; set; }
-        public IReadOnlyList<MatchResult> AwayRecentMatchHistory { get; set; }
         public FixtureContext? FixtureContext { get; set; }
         public string HomeTeamId => HomeTeam.Id;
         public string AwayTeamId => AwayTeam.Id;

@@ -6,7 +6,6 @@ using Microsoft.Extensions.Options;
 using MondialXboost.Web;
 using MondialXboost.Web.DAL;
 using MondialXboost.Web.Models;
-using MondialXboost.Web.Predictors;
 using MondialXboost.Web.Probability;
 using MondialXboost.Web.Services;
 using System.Net;
@@ -18,8 +17,6 @@ public abstract class TestFixtures
     protected static IOptions<MondialXboostConfig> SimulationOptions(int simulations, int seed) =>
         Options.Create(new MondialXboostConfig
         {
-            GoalModelYearsWindow = 3,
-            RecentResultCount = 8,
             SimulationCount = simulations,
             SimulationSeed = seed
         });
@@ -57,10 +54,6 @@ public abstract class TestFixtures
         Fixture = new Fixture { Id = "test", HomeTeamId = homeId, AwayTeamId = awayId, NeutralVenue = true },
         HomeTeam = new Team { Id = homeId, Name = homeId.ToUpperInvariant() },
         AwayTeam = new Team { Id = awayId, Name = awayId.ToUpperInvariant() },
-        HomeElo = new Rating { TeamId = homeId, Type = RatingTypeEnum.Elo, Value = 1800, Source = "test" },
-        AwayElo = new Rating { TeamId = awayId, Type = RatingTypeEnum.Elo, Value = 1700, Source = "test" },
-        HomeRecentMatchHistory = [],
-        AwayRecentMatchHistory = [],
         FixtureContext = fixtureContext
     };
 

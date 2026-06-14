@@ -26,7 +26,8 @@ from sklearn.metrics import accuracy_score, log_loss
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from predictors.feature_engineering import build_training_dataset, save_features
+from predictors.feature_engineering import FEATURE_COLS, build_training_dataset, save_features
+from predictors.random_forest_engine import RandomForestFootballPredictor
 from predictors.xgboost_engine import XGBoostFootballPredictor
 
 # ANSI colors
@@ -56,9 +57,10 @@ def train_canonical(
     min_date: str = "2010-01-01",
     elo_decay_halflife_years: float | None = None,
     elo_recent_years: float | None = 8.0,
+    engine: str = "xgboost",
 ) -> None:
-    """Train the canonical XGBoostFootballPredictor and save it."""
-    print_header("Mondial-Xboost — Entrenamiento Canónico")
+    """Train the canonical predictor and save it."""
+    print_header(f"Mondial-Xboost — Entrenamiento Canónico ({engine})")
 
     start = time.time()
     print(f"{C['dim']}Construyendo dataset de entrenamiento...{C['reset']}")
@@ -71,11 +73,15 @@ def train_canonical(
 
     print(f"\n{C['bold']}Dataset{C['reset']}")
     print_metric("Filas", f"{len(train):,}")
-    print_metric("Features", f"{len([c for c in train.columns if c in XGBoostFootballPredictor(random_state=0).feature_cols])}")
+    print_metric("Features", f"{len([c for c in train.columns if c in FEATURE_COLS])}")
     print_metric("Rango", f"{train['date'].min().date()} -> {train['date'].max().date()}")
 
-    print(f"\n{C['dim']}Entrenando XGBoostFootballPredictor...{C['reset']}")
-    predictor = XGBoostFootballPredictor(random_state=2026)
+    if engine == "random_forest":
+        print(f"\n{C['dim']}Entrenando RandomForestFootballPredictor...{C['reset']}")
+        predictor = RandomForestFootballPredictor(random_state=2026)
+    else:
+        print(f"\n{C['dim']}Entrenando XGBoostFootballPredictor...{C['reset']}")
+        predictor = XGBoostFootballPredictor(random_state=2026)
     metrics = predictor.fit(train, calibrate=True)
 
     # Training-set diagnostics for the manifest (labelled as training metrics)
@@ -120,7 +126,7 @@ def train_loop(trials: int, auto: bool) -> None:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Train XGBoost models for Mondial-Xboost")
+    parser = argparse.ArgumentParser(description="Train ML models for Mondial-Xboost")
     parser.add_argument("--loop", action="store_true", help="Run hyperparameter tuning with Optuna")
     parser.add_argument("--trials", type=int, default=50, help="Optuna trials per batch (default: 50)")
     parser.add_argument("--auto", action="store_true", help="Run 10 batches automatically")
@@ -128,6 +134,7 @@ def main() -> int:
     parser.add_argument("--min-date", type=str, default="2010-01-01", help="Minimum date for training data")
     parser.add_argument("--elo-decay", type=float, default=None, help="Elo temporal decay half-life in years")
     parser.add_argument("--elo-recent", type=float, default=8.0, help="Recent Elo window in years")
+    parser.add_argument("--engine", type=str, default="xgboost", choices=["xgboost", "random_forest"], help="ML engine to train (default: xgboost)")
     args = parser.parse_args()
 
     try:
@@ -139,6 +146,7 @@ def main() -> int:
                 args.min_date,
                 elo_decay_halflife_years=args.elo_decay,
                 elo_recent_years=args.elo_recent,
+                engine=args.engine,
             )
         return 0
     except KeyboardInterrupt:

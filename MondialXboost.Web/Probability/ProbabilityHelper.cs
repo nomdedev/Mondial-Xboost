@@ -2,24 +2,6 @@ namespace MondialXboost.Web.Probability
 {
     public static class ProbabilityHelper
     {
-        public static double EloExpectation(double a, double b)
-        {
-            return 1.0 / (1.0 + Math.Pow(10, (b - a) / 400.0));
-        }
-
-        public static OutcomeProbabilities OutcomeFromExpectation(double expectedHome, double strengthGap)
-        {
-            var closenessGap = Math.Abs(strengthGap);
-            var drawProbability = 0.30 * Math.Exp(-closenessGap / 550.0) + 0.08;
-            drawProbability = Math.Clamp(drawProbability, 0.08, 0.34);
-            var remainingProbability = 1.0 - drawProbability;
-
-            return new OutcomeProbabilities(
-                expectedHome * remainingProbability,
-                drawProbability,
-                remainingProbability * (1.0 - expectedHome)).Normalize();
-        }
-
         public static ScorelineDistribution PoissonScoreline(double lambdaHome, double lambdaAway, int maxGoals = 8, double lowScoreRho = -0.06)
         {
             lambdaHome = Math.Clamp(lambdaHome, 0.05, 6.0);

@@ -16,7 +16,6 @@ namespace MondialXboost.Web.Services
 
         private readonly MondialXboostDbContext _db;
         private readonly CsvImportService _importer;
-        private readonly RankingRefreshService _rankings;
         private readonly ApiFootballService _api;
         private readonly AvailabilityNewsService _availability;
         private readonly PredictionService _prediction;
@@ -29,7 +28,6 @@ namespace MondialXboost.Web.Services
         public ReadmeSnapshotExportService(
             MondialXboostDbContext db,
             CsvImportService importer,
-            RankingRefreshService rankings,
             ApiFootballService api,
             AvailabilityNewsService availability,
             PredictionService prediction,
@@ -41,7 +39,6 @@ namespace MondialXboost.Web.Services
         {
             _db = db;
             _importer = importer;
-            _rankings = rankings;
             _api = api;
             _availability = availability;
             _prediction = prediction;
@@ -54,11 +51,6 @@ namespace MondialXboost.Web.Services
 
         public async Task ExportAsync(CancellationToken ct = default)
         {
-            var rankings = await _rankings.RefreshAsync(ct: ct);
-            LogReport("ranking", rankings.Notes, rankings.Errors);
-            if (rankings.AnyFileUpdated)
-                await _importer.ImportRatingsOnlyAsync(ct);
-
             var api = await _api.RefreshFixturesAsync(ct);
             LogReport("API-Football fixtures", api.Notes, api.Errors);
 

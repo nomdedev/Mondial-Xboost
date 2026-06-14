@@ -91,9 +91,8 @@ public class SimulationServiceTests : TestFixtures
     private static SimulationService Simulation(MondialXboostDbContext db, int simulations, int seed)
     {
         var options = SimulationOptions(simulations, seed);
-        var prediction = new PredictionService(db, options);
         var snapshots = new SnapshotService(db);
-        return new SimulationService(db, prediction, snapshots, options);
+        return new SimulationService(db, snapshots, options);
     }
 
     private static object ProjectionKey(TeamTournamentProbability team) => new

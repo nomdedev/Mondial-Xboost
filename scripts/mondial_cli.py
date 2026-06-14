@@ -104,7 +104,7 @@ def cmd_install(_args: argparse.Namespace) -> int:
 
 def cmd_train(args: argparse.Namespace) -> int:
     """Train the canonical model."""
-    command = [PYTHON, "scripts/train.py"]
+    command = [PYTHON, "scripts/train.py", "--engine", args.engine]
     if args.name:
         command.extend(["--name", args.name])
     if args.min_date:
@@ -118,7 +118,7 @@ def cmd_train(args: argparse.Namespace) -> int:
 
 def cmd_train_gpu(args: argparse.Namespace) -> int:
     """Train the canonical model using GPU."""
-    command = [PYTHON, "scripts/train.py"]
+    command = [PYTHON, "scripts/train.py", "--engine", args.engine]
     if args.name:
         command.extend(["--name", args.name])
     if args.min_date:
@@ -127,12 +127,13 @@ def cmd_train_gpu(args: argparse.Namespace) -> int:
         command.extend(["--elo-decay", str(args.elo_decay)])
     if args.elo_recent is not None:
         command.extend(["--elo-recent", str(args.elo_recent)])
-    return _run(command, env={"XGBOOST_DEVICE": "cuda"})
+    env = {"XGBOOST_DEVICE": "cuda"} if args.engine == "xgboost" else {}
+    return _run(command, env=env)
 
 
 def cmd_predict(args: argparse.Namespace) -> int:
     """Run a prediction."""
-    command = [PYTHON, "scripts/predict.py", "--home", args.home, "--away", args.away]
+    command = [PYTHON, "scripts/predict.py", "--home", args.home, "--away", args.away, "--engine", args.engine]
     if args.blend:
         command.append("--blend")
     if args.cold_start_only:
@@ -492,6 +493,7 @@ def build_parser() -> argparse.ArgumentParser:
     train_parser.add_argument("--min-date", default="2010-01-01", help="Fecha mínima de partidos a incluir (YYYY-MM-DD)")
     train_parser.add_argument("--elo-decay", type=float, default=None, help="Half-life del decaimiento Elo en años (None = sin decaimiento)")
     train_parser.add_argument("--elo-recent", type=float, default=8.0, help="Ventana del Elo reciente en años")
+    train_parser.add_argument("--engine", default="xgboost", choices=["xgboost", "random_forest"], help="Motor ML")
     train_parser.set_defaults(func=cmd_train)
 
     # entrenar-gpu
@@ -506,6 +508,7 @@ def build_parser() -> argparse.ArgumentParser:
     train_gpu_parser.add_argument("--min-date", default="2010-01-01", help="Fecha mínima del dataset")
     train_gpu_parser.add_argument("--elo-decay", type=float, default=None, help="Half-life del decaimiento Elo en años")
     train_gpu_parser.add_argument("--elo-recent", type=float, default=8.0, help="Ventana del Elo reciente en años")
+    train_gpu_parser.add_argument("--engine", default="xgboost", choices=["xgboost", "random_forest"], help="Motor ML")
     train_gpu_parser.set_defaults(func=cmd_train_gpu)
 
     # predecir
@@ -524,6 +527,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     predict_parser.add_argument("--home", required=True, help="Nombre del equipo local")
     predict_parser.add_argument("--away", required=True, help="Nombre del equipo visitante")
+    predict_parser.add_argument("--engine", default="xgboost", choices=["xgboost", "random_forest"], help="Motor ML")
     predict_parser.add_argument("--blend", action="store_true", help="Usar blended predictor (combinación de modelos)")
     predict_parser.add_argument("--cold-start-only", action="store_true", help="Usar solo el modelo de cold-start")
     predict_parser.set_defaults(func=cmd_predict)

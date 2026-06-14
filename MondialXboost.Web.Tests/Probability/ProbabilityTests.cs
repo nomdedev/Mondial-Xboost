@@ -31,14 +31,6 @@ public class ProbabilityTests : TestFixtures
         Assert.Equal("Home", p.TopPick);
     }
 
-    [Fact]
-    public void OutcomeFromExpectation_TreatsEqualMagnitudeGapsSymmetrically()
-    {
-        var strongerHome = ProbabilityHelper.OutcomeFromExpectation(.78, 400);
-        var strongerAway = ProbabilityHelper.OutcomeFromExpectation(.22, -400);
-
-        Assert.Equal(strongerHome.Draw, strongerAway.Draw, 6);
-    }
 
     [Fact]
     public void PoissonScoreline_ProducesARealProbabilityGrid()

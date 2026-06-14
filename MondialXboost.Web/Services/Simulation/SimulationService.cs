@@ -11,17 +11,17 @@ namespace MondialXboost.Web.Services.Simulation
     public class SimulationService
     {
         private readonly MondialXboostDbContext _db;
-        private readonly PredictionService _prediction;
         private readonly SnapshotService _snapshots;
         private readonly MondialXboostConfig _config;
+        private readonly XGBoostBridgeService? _xgboostBridge;
 
-        public SimulationService(MondialXboostDbContext db, PredictionService prediction, 
-            SnapshotService snapshots, IOptions<MondialXboostConfig> options)
+        public SimulationService(MondialXboostDbContext db,
+            SnapshotService snapshots, IOptions<MondialXboostConfig> options, XGBoostBridgeService? xgboostBridge = null)
         {
             _db = db;
-            _prediction = prediction;
             _snapshots = snapshots;
             _config = options.Value;
+            _xgboostBridge = xgboostBridge;
         }
 
         public async Task<TournamentProjection> RunAsync(int? simulations = null, int? seed = null, bool saveSnapshot = true, CancellationToken ct = default)
@@ -33,7 +33,7 @@ namespace MondialXboost.Web.Services.Simulation
             var rng = new Random(seed ?? _config.SimulationSeed ?? Environment.TickCount);
             var n = simulations ?? _config.SimulationCount;
             var counters = teams.ToDictionary(t => t, _ => new Counter());
-            var predictionContext = await SimulationPredictionContext.CreateAsync(_db, _config, ct);
+            var predictionContext = await SimulationPredictionContext.CreateAsync(_db, _config, _xgboostBridge, ct);
             var sampler = new MatchSamplerCache(predictionContext.PredictPairAsync);
 
             for (var i = 0; i < n; i++)

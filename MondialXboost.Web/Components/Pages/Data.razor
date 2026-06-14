@@ -1,7 +1,6 @@
 @page "/data"
 @rendermode InteractiveServer
 @inject CsvImportService Importer
-@inject RankingRefreshService Rankings
 @inject ApiFootballService Api
 @inject AvailabilityNewsService Availability
 @inject MondialXboostDbContext Db
@@ -23,31 +22,16 @@
     <MudPaper Class="surface-card" Elevation="0">
         <MudStack Row="true" Spacing="1" Class="action-row">
             <BusyButton Text="Reimportar CSV" BusyText="Importando" IsBusy="_busy" Icon="@Icons.Material.Filled.UploadFile" OnClick="ImportAll" />
-            <BusyButton Text="Actualizar rankings" BusyText="Actualizando" IsBusy="_rankingsBusy" Variant="Variant.Outlined" Color="Color.Secondary" Icon="@Icons.Material.Filled.Sync" OnClick="RefreshRankings" />
             <BusyButton Text="Actualizar partidos API-Football" BusyText="Actualizando" IsBusy="_apiBusy" Variant="Variant.Outlined" Color="Color.Secondary" Icon="@Icons.Material.Filled.CloudSync" OnClick="RefreshApi" />
             <BusyButton Text="Actualizar disponibilidad" BusyText="Analizando" IsBusy="_availabilityBusy" Variant="Variant.Outlined" Color="Color.Secondary" Icon="@Icons.Material.Filled.FactCheck" OnClick="RefreshAvailability" />
         </MudStack>
-        @if (_busy || _rankingsBusy || _apiBusy || _availabilityBusy)
+        @if (_busy || _apiBusy || _availabilityBusy)
         {
             <MudProgressLinear Class="inline-progress" Color="Color.Primary" Indeterminate="true" />
         }
         @if (_report is not null)
         {
             <MudAlert Class="mt-2" Severity="Severity.Success" Variant="Variant.Outlined">@_report.Teams equipos, @_report.Groups grupos, @_report.Fixtures partidos, @_report.Results resultados, @_report.Ratings ratings.</MudAlert>
-        }
-        @if (_rankingsReport is not null)
-        {
-            <MudAlert Class="mt-2" Severity="@(_rankingsReport.Errors.Count > 0 ? Severity.Warning : Severity.Info)" Variant="Variant.Outlined">
-                @string.Join(" ", _rankingsReport.Notes)
-                @if (_rankingsReport.AnyFileUpdated)
-                {
-                    <span> Archivos actualizados: @string.Join(", ", _rankingsReport.UpdatedFiles). Ratings importados: @_ratings.</span>
-                }
-            </MudAlert>
-            @foreach (var error in _rankingsReport.Errors)
-            {
-                <MudAlert Class="mt-2" Severity="Severity.Warning" Variant="Variant.Outlined">@error</MudAlert>
-            }
         }
         @if (_apiReport is not null)
         {
@@ -116,11 +100,9 @@
 @code {
     private bool _busy;
     private bool _apiBusy;
-    private bool _rankingsBusy;
     private bool _availabilityBusy;
     private bool _loaded;
     private CsvImportReport? _report;
-    private RankingRefreshReport? _rankingsReport;
     private ApiFootballRefreshReport? _apiReport;
     private AvailabilityRefreshReport? _availabilityReport;
     private AvailabilityRefreshReport? _roleReport;
@@ -176,29 +158,6 @@
         finally
         {
             _apiBusy = false;
-        }
-    }
-
-    private async Task RefreshRankings()
-    {
-        _rankingsBusy = true;
-        _error = "";
-        try
-        {
-            _rankingsReport = await Rankings.RefreshAsync();
-            if (_rankingsReport.AnyFileUpdated)
-                _ratings = await Importer.ImportRatingsOnlyAsync();
-            await Load();
-            Snackbar.Add(_rankingsReport.Errors.Count > 0 ? "La actualización de rankings terminó con advertencias." : "Rankings actualizados.", _rankingsReport.Errors.Count > 0 ? Severity.Warning : Severity.Success);
-        }
-        catch (Exception ex)
-        {
-            _error = ex.Message;
-            Snackbar.Add("No se pudieron actualizar los rankings.", Severity.Error);
-        }
-        finally
-        {
-            _rankingsBusy = false;
         }
     }
 
