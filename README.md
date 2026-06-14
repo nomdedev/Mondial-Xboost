@@ -279,12 +279,25 @@ Cada batch de `N` trials de Optuna genera un reporte HTML con:
 
 ### CLI local
 
-El repo incluye un wrapper `mondial` (Git Bash / WSL / Linux / macOS) y `mondial.cmd` (Windows cmd/PowerShell) que detecta el entorno virtual y expone todos los comandos del pipeline.
+El repo incluye wrappers para ejecutar el CLI desde el directorio del proyecto:
 
-**Si no sabés por dónde empezar, ejecutá `mondial` solo** y te aparece un menú interactivo:
+- **Git Bash / WSL / Linux / macOS:** `./mondial`
+- **Windows cmd:** `mondial.cmd`
+- **Windows PowerShell:** `\.mondial.cmd`
+
+**Importante:** tenés que estar parado en la carpeta raíz del proyecto (`d:\martin\Proyectos\Mondial-xBoost` o donde lo hayas clonado).
+
+**Si no sabés por dónde empezar, ejecutá el menú interactivo:**
 
 ```bash
+# Git Bash
 ./mondial
+
+# PowerShell
+\.mondial.cmd
+
+# cmd
+mondial.cmd
 ```
 
 También podés ver la guía de uso en cualquier momento:
@@ -328,18 +341,21 @@ Cada comando tiene su propia ayuda con ejemplos:
 ./mondial loop --help
 ```
 
-En Windows cmd/PowerShell:
+#### Usar `mondial` como comando global
 
-```cmd
-mondial.cmd
-mondial.cmd guia
-mondial.cmd instalar
-mondial.cmd entrenar
-mondial.cmd entrenar-gpu
-mondial.cmd predecir --home Brazil --away Morocco
+Si querés escribir solo `mondial` desde cualquier carpeta, instalá el paquete en modo editable (con el entorno virtual activado):
+
+```bash
+# Windows
+venv\Scripts\python -m pip install -e .
+venv\Scripts\mondial --help
+
+# Git Bash / WSL / Linux / macOS
+./venv/bin/python -m pip install -e .
+./venv/bin/mondial --help
 ```
 
-También podés instalar el comando global con:
+Si el entorno virtual está activado (`venv\Scripts\activate` o `source venv/bin/activate`), simplemente:
 
 ```bash
 pip install -e .
