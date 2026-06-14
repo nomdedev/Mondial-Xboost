@@ -1,0 +1,19 @@
+{
+  "batch": 1,
+  "iteration": 70,
+  "global_iter": 70,
+  "model": "RandomForest",
+  "params": {
+    "n_estimators": 200,
+    "max_depth": 8,
+    "min_samples_split": 10,
+    "min_samples_leaf": 2,
+    "max_features": 0.5
+  },
+  "accuracy": 60.6001,
+  "log_loss": 0.8804,
+  "brier": 0.1727,
+  "train_accuracy": 65.1551,
+  "overfit_gap": 4.555,
+  "time_s": 0.9
+}

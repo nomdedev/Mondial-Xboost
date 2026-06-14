@@ -1,0 +1,163 @@
+@page "/lab"
+@rendermode InteractiveServer
+@inject OloraculoDbContext Db
+@inject PredictionService Predictor
+@inject ISnackbar Snackbar
+
+<PageTitle>Laboratorio</PageTitle>
+
+<MudStack Spacing="3">
+    <div class="page-head">
+        <MudText Typo="Typo.h3">Laboratorio</MudText>
+        <MudText Typo="Typo.body1" Color="Color.Secondary">Compará dos equipos en toda la escalera de predicción.</MudText>
+    </div>
+
+    <MudPaper Class="surface-card" Elevation="0">
+        <MudGrid Spacing="2" Class="control-grid">
+            <MudItem xs="12" md="5">
+                <MudAutocomplete T="Team"
+                                 Label="Equipo A"
+                                 Value="_homeTeam"
+                                 ValueChanged="OnHomeTeamChanged"
+                                 SearchFunc="SearchTeams"
+                                 ToStringFunc="TeamName"
+                                 Dense="true"
+                                 Disabled="@_busy"
+                                 Variant="Variant.Outlined"
+                                 ResetValueOnEmptyText="false"
+                                 CoerceText="false"
+                                 MaxItems="20">
+                    <ItemTemplate>
+                        <TeamLabel TeamId="@context.Id" Name="@context.Name" Compact="true" />
+                    </ItemTemplate>
+                </MudAutocomplete>
+            </MudItem>
+            <MudItem xs="12" md="5">
+                <MudAutocomplete T="Team"
+                                 Label="Equipo B"
+                                 Value="_awayTeam"
+                                 ValueChanged="OnAwayTeamChanged"
+                                 SearchFunc="SearchTeams"
+                                 ToStringFunc="TeamName"
+                                 Dense="true"
+                                 Disabled="@_busy"
+                                 Variant="Variant.Outlined"
+                                 ResetValueOnEmptyText="false"
+                                 CoerceText="false"
+                                 MaxItems="20">
+                    <ItemTemplate>
+                        <TeamLabel TeamId="@context.Id" Name="@context.Name" Compact="true" />
+                    </ItemTemplate>
+                </MudAutocomplete>
+            </MudItem>
+            <MudItem xs="12" md="2" Class="action-cell">
+                <BusyButton Text="Predecir" BusyText="Prediciendo" IsBusy="_busy" Disabled="@(_homeTeam is null || _awayTeam is null || _homeTeam.Id == _awayTeam.Id)" Icon="@Icons.Material.Filled.AutoAwesome" OnClick="Predict" />
+            </MudItem>
+        </MudGrid>
+        @if (_busy)
+        {
+            <MudProgressLinear Class="inline-progress" Color="Color.Primary" Indeterminate="true" />
+        }
+    </MudPaper>
+
+    @if (!string.IsNullOrWhiteSpace(_error))
+    {
+        <MudAlert Severity="Severity.Error" Variant="Variant.Outlined">@_error</MudAlert>
+    }
+
+    @if (_result is not null)
+    {
+        <MudPaper Class="surface-card final-call" Elevation="0">
+            <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
+                <MudChip T="string" Size="Size.Small" Color="Color.Secondary" Variant="Variant.Filled">Final</MudChip>
+                <MudText Typo="Typo.h6">
+                    <span class="matchup-label">
+                        <TeamLabel TeamId="@_result.Fixture.HomeTeamId" Name="@_result.HomeTeamName" />
+                        <span>vs</span>
+                        <TeamLabel TeamId="@_result.Fixture.AwayTeamId" Name="@_result.AwayTeamName" />
+                    </span>
+                </MudText>
+            </MudStack>
+            <div class="prob-wrap">
+                <ProbabilityBar Outcome="_result.BestPrediction.Outcome" HomeTeamId="@_result.Fixture.HomeTeamId" AwayTeamId="@_result.Fixture.AwayTeamId" HomeLabel="@_result.HomeTeamName" AwayLabel="@_result.AwayTeamName" />
+            </div>
+            <MudText Typo="Typo.body2" Class="explain">@_result.BestPrediction.Explanation</MudText>
+        </MudPaper>
+
+        <MudGrid Spacing="2">
+            @foreach (var prediction in _result.Predictions)
+            {
+                <MudItem xs="12" lg="6">
+                    <PredictionCard Prediction="@prediction" HomeLabel="@_result.HomeTeamName" AwayLabel="@_result.AwayTeamName" />
+                </MudItem>
+            }
+            <MudItem xs="12" lg="6">
+                <PredictionCard Prediction="@_result.BestPrediction" HomeLabel="@_result.HomeTeamName" AwayLabel="@_result.AwayTeamName" />
+            </MudItem>
+        </MudGrid>
+    }
+</MudStack>
+
+@code {
+    private List<Team> _teams = [];
+    private Team? _homeTeam;
+    private Team? _awayTeam;
+    private bool _busy;
+    private string _error = "";
+    private MatchPredictionResult? _result;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _teams = await Db.Teams.OrderBy(t => t.Name).ToListAsync();
+        _homeTeam = _teams.FirstOrDefault();
+        _awayTeam = _teams.Skip(1).FirstOrDefault();
+    }
+
+    private async Task Predict()
+    {
+        if (_homeTeam is null || _awayTeam is null || _homeTeam.Id == _awayTeam.Id)
+            return;
+
+        _busy = true;
+        _error = "";
+        try
+        {
+            _result = await Predictor.PredictPairAsync(_homeTeam.Id, _awayTeam.Id);
+            Snackbar.Add("Predicción completa.", Severity.Success);
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+            Snackbar.Add("No se pudo generar la predicción.", Severity.Error);
+        }
+        finally
+        {
+            _busy = false;
+        }
+    }
+
+    private Task<IEnumerable<Team>> SearchTeams(string? value, CancellationToken cancellationToken)
+    {
+        var query = value?.Trim();
+        var matches = string.IsNullOrWhiteSpace(query)
+            ? _teams
+            : _teams.Where(team =>
+                team.Name.Contains(query, StringComparison.OrdinalIgnoreCase) ||
+                team.Id.Contains(query, StringComparison.OrdinalIgnoreCase));
+
+        return Task.FromResult(matches.Take(20));
+    }
+
+    private static string TeamName(Team? team) => team?.Name ?? "";
+    private Task OnHomeTeamChanged(Team? team)
+    {
+        _homeTeam = team;
+        return Task.CompletedTask;
+    }
+
+    private Task OnAwayTeamChanged(Team? team)
+    {
+        _awayTeam = team;
+        return Task.CompletedTask;
+    }
+}

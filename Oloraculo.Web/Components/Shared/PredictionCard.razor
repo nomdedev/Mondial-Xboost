@@ -1,0 +1,78 @@
+<MudPaper Class="prediction-card" Elevation="0">
+    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
+        <MudChip T="string" Size="Size.Small" Color="Color.Primary" Variant="Variant.Outlined">L@(Prediction.PredictorPriority)</MudChip>
+        <MudText Typo="Typo.subtitle1">@Prediction.PredictorName</MudText>
+        @if (Prediction.Degraded)
+        {
+            <MudChip T="string" Size="Size.Small" Color="Color.Error" Variant="Variant.Outlined">degradado</MudChip>
+        }
+    </MudStack>
+
+    <div class="prob-wrap">
+        <ProbabilityBar Outcome="Prediction.Outcome" HomeTeamId="@Prediction.HomeTeamId" AwayTeamId="@Prediction.AwayTeamId" HomeLabel="@HomeLabel" AwayLabel="@AwayLabel" />
+    </div>
+
+    @if (Prediction.ExpectedHomeGoals.HasValue && Prediction.ExpectedAwayGoals.HasValue)
+    {
+        <MudText Typo="Typo.caption" Color="Color.Secondary">
+            Goles esperados <TeamLabel TeamId="@Prediction.HomeTeamId" Name="@HomeLabel" Compact="true" /> @Prediction.ExpectedHomeGoals.Value.ToString("0.00")
+            - @Prediction.ExpectedAwayGoals.Value.ToString("0.00") <TeamLabel TeamId="@Prediction.AwayTeamId" Name="@AwayLabel" Compact="true" />
+            @if (Prediction.MostLikelyScore.HasValue)
+            {
+                <span> | probable @Prediction.MostLikelyScore.Value.Home-@Prediction.MostLikelyScore.Value.Away</span>
+            }
+        </MudText>
+    }
+
+    <MudText Typo="Typo.body2" Class="explain">@Prediction.Explanation</MudText>
+
+    @if (ShowDetails)
+    {
+        <MudGrid Spacing="2" Class="mt-2">
+            <MudItem xs="12" md="6">
+                <MudText Typo="Typo.caption" Color="Color.Secondary">Usado</MudText>
+                <MudStack Row="true" Spacing="1" Class="chip-wrap">
+                    @foreach (var feature in Prediction.FeaturesUsed)
+                    {
+                        <MudChip T="string" Size="Size.Small" Color="Color.Success" Variant="Variant.Outlined">@feature.ToString()</MudChip>
+                    }
+                    @if (Prediction.FeaturesUsed.Count == 0)
+                    {
+                        <MudText Typo="Typo.caption" Color="Color.Secondary">ninguno</MudText>
+                    }
+                </MudStack>
+            </MudItem>
+            <MudItem xs="12" md="6">
+                <MudText Typo="Typo.caption" Color="Color.Secondary">Falta</MudText>
+                <MudStack Row="true" Spacing="1" Class="chip-wrap">
+                    @foreach (var feature in Prediction.FeaturesMissing)
+                    {
+                        <MudChip T="string" Size="Size.Small" Color="Color.Error" Variant="Variant.Outlined">@feature.ToString()</MudChip>
+                    }
+                    @if (Prediction.FeaturesMissing.Count == 0)
+                    {
+                        <MudText Typo="Typo.caption" Color="Color.Secondary">nada</MudText>
+                    }
+                </MudStack>
+            </MudItem>
+        </MudGrid>
+
+        @if (Prediction.Drivers.Count > 0)
+        {
+            <MudText Typo="Typo.caption" Color="Color.Secondary" Class="section-label">Factores</MudText>
+            <ul class="driver-list">
+                @foreach (var driver in Prediction.Drivers)
+                {
+                    <li>@driver</li>
+                }
+            </ul>
+        }
+    }
+</MudPaper>
+
+@code {
+    [Parameter, EditorRequired] public MatchPrediction Prediction { get; set; } = default!;
+    [Parameter] public string HomeLabel { get; set; } = "Local";
+    [Parameter] public string AwayLabel { get; set; } = "Visitante";
+    [Parameter] public bool ShowDetails { get; set; } = true;
+}

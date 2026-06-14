@@ -1,0 +1,26 @@
+[
+  {
+    "name": "RandomForest",
+    "accuracy": 59.73,
+    "log_loss": 0.8862,
+    "brier": 0.1737,
+    "train_accuracy": 83.89,
+    "overfit_gap": 24.15
+  },
+  {
+    "name": "GradientBoosting",
+    "accuracy": 57.44,
+    "log_loss": 0.9579,
+    "brier": 0.1858,
+    "train_accuracy": 99.03,
+    "overfit_gap": 41.59
+  },
+  {
+    "name": "XGBoost",
+    "accuracy": 58.47,
+    "log_loss": 0.9922,
+    "brier": 0.1881,
+    "train_accuracy": 100.0,
+    "overfit_gap": 41.53
+  }
+]

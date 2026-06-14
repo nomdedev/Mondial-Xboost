@@ -1,0 +1,1 @@
+"""Mondial-Xboost scrapers package."""

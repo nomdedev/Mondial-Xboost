@@ -1,0 +1,19 @@
+{
+  "tested_at": "2026-06-14T16:18:46.328307+00:00",
+  "base_url": "http://127.0.0.1:53877",
+  "fixtures_sent": 3,
+  "predictions_received": 3,
+  "status": "PASS",
+  "errors": [],
+  "sample_prediction": {
+    "home_team": "Argentina",
+    "away_team": "Brazil",
+    "date": "2026-06-15T00:00:00",
+    "prob_away_win": 0.3655238697424584,
+    "prob_draw": 0.21690616107641125,
+    "prob_home_win": 0.4175699691811304,
+    "expected_home_goals": 2.190000057220459,
+    "expected_away_goals": 1.909999966621399,
+    "top_pick": "Home"
+  }
+}

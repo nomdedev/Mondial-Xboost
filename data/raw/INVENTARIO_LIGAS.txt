@@ -1,0 +1,52 @@
+INVENTARIO COMPLETO - football-data.co.uk
+======================================================================
+
+EUROPEAS (mmz4281/SEASON/CODE.csv)
+--------------------------------------------------
+  B1    :  31 temporadas (0001 -> 9900)
+  D1    :  33 temporadas (0001 -> 9900)
+  D2    :  33 temporadas (0001 -> 9900)
+  E0    :  33 temporadas (0001 -> 9900)
+  E1    :  33 temporadas (0001 -> 9900)
+  E2    :  33 temporadas (0001 -> 9900)
+  E3    :  33 temporadas (0001 -> 9900)
+  EC    :  21 temporadas (0506 -> 2526)
+  F1    :  33 temporadas (0001 -> 9900)
+  F2    :  30 temporadas (0001 -> 9900)
+  G1    :  32 temporadas (0001 -> 9900)
+  I1    :  33 temporadas (0001 -> 9900)
+  I2    :  29 temporadas (0001 -> 9900)
+  N1    :  33 temporadas (0001 -> 9900)
+  P1    :  32 temporadas (0001 -> 9900)
+  SC0   :  32 temporadas (0001 -> 9900)
+  SC1   :  32 temporadas (0001 -> 9900)
+  SC2   :  29 temporadas (0001 -> 9900)
+  SC3   :  29 temporadas (0001 -> 9900)
+  SP1   :  33 temporadas (0001 -> 9900)
+  SP2   :  30 temporadas (0001 -> 9900)
+  T1    :  32 temporadas (0001 -> 9900)
+  SUBTOTAL: 689 CSVs
+
+AMERICANAS/ASIATICAS (new/CODE.csv)
+--------------------------------------------------
+  ARG   : 1 archivo (todas las temporadas)
+  BRA   : 1 archivo (todas las temporadas)
+  MEX   : 1 archivo (todas las temporadas)
+  USA   : 1 archivo (todas las temporadas)
+  CHN   : 1 archivo (todas las temporadas)
+  JPN   : 1 archivo (todas las temporadas)
+  ROU   : 1 archivo (todas las temporadas)
+  POL   : 1 archivo (todas las temporadas)
+  RUS   : 1 archivo (todas las temporadas)
+  SWE   : 1 archivo (todas las temporadas)
+  NOR   : 1 archivo (todas las temporadas)
+  DNK   : 1 archivo (todas las temporadas)
+  SWZ   : 1 archivo (todas las temporadas)
+  IRL   : 1 archivo (todas las temporadas)
+  AUS   : 1 archivo (todas las temporadas)
+  FIN   : 1 archivo (todas las temporadas)
+  SUBTOTAL: 16 CSVs
+
+======================================================================
+TOTAL EN WEB: 705 CSVs
+YA DESCARGADOS: 55 archivos

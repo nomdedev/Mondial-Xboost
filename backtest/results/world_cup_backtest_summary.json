@@ -1,0 +1,47 @@
+{
+  "run_at": "2026-06-14T17:46:05.514472+00:00",
+  "verdict": "PASS",
+  "tournaments": [
+    {
+      "wc_year": 2014,
+      "n_matches": 64,
+      "log_loss": 0.9477542294070832,
+      "brier_score": 0.18739000798937852,
+      "top_pick_accuracy": 0.59375,
+      "calibration_error": 0.12849254466274349,
+      "roi_simulated": 0.23748811663676767
+    },
+    {
+      "wc_year": 2018,
+      "n_matches": 64,
+      "log_loss": 0.9640295109004736,
+      "brier_score": 0.19162933075838537,
+      "top_pick_accuracy": 0.5625,
+      "calibration_error": 0.05553682831405081,
+      "roi_simulated": 0.07846857303553552
+    },
+    {
+      "wc_year": 2022,
+      "n_matches": 64,
+      "log_loss": 1.0653232016988474,
+      "brier_score": 0.20603329712924712,
+      "top_pick_accuracy": 0.5,
+      "calibration_error": 0.1325822764257441,
+      "roi_simulated": -0.07764181842718641
+    }
+  ],
+  "average": {
+    "log_loss": 0.9924,
+    "brier_score": 0.195,
+    "top_pick_accuracy": 0.5521,
+    "roi_simulated": 0.0794
+  },
+  "thresholds": {
+    "log_loss": 1.05,
+    "brier": 0.22,
+    "accuracy": 0.45,
+    "roi": -0.05
+  },
+  "failures": [],
+  "warnings": []
+}

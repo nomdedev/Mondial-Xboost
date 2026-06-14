@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mondial-Xboost - Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #0f172a; color: #e2e8f0; }
+        .card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 20px; }
+        .metric { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border: 1px solid #334155; }
+        .btn-primary { background: #3b82f6; color: white; padding: 10px 20px; border-radius: 8px; font-weight: 600; }
+        .btn-primary:hover { background: #2563eb; }
+        .btn-secondary { background: #334155; color: white; padding: 10px 20px; border-radius: 8px; }
+        .progress-bar { background: #334155; height: 8px; border-radius: 4px; overflow: hidden; }
+        .progress-fill { background: #3b82f6; height: 100%; transition: width 0.3s; }
+        .prediction-home { background: #10b981; }
+        .prediction-draw { background: #f59e0b; }
+        .prediction-away { background: #ef4444; }
+        .feature-bar { background: #334155; height: 24px; border-radius: 4px; position: relative; }
+        .feature-fill { background: #3b82f6; height: 100%; border-radius: 4px; }
+        .nav-item { padding: 12px 16px; cursor: pointer; border-radius: 8px; }
+        .nav-item:hover { background: #1e293b; }
+        .nav-item.active { background: #3b82f6; color: white; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+    </style>
+</head>
+<body>
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div class="w-64 bg-slate-900 border-r border-slate-700 p-4">
+            <div class="mb-8">
+                <h1 class="text-xl font-bold text-blue-400">Mondial-Xboost</h1>
+                <p class="text-xs text-slate-400 mt-1">ML Prediction Platform</p>
+            </div>
+            
+            <nav>
+                <div class="nav-item active" onclick="showTab('dashboard')">
+                    <span class="mr-2">📊</span> Dashboard
+                </div>
+                <div class="nav-item" onclick="showTab('training')">
+                    <span class="mr-2">🧠</span> Training
+                </div>
+                <div class="nav-item" onclick="showTab('predictions')">
+                    <span class="mr-2">⚽</span> Predictions
+                </div>
+                <div class="nav-item" onclick="showTab('models')">
+                    <span class="mr-2">🤖</span> Models
+                </div>
+                <div class="nav-item" onclick="showTab('features')">
+                    <span class="mr-2">📈</span> Features
+                </div>
+                <div class="nav-item" onclick="showTab('agents')">
+                    <span class="mr-2">🎯</span> Agent System
+                </div>
+            </nav>
+            
+            <div class="mt-8 p-4 bg-slate-800 rounded-lg">
+                <p class="text-xs text-slate-400">API Status</p>
+                <div class="flex items-center mt-2">
+                    <div class="w-2 h-2 rounded-full bg-green-500 mr-2" id="status-dot"></div>
+                    <span class="text-sm" id="status-text">Connected</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="flex-1 overflow-auto p-6">
+            <!-- Dashboard Tab -->
+            <div id="dashboard" class="tab-content active">
+                <h2 class="text-2xl font-bold mb-6">Dashboard</h2>
+                
+                <div class="grid grid-cols-4 gap-4 mb-6">
+                    <div class="card metric">
+                        <p class="text-slate-400 text-sm">Total Matches</p>
+                        <p class="text-2xl font-bold text-blue-400" id="total-matches">-</p>
+                    </div>
+                    <div class="card metric">
+                        <p class="text-slate-400 text-sm">Teams</p>
+                        <p class="text-2xl font-bold text-green-400" id="total-teams">-</p>
+                    </div>
+                    <div class="card metric">
+                        <p class="text-slate-400 text-sm">Best Accuracy</p>
+                        <p class="text-2xl font-bold text-yellow-400" id="best-accuracy">-</p>
+                    </div>
+                    <div class="card metric">
+                        <p class="text-slate-400 text-sm">Models Trained</p>
+                        <p class="text-2xl font-bold text-purple-400" id="models-count">-</p>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="card">
+                        <h3 class="font-semibold mb-4">Model Performance History</h3>
+                        <canvas id="performance-chart"></canvas>
+                    </div>
+                    <div class="card">
+                        <h3 class="font-semibold mb-4">Outcome Distribution</h3>
+                        <canvas id="outcome-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Training Tab -->
+            <div id="training" class="tab-content">
+                <h2 class="text-2xl font-bold mb-6">Model Training</h2>
+                
+                <div class="card mb-6">
+                    <h3 class="font-semibold mb-4">Training Configuration</h3>
+                    <div class="grid grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-sm text-slate-400 mb-2">Model Name</label>
+                            <input type="text" id="train-model-name" value="outcome_v2" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-2">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-slate-400 mb-2">Min Date</label>
+                            <input type="date" id="train-min-date" value="2018-01-01" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-2">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-slate-400 mb-2">Test Size</label>
+                            <input type="number" id="train-test-size" value="0.2" step="0.05" min="0.1" max="0.5" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-2">
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <label class="block text-sm text-slate-400 mb-2">Hyperparameters (JSON)</label>
+                        <textarea id="train-hyperparams" rows="4" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-2 font-mono text-sm">{
+  "n_estimators": 200,
+  "max_depth": 6,
+  "learning_rate": 0.1,
+  "subsample": 0.8,
+  "colsample_bytree": 0.8
+}</textarea>
+                    </div>
+                    
+                    <button onclick="startTraining()" class="btn-primary mt-4">Start Training</button>
+                </div>
+                
+                <div class="card">
+                    <h3 class="font-semibold mb-4">Training Jobs</h3>
+                    <div id="training-jobs" class="space-y-4">
+                        <p class="text-slate-400">No active training jobs</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Predictions Tab -->
+            <div id="predictions" class="tab-content">
+                <h2 class="text-2xl font-bold mb-6">Match Predictions</h2>
+                
+                <div class="card mb-6">
+                    <div class="grid grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-sm text-slate-400 mb-2">Home Team</label>
+                            <input type="text" id="pred-home" placeholder="e.g. Argentina" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-2">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-slate-400 mb-2">Away Team</label>
+                            <input type="text" id="pred-away" placeholder="e.g. Brazil" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-2">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-slate-400 mb-2">Date (optional)</label>
+                            <input type="date" id="pred-date" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-2">
+                        </div>
+                    </div>
+                    <button onclick="makePrediction()" class="btn-primary mt-4">Predict</button>
+                </div>
+                
+                <div id="prediction-result" class="hidden">
+                    <div class="card">
+                        <h3 class="font-semibold mb-4">Prediction Result</h3>
+                        <div class="flex items-center justify-between mb-6">
+                            <div class="text-center">
+                                <p class="text-lg font-semibold" id="pred-home-team">-</p>
+                                <p class="text-3xl font-bold text-green-400" id="pred-home-prob">-</p>
+                            </div>
+                            <div class="text-center">
+                                <p class="text-lg font-semibold">Draw</p>
+                                <p class="text-3xl font-bold text-yellow-400" id="pred-draw-prob">-</p>
+                            </div>
+                            <div class="text-center">
+                                <p class="text-lg font-semibold" id="pred-away-team">-</p>
+                                <p class="text-3xl font-bold text-red-400" id="pred-away-prob">-</p>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-slate-800 rounded-lg p-4">
+                            <p class="text-sm text-slate-400 mb-2">Prediction: <span id="pred-winner" class="font-bold text-white">-</span></p>
+                            <p class="text-sm text-slate-400">Confidence: <span id="pred-confidence" class="font-bold text-white">-</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Models Tab -->
+            <div id="models" class="tab-content">
+                <h2 class="text-2xl font-bold mb-6">Trained Models</h2>
+                <div id="models-list" class="grid grid-cols-3 gap-4">
+                    <p class="text-slate-400">Loading models...</p>
+                </div>
+            </div>
+            
+            <!-- Features Tab -->
+            <div id="features" class="tab-content">
+                <h2 class="text-2xl font-bold mb-6">Feature Importance</h2>
+                <div class="card">
+                    <div id="feature-bars" class="space-y-3">
+                        <p class="text-slate-400">Train a model to see feature importance</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Agents Tab -->
+            <div id="agents" class="tab-content">
+                <h2 class="text-2xl font-bold mb-6">Agent System</h2>
+                
+                <div class="card mb-6">
+                    <h3 class="font-semibold mb-4">Auto-Improvement Loop</h3>
+                    <p class="text-slate-400 mb-4">The agent system will automatically train models with different hyperparameters, evaluate them, and keep the best one.</p>
+                    
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-sm text-slate-400 mb-2">Max Iterations</label>
+                            <input type="number" id="agent-iterations" value="10" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-2">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-slate-400 mb-2">Target Metric</label>
+                            <select id="agent-metric" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-2">
+                                <option value="log_loss">Log Loss (minimize)</option>
+                                <option value="accuracy">Accuracy (maximize)</option>
+                                <option value="brier">Brier Score (minimize)</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <button onclick="startAgentLoop()" class="btn-primary">Start Agent Loop</button>
+                </div>
+                
+                <div class="card">
+                    <h3 class="font-semibold mb-4">Agent Log</h3>
+                    <div id="agent-log" class="bg-slate-900 rounded-lg p-4 h-64 overflow-auto font-mono text-sm">
+                        <p class="text-slate-500">Agent system ready...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const API_URL = 'http://localhost:8000';
+        let performanceChart = null;
+        let outcomeChart = null;
+        
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            event.target.closest('.nav-item').classList.add('active');
+            
+            if (tabId === 'dashboard') loadDashboard();
+            if (tabId === 'models') loadModels();
+            if (tabId === 'features') loadFeatures();
+        }
+        
+        async function loadDashboard() {
+            try {
+                const stats = await fetch(`${API_URL}/dataset/stats`).then(r => r.json());
+                document.getElementById('total-matches').textContent = stats.total_matches?.toLocaleString() || '-';
+                document.getElementById('total-teams').textContent = stats.teams || '-';
+                
+                const metrics = await fetch(`${API_URL}/metrics`).then(r => r.json());
+                const best = metrics.metrics?.[0];
+                document.getElementById('best-accuracy').textContent = best ? (best.accuracy * 100).toFixed(1) + '%' : '-';
+                document.getElementById('models-count').textContent = metrics.metrics?.length || 0;
+                
+                // Performance chart
+                const ctx = document.getElementById('performance-chart').getContext('2d');
+                if (performanceChart) performanceChart.destroy();
+                
+                const labels = metrics.metrics?.map(m => m.trained_at?.substring(0, 10)) || [];
+                const accData = metrics.metrics?.map(m => m.accuracy * 100) || [];
+                const lossData = metrics.metrics?.map(m => m.log_loss) || [];
+                
+                performanceChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels.reverse(),
+                        datasets: [{
+                            label: 'Accuracy %',
+                            data: accData.reverse(),
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            fill: true
+                        }, {
+                            label: 'Log Loss',
+                            data: lossData.reverse(),
+                            borderColor: '#ef4444',
+                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                            fill: true,
+                            yAxisID: 'y1'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: { beginAtZero: true, max: 100 },
+                            y1: { position: 'right', beginAtZero: true }
+                        }
+                    }
+                });
+                
+                // Outcome chart
+                const ctx2 = document.getElementById('outcome-chart').getContext('2d');
+                if (outcomeChart) outcomeChart.destroy();
+                
+                const outcomes = stats.outcome_distribution || {};
+                outcomeChart = new Chart(ctx2, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Home Win', 'Draw', 'Away Win'],
+                        datasets: [{
+                            data: [outcomes.H || 0, outcomes.D || 0, outcomes.A || 0],
+                            backgroundColor: ['#10b981', '#f59e0b', '#ef4444']
+                        }]
+                    }
+                });
+            } catch (e) {
+                console.error('Dashboard error:', e);
+            }
+        }
+        
+        async function startTraining() {
+            const config = {
+                model_name: document.getElementById('train-model-name').value,
+                min_date: document.getElementById('train-min-date').value,
+                test_size: parseFloat(document.getElementById('train-test-size').value),
+                hyperparams: JSON.parse(document.getElementById('train-hyperparams').value)
+            };
+            
+            try {
+                const response = await fetch(`${API_URL}/train`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(config)
+                });
+                const data = await response.json();
+                
+                const jobsDiv = document.getElementById('training-jobs');
+                const jobEl = document.createElement('div');
+                jobEl.className = 'card';
+                jobEl.id = `job-${data.job_id}`;
+                jobEl.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="font-semibold">${config.model_name}</p>
+                            <p class="text-sm text-slate-400">${data.job_id}</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-sm font-semibold status">Queued</p>
+                            <div class="progress-bar w-32 mt-1">
+                                <div class="progress-fill" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                jobsDiv.appendChild(jobEl);
+                
+                // Poll for status
+                pollTrainingStatus(data.job_id);
+            } catch (e) {
+                alert('Error starting training: ' + e.message);
+            }
+        }
+        
+        async function pollTrainingStatus(jobId) {
+            const interval = setInterval(async () => {
+                try {
+                    const response = await fetch(`${API_URL}/train/${jobId}`);
+                    const job = await response.json();
+                    
+                    const jobEl = document.getElementById(`job-${jobId}`);
+                    if (!jobEl) return;
+                    
+                    jobEl.querySelector('.status').textContent = job.status;
+                    jobEl.querySelector('.progress-fill').style.width = `${job.progress * 100}%`;
+                    
+                    if (job.status === 'completed') {
+                        clearInterval(interval);
+                        jobEl.querySelector('.status').textContent = 'Completed ✓';
+                        jobEl.querySelector('.status').className = 'text-sm font-semibold status text-green-400';
+                        if (job.metrics) {
+                            jobEl.innerHTML += `
+                                <div class="mt-4 grid grid-cols-3 gap-2 text-sm">
+                                    <div>Accuracy: ${(job.metrics.accuracy * 100).toFixed(1)}%</div>
+                                    <div>Log Loss: ${job.metrics.log_loss.toFixed(4)}</div>
+                                    <div>Brier: ${job.metrics.brier_score.toFixed(4)}</div>
+                                </div>
+                            `;
+                        }
+                    } else if (job.status === 'failed') {
+                        clearInterval(interval);
+                        jobEl.querySelector('.status').textContent = 'Failed ✗';
+                        jobEl.querySelector('.status').className = 'text-sm font-semibold status text-red-400';
+                    }
+                } catch (e) {
+                    console.error('Polling error:', e);
+                }
+            }, 2000);
+        }
+        
+        async function makePrediction() {
+            const home = document.getElementById('pred-home').value;
+            const away = document.getElementById('pred-away').value;
+            const date = document.getElementById('pred-date').value;
+            
+            if (!home || !away) {
+                alert('Please enter both teams');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/predict`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ home_team: home, away_team: away, date: date || undefined })
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    alert('Error: ' + error.detail);
+                    return;
+                }
+                
+                const data = await response.json();
+                
+                document.getElementById('prediction-result').classList.remove('hidden');
+                document.getElementById('pred-home-team').textContent = home;
+                document.getElementById('pred-away-team').textContent = away;
+                document.getElementById('pred-home-prob').textContent = (data.probabilities.home_win * 100).toFixed(1) + '%';
+                document.getElementById('pred-draw-prob').textContent = (data.probabilities.draw * 100).toFixed(1) + '%';
+                document.getElementById('pred-away-prob').textContent = (data.probabilities.away_win * 100).toFixed(1) + '%';
+                document.getElementById('pred-winner').textContent = data.prediction;
+                document.getElementById('pred-confidence').textContent = (data.confidence * 100).toFixed(1) + '%';
+            } catch (e) {
+                alert('Error making prediction: ' + e.message);
+            }
+        }
+        
+        async function loadModels() {
+            try {
+                const response = await fetch(`${API_URL}/models`);
+                const data = await response.json();
+                
+                const container = document.getElementById('models-list');
+                if (!data.models || data.models.length === 0) {
+                    container.innerHTML = '<p class="text-slate-400">No models trained yet</p>';
+                    return;
+                }
+                
+                container.innerHTML = data.models.map(m => `
+                    <div class="card">
+                        <p class="font-semibold">${m.name}</p>
+                        <p class="text-sm text-slate-400">Size: ${m.size_mb} MB</p>
+                        <p class="text-sm text-slate-400">Created: ${m.created.substring(0, 10)}</p>
+                    </div>
+                `).join('');
+            } catch (e) {
+                console.error('Models error:', e);
+            }
+        }
+        
+        async function loadFeatures() {
+            try {
+                const response = await fetch(`${API_URL}/features/importance`);
+                const data = await response.json();
+                
+                const container = document.getElementById('feature-bars');
+                if (!data.features || data.features.length === 0) {
+                    container.innerHTML = '<p class="text-slate-400">Train a model to see feature importance</p>';
+                    return;
+                }
+                
+                const maxImp = Math.max(...data.features.map(f => f.importance));
+                
+                container.innerHTML = data.features.map(f => {
+                    const pct = (f.importance / maxImp * 100).toFixed(1);
+                    return `
+                        <div class="flex items-center">
+                            <span class="w-48 text-sm">${f.feature}</span>
+                            <div class="flex-1 feature-bar">
+                                <div class="feature-fill" style="width: ${pct}%"></div>
+                            </div>
+                            <span class="w-16 text-right text-sm">${f.importance.toFixed(4)}</span>
+                        </div>
+                    `;
+                }).join('');
+            } catch (e) {
+                console.error('Features error:', e);
+            }
+        }
+        
+        async function startAgentLoop() {
+            const iterations = parseInt(document.getElementById('agent-iterations').value);
+            const metric = document.getElementById('agent-metric').value;
+            const log = document.getElementById('agent-log');
+            
+            log.innerHTML = '<p class="text-blue-400">Starting agent loop...</p>';
+            
+            const hyperparamSpace = {
+                n_estimators: [100, 200, 300, 500],
+                max_depth: [4, 6, 8, 10],
+                learning_rate: [0.05, 0.1, 0.15, 0.2],
+                subsample: [0.7, 0.8, 0.9],
+                colsample_bytree: [0.7, 0.8, 0.9]
+            };
+            
+            let bestMetric = metric === 'accuracy' ? 0 : Infinity;
+            let bestConfig = null;
+            
+            for (let i = 0; i < iterations; i++) {
+                const config = {
+                    model_name: `agent_iter_${i}`,
+                    min_date: '2018-01-01',
+                    test_size: 0.2,
+                    hyperparams: {
+                        n_estimators: hyperparamSpace.n_estimators[Math.floor(Math.random() * hyperparamSpace.n_estimators.length)],
+                        max_depth: hyperparamSpace.max_depth[Math.floor(Math.random() * hyperparamSpace.max_depth.length)],
+                        learning_rate: hyperparamSpace.learning_rate[Math.floor(Math.random() * hyperparamSpace.learning_rate.length)],
+                        subsample: hyperparamSpace.subsample[Math.floor(Math.random() * hyperparamSpace.subsample.length)],
+                        colsample_bytree: hyperparamSpace.colsample_bytree[Math.floor(Math.random() * hyperparamSpace.colsample_bytree.length)],
+                        random_state: 42
+                    }
+                };
+                
+                log.innerHTML += `<p class="text-slate-400">[${i + 1}/${iterations}] Training with n_estimators=${config.hyperparams.n_estimators}, max_depth=${config.hyperparams.max_depth}, lr=${config.hyperparams.learning_rate}...</p>`;
+                
+                try {
+                    const response = await fetch(`${API_URL}/train`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(config)
+                    });
+                    const data = await response.json();
+                    
+                    // Poll for completion
+                    let completed = false;
+                    while (!completed) {
+                        await new Promise(r => setTimeout(r, 3000));
+                        const status = await fetch(`${API_URL}/train/${data.job_id}`).then(r => r.json());
+                        
+                        if (status.status === 'completed') {
+                            completed = true;
+                            const m = status.metrics;
+                            const currentMetric = metric === 'accuracy' ? m.accuracy : metric === 'log_loss' ? m.log_loss : m.brier_score;
+                            
+                            const isBetter = metric === 'accuracy' ? currentMetric > bestMetric : currentMetric < bestMetric;
+                            
+                            if (isBetter) {
+                                bestMetric = currentMetric;
+                                bestConfig = config;
+                                log.innerHTML += `<p class="text-green-400">✓ New best! ${metric}: ${currentMetric.toFixed(4)}</p>`;
+                            } else {
+                                log.innerHTML += `<p class="text-slate-500">  ${metric}: ${currentMetric.toFixed(4)} (no improvement)</p>`;
+                            }
+                        } else if (status.status === 'failed') {
+                            completed = true;
+                            log.innerHTML += `<p class="text-red-400">✗ Training failed</p>`;
+                        }
+                    }
+                } catch (e) {
+                    log.innerHTML += `<p class="text-red-400">Error: ${e.message}</p>`;
+                }
+            }
+            
+            log.innerHTML += `<p class="text-blue-400 font-bold">Agent loop complete! Best ${metric}: ${bestMetric.toFixed(4)}</p>`;
+            if (bestConfig) {
+                log.innerHTML += `<p class="text-green-400">Best config: ${JSON.stringify(bestConfig.hyperparams, null, 2)}</p>`;
+            }
+        }
+        
+        // Load dashboard on startup
+        loadDashboard();
+        
+        // Check API status periodically
+        setInterval(async () => {
+            try {
+                const response = await fetch(`${API_URL}/health`);
+                const dot = document.getElementById('status-dot');
+                const text = document.getElementById('status-text');
+                
+                if (response.ok) {
+                    dot.className = 'w-2 h-2 rounded-full bg-green-500 mr-2';
+                    text.textContent = 'Connected';
+                } else {
+                    dot.className = 'w-2 h-2 rounded-full bg-red-500 mr-2';
+                    text.textContent = 'Disconnected';
+                }
+            } catch (e) {
+                document.getElementById('status-dot').className = 'w-2 h-2 rounded-full bg-red-500 mr-2';
+                document.getElementById('status-text').textContent = 'Disconnected';
+            }
+        }, 5000);
+    </script>
+</body>
+</html>

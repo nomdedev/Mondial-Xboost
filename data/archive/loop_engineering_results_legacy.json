@@ -1,0 +1,2062 @@
+{
+  "batches": [
+    {
+      "batch": 1,
+      "iterations": 100,
+      "best": {
+        "batch": 1,
+        "iteration": 70,
+        "global_iter": 70,
+        "model": "RandomForest",
+        "params": {
+          "n_estimators": 200,
+          "max_depth": 8,
+          "min_samples_split": 10,
+          "min_samples_leaf": 2,
+          "max_features": 0.5
+        },
+        "accuracy": 60.6001,
+        "log_loss": 0.8804,
+        "brier": 0.1727,
+        "train_accuracy": 65.1551,
+        "overfit_gap": 4.555,
+        "time_s": 0.9
+      },
+      "timestamp": "2026-06-13T19:32:02.411564"
+    }
+  ],
+  "all_runs": [
+    {
+      "batch": 1,
+      "iteration": 1,
+      "global_iter": 1,
+      "model": "RandomForest",
+      "params": {
+        "n_estimators": 500,
+        "max_depth": null,
+        "min_samples_split": 10,
+        "min_samples_leaf": 2,
+        "max_features": "log2"
+      },
+      "accuracy": 60.0474,
+      "log_loss": 0.8893,
+      "brier": 0.1743,
+      "train_accuracy": 92.7895,
+      "overfit_gap": 32.7421,
+      "time_s": 1.9
+    },
+    {
+      "batch": 1,
+      "iteration": 2,
+      "global_iter": 2,
+      "model": "GradientBoosting",
+      "params": {
+        "n_estimators": 200,
+        "max_depth": 6,
+        "learning_rate": 0.03,
+        "subsample": 1.0,
+        "min_samples_split": 2
+      },
+      "accuracy": 59.6526,
+      "log_loss": 0.8918,
+      "brier": 0.1746,
+      "train_accuracy": 74.2955,
+      "overfit_gap": 14.6429,
+      "time_s": 21.3
+    },
+    {
+      "batch": 1,
+      "iteration": 3,
+      "global_iter": 3,
+      "model": "XGBoost",
+      "params": {
+        "n_estimators": 500,
+        "max_depth": 12,
+        "learning_rate": 0.05,
+        "subsample": 0.8,
+        "colsample_bytree": 0.9,
+        "reg_alpha": 0.01,
+        "reg_lambda": 0.5,
+        "min_child_weight": 3,
+        "gamma": 0
+      },
+      "accuracy": 58.4682,
+      "log_loss": 1.0576,
+      "brier": 0.1954,
+      "train_accuracy": 100.0,
+      "overfit_gap": 41.5318,
+      "time_s": 4.0
+    },
+    {
+      "batch": 1,
+      "iteration": 4,
+      "global_iter": 4,
+      "model": "RandomForest",
+      "params": {
+        "n_estimators": 800,
+        "max_depth": 12,
+        "min_samples_split": 5,
+        "min_samples_leaf": 4,
+        "max_features": "log2"
+      },
+      "accuracy": 60.2448,
+      "log_loss": 0.8848,
+      "brier": 0.1734,
+      "train_accuracy": 78.4869,
+      "overfit_gap": 18.2421,
+      "time_s": 2.7
+    },
+    {
+      "batch": 1,
+      "iteration": 5,
+      "global_iter": 5,
+      "model": "GradientBoosting",
+      "params": {
+        "n_estimators": 500,
+        "max_depth": 10,
+        "learning_rate": 0.05,
+        "subsample": 0.8,
+        "min_samples_split": 5
+      },
+      "accuracy": 58.0734,
+      "log_loss": 1.1883,
+      "brier": 0.2046,
+      "train_accuracy": 100.0,
+      "overfit_gap": 41.9266,
+      "time_s": 79.2
+    },
+    {
+      "batch": 1,
+      "iteration": 6,
+      "global_iter": 6,
+      "model": "XGBoost",
+      "params": {
+        "n_estimators": 1000,
+        "max_depth": 4,
+        "learning_rate": 0.05,
+        "subsample": 0.8,
+        "colsample_bytree": 0.7,
+        "reg_alpha": 0.01,
+        "reg_lambda": 2.0,
+        "min_child_weight": 1,
+        "gamma": 0.1
+      },
+      "accuracy": 57.876,
+      "log_loss": 0.9269,
+      "brier": 0.1806,
+      "train_accuracy": 83.7556,
+      "overfit_gap": 25.8796,
+      "time_s": 2.0
+    },
+    {
+      "batch": 1,
+      "iteration": 7,
+      "global_iter": 7,
+      "model": "RandomForest",
+      "params": {
+        "n_estimators": 1000,
+        "max_depth": 6,
+        "min_samples_split": 10,
+        "min_samples_leaf": 2,
+        "max_features": 0.5
+      },
+      "accuracy": 60.2842,
+      "log_loss": 0.8772,
+      "brier": 0.1721,
+      "train_accuracy": 61.1414,
+      "overfit_gap": 0.8571,
+      "time_s": 3.5
+    },
+    {
+      "batch": 1,
+      "iteration": 8,
+      "global_iter": 8,
+      "model": "GradientBoosting",
+      "params": {
+        "n_estimators": 300,
+        "max_depth": 4,
+        "learning_rate": 0.03,
+        "subsample": 0.7,
+        "min_samples_split": 5
+      },
+      "accuracy": 59.1788,
+      "log_loss": 0.8865,
+      "brier": 0.1738,
+      "train_accuracy": 67.3928,
+      "overfit_gap": 8.214,
+      "time_s": 15.9
+    },
+    {
+      "batch": 1,
+      "iteration": 9,
+      "global_iter": 9,
+      "model": "XGBoost",
+      "params": {
+        "n_estimators": 500,
+        "max_depth": 12,
+        "learning_rate": 0.03,
+        "subsample": 0.9,
+        "colsample_bytree": 1.0,
+        "reg_alpha": 0.1,
+        "reg_lambda": 1.5,
+        "min_child_weight": 5,
+        "gamma": 0.2
+      },
+      "accuracy": 58.5077,
+      "log_loss": 0.9574,
+      "brier": 0.1845,
+      "train_accuracy": 99.9763,
+      "overfit_gap": 41.4686,
+      "time_s": 3.4
+    },
+    {
+      "batch": 1,
+      "iteration": 10,
+      "global_iter": 10,
+      "model": "RandomForest",
+      "params": {
+        "n_estimators": 300,
+        "max_depth": 12,
+        "min_samples_split": 2,
+        "min_samples_leaf": 1,
+        "max_features": 0.5
+      },
+      "accuracy": 59.9289,
+      "log_loss": 0.8889,
+      "brier": 0.174,
+      "train_accuracy": 87.8641,
+      "overfit_gap": 27.9351,
+      "time_s": 1.6
+    },
+    {
+      "batch": 1,
+      "iteration": 11,
+      "global_iter": 11,
+      "model": "GradientBoosting",
+      "params": {
+        "n_estimators": 500,
+        "max_depth": 8,
+        "learning_rate": 0.01,
+        "subsample": 0.7,
+        "min_samples_split": 10
+      },
+      "accuracy": 59.4552,
+      "log_loss": 0.8946,
+      "brier": 0.1752,
+      "train_accuracy": 88.4916,
+      "overfit_gap": 29.0364,
+      "time_s": 52.0
+    },
+    {
+      "batch": 1,
+      "iteration": 12,
+      "global_iter": 12,
+      "model": "XGBoost",
+      "params": {
+        "n_estimators": 500,
+        "max_depth": 12,
+        "learning_rate": 0.01,
+        "subsample": 0.8,
+        "colsample_bytree": 0.9,
+        "reg_alpha": 1.0,
+        "reg_lambda": 2.0,
+        "min_child_weight": 3,
+        "gamma": 0.2
+      },
+      "accuracy": 59.4552,
+      "log_loss": 0.9022,
+      "brier": 0.1765,
+      "train_accuracy": 94.5655,
+      "overfit_gap": 35.1103,
+      "time_s": 5.1
+    },
+    {
+      "batch": 1,
+      "iteration": 13,
+      "global_iter": 13,
+      "model": "RandomForest",
+      "params": {
+        "n_estimators": 300,
+        "max_depth": 12,
+        "min_samples_split": 2,
+        "min_samples_leaf": 4,
+        "max_features": 0.5
+      },
+      "accuracy": 60.2053,
+      "log_loss": 0.8841,
+      "brier": 0.1732,
+      "train_accuracy": 79.8248,
+      "overfit_gap": 19.6195,
+      "time_s": 1.4
+    },
+    {
+      "batch": 1,
+      "iteration": 14,
+      "global_iter": 14,
+      "model": "GradientBoosting",
+      "params": {
+        "n_estimators": 500,
+        "max_depth": 8,
+        "learning_rate": 0.03,
+        "subsample": 1.0,
+        "min_samples_split": 2
+      },
+      "accuracy": 57.955,
+      "log_loss": 0.9653,
+      "brier": 0.1857,
+      "train_accuracy": 99.5619,
+      "overfit_gap": 41.6069,
+      "time_s": 69.6
+    },
+    {
+      "batch": 1,
+      "iteration": 15,
+      "global_iter": 15,
+      "model": "XGBoost",
+      "params": {
+        "n_estimators": 200,
+        "max_depth": 6,
+        "learning_rate": 0.03,
+        "subsample": 0.9,
+        "colsample_bytree": 1.0,
+        "reg_alpha": 1.0,
+        "reg_lambda": 2.0,
+        "min_child_weight": 7,
+        "gamma": 0.3
+      },
+      "accuracy": 59.7315,
+      "log_loss": 0.8865,
+      "brier": 0.1735,
+      "train_accuracy": 66.9903,
+      "overfit_gap": 7.2587,
+      "time_s": 0.6
+    },
+    {
+      "batch": 1,
+      "iteration": 16,
+      "global_iter": 16,
+      "model": "RandomForest",
+      "params": {
+        "n_estimators": 200,
+        "max_depth": 8,
+        "min_samples_split": 2,
+        "min_samples_leaf": 2,
+        "max_features": 0.8
+      },
+      "accuracy": 60.4027,
+      "log_loss": 0.879,
+      "brier": 0.1723,
+      "train_accuracy": 65.3445,
+      "overfit_gap": 4.9419,
+      "time_s": 1.1
+    },
+    {
+      "batch": 1,
+      "iteration": 17,
+      "global_iter": 17,
+      "model": "GradientBoosting",
+      "params": {
+        "n_estimators": 800,
+        "max_depth": 8,
+        "learning_rate": 0.1,
+        "subsample": 0.7,
+        "min_samples_split": 10
+      },
+      "accuracy": 57.3233,
+      "log_loss": 1.5773,
+      "brier": 0.2242,
+      "train_accuracy": 100.0,
+      "overfit_gap": 42.6767,
+      "time_s": 93.5
+    },
+    {
+      "batch": 1,
+      "iteration": 18,
+      "global_iter": 18,
+      "model": "XGBoost",
+      "params": {
+        "n_estimators": 200,
+        "max_depth": 4,
+        "learning_rate": 0.03,
+        "subsample": 0.7,
+        "colsample_bytree": 0.7,
+        "reg_alpha": 1.0,
+        "reg_lambda": 0.5,
+        "min_child_weight": 3,
+        "gamma": 0.1
+      },
+      "accuracy": 59.9289,
+      "log_loss": 0.8773,
+      "brier": 0.1719,
+      "train_accuracy": 61.8518,
+      "overfit_gap": 1.9228,
+      "time_s": 0.5
+    },
+    {
+      "batch": 1,
+      "iteration": 19,
+      "global_iter": 19,
+      "model": "RandomForest",
+      "params": {
+        "n_estimators": 500,
+        "max_depth": 8,
+        "min_samples_split": 5,
+        "min_samples_leaf": 4,
+        "max_features": "log2"
+      },
+      "accuracy": 59.7315,
+      "log_loss": 0.8851,
+      "brier": 0.1734,
+      "train_accuracy": 63.8054,
+      "overfit_gap": 4.0738,
+      "time_s": 1.6
+    },
+    {
+      "batch": 1,
+      "iteration": 20,
+      "global_iter": 20,
+      "model": "GradientBoosting",
+      "params": {
+        "n_estimators": 500,
+        "max_depth": 4,
+        "learning_rate": 0.03,
+        "subsample": 1.0,
+        "min_samples_split": 2
+      },
+      "accuracy": 59.0999,
+      "log_loss": 0.8937,
+      "brier": 0.1751,
+      "train_accuracy": 70.4357,
+      "overfit_gap": 11.3358,
+      "time_s": 39.7
+    },
+    {
+      "batch": 1,
+      "iteration": 21,
+      "global_iter": 21,
+      "model": "XGBoost",
+      "params": {
+        "n_estimators": 800,
+        "max_depth": 10,
+        "learning_rate": 0.15,
+        "subsample": 0.8,
+        "colsample_bytree": 1.0,
+        "reg_alpha": 0.5,
+        "reg_lambda": 1.5,
+        "min_child_weight": 7,
+        "gamma": 0
+      },
+      "accuracy": 56.4943,
+      "log_loss": 1.2467,
+      "brier": 0.2136,
+      "train_accuracy": 100.0,
+      "overfit_gap": 43.5057,
+      "time_s": 5.8
+    },
+    {
+      "batch": 1,
+      "iteration": 22,
+      "global_iter": 22,
+      "model": "RandomForest",
+      "params": {
+        "n_estimators": 500,
+        "max_depth": 12,
+        "min_samples_split": 10,
+        "min_samples_leaf": 4,
+        "max_features": "log2"
+      },
+      "accuracy": 59.6131,
+      "log_loss": 0.8847,
+      "brier": 0.1733,
+      "train_accuracy": 77.3502,
+      "overfit_gap": 17.7371,
+      "time_s": 2.3
+    },
+    {
+      "batch": 1,
+      "iteration": 23,
+      "global_iter": 23,
+      "model": "GradientBoosting",
+      "params": {
+        "n_estimators": 500,
+        "max_depth": 6,
+        "learning_rate": 0.15,
+        "subsample": 1.0,
+        "min_samples_split": 5
+      },
+      "accuracy": 56.1784,
+      "log_loss": 1.142,
+      "brier": 0.2047,
+      "train_accuracy": 100.0,
+      "overfit_gap": 43.8216,
+      "time_s": 79.1
+    },
+    {
+      "batch": 1,
+      "iteration": 24,
+      "global_iter": 24,
+      "model": "XGBoost",
+      "params": {
+        "n_estimators": 200,
+        "max_depth": 8,
+        "learning_rate": 0.03,
+        "subsample": 0.7,
+        "colsample_bytree": 0.7,
+        "reg_alpha": 1.0,
+        "reg_lambda": 1.0,
+        "min_child_weight": 7,
+        "gamma": 0.3
+      },
+      "accuracy": 59.5341,
+      "log_loss": 0.8919,
+      "brier": 0.1747,
+      "train_accuracy": 76.3438,
+      "overfit_gap": 16.8097,
+      "time_s": 1.1
+    },
+    {
+      "batch": 1,
+      "iteration": 25,
+      "global_iter": 25,
+      "model": "RandomForest",
+      "params": {
+        "n_estimators": 200,
+        "max_depth": 6,
+        "min_samples_split": 5,
+        "min_samples_leaf": 2,
+        "max_features": "log2"
+      },
+      "accuracy": 59.8105,
+      "log_loss": 0.8905,
+      "brier": 0.1744,
+      "train_accuracy": 60.7862,
+      "overfit_gap": 0.9757,
+      "time_s": 0.7
+    },
+    {
+      "batch": 1,
+      "iteration": 26,
+      "global_iter": 26,
+      "model": "GradientBoosting",
+      "params": {
+        "n_estimators": 300,
+        "max_depth": 6,
+        "learning_rate": 0.1,
+        "subsample": 0.7,
+        "min_samples_split": 5
+      },
+      "accuracy": 56.8101,
+      "log_loss": 0.9976,
+      "brier": 0.1914,
+      "train_accuracy": 99.7514,
+      "overfit_gap": 42.9413,
+      "time_s": 31.4
+    },
+    {
+      "batch": 1,
+      "iteration": 27,
+      "global_iter": 27,
+      "model": "XGBoost",
+      "params": {
+        "n_estimators": 300,
+        "max_depth": 12,
+        "learning_rate": 0.03,
+        "subsample": 0.9,
+        "colsample_bytree": 1.0,
+        "reg_alpha": 0,
+        "reg_lambda": 2.0,
+        "min_child_weight": 5,
+        "gamma": 0.2
+      },
+      "accuracy": 58.6261,
+      "log_loss": 0.9294,
+      "brier": 0.1807,
+      "train_accuracy": 99.0765,
+      "overfit_gap": 40.4504,
+      "time_s": 3.6
+    },
+    {
+      "batch": 1,
+      "iteration": 28,
+      "global_iter": 28,
+      "model": "RandomForest",
+      "params": {
+        "n_estimators": 200,
+        "max_depth": null,
+        "min_samples_split": 2,
+        "min_samples_leaf": 2,
+        "max_features": "sqrt"
+      },
+      "accuracy": 59.5736,
+      "log_loss": 0.89,
+      "brier": 0.1745,
+      "train_accuracy": 99.1002,
+      "overfit_gap": 39.5265,
+      "time_s": 1.0
+    },
+    {
+      "batch": 1,
+      "iteration": 29,
+      "global_iter": 29,
+      "model": "GradientBoosting",
+      "params": {
+        "n_estimators": 800,
+        "max_depth": 8,
+        "learning_rate": 0.01,
+        "subsample": 0.7,
+        "min_samples_split": 10
+      },
+      "accuracy": 58.5077,
+      "log_loss": 0.9094,
+      "brier": 0.1778,
+      "train_accuracy": 96.3178,
+      "overfit_gap": 37.8101,
+      "time_s": 120.5
+    },
+    {
+      "batch": 1,
+      "iteration": 30,
+      "global_iter": 30,
+      "model": "XGBoost",
+      "params": {
+        "n_estimators": 1000,
+        "max_depth": 12,
+        "learning_rate": 0.15,
+        "subsample": 0.7,
+        "colsample_bytree": 0.8,
+        "reg_alpha": 0.5,
+        "reg_lambda": 2.0,
+        "min_child_weight": 7,
+        "gamma": 0.3
+      },
+      "accuracy": 56.968,
+      "log_loss": 1.0311,
+      "brier": 0.1944,
+      "train_accuracy": 99.9408,
+      "overfit_gap": 42.9728,
+      "time_s": 3.5
+    },
+    {
+      "batch": 1,
+      "iteration": 31,
+      "global_iter": 31,
+      "model": "RandomForest",
+      "params": {
+        "n_estimators": 1000,
+        "max_depth": 6,
+        "min_samples_split": 10,
+        "min_samples_leaf": 2,
+        "max_features": "sqrt"
+      },
+      "accuracy": 59.6921,
+      "log_loss": 0.8919,
+      "brier": 0.1747,
+      "train_accuracy": 60.798,
+      "overfit_gap": 1.1059,
+      "time_s": 3.2
+    },
+    {
+      "batch": 1,
+      "iteration": 32,
+      "global_iter": 32,
+      "model": "GradientBoosting",
+      "params": {
+        "n_estimators": 200,
+        "max_depth": 10,
+        "learning_rate": 0.01,
+        "subsample": 0.7,
+        "min_samples_split": 2
+      },
+      "accuracy": 59.6526,
+      "log_loss": 0.8946,
+      "brier": 0.1748,
+      "train_accuracy": 88.6929,
+      "overfit_gap": 29.0403,
+      "time_s": 38.5
+    },
+    {
+      "batch": 1,
+      "iteration": 33,
+      "global_iter": 33,
+      "model": "XGBoost",
+      "params": {
+        "n_estimators": 1000,
+        "max_depth": 4,
+        "learning_rate": 0.15,
+        "subsample": 0.7,
+        "colsample_bytree": 0.9,
+        "reg_alpha": 1.0,
+        "reg_lambda": 1.0,
+        "min_child_weight": 7,
+        "gamma": 0.3
+      },
+      "accuracy": 55.7837,
+      "log_loss": 1.0466,
+      "brier": 0.1977,
+      "train_accuracy": 97.9635,
+      "overfit_gap": 42.1799,
+      "time_s": 2.8
+    },
+    {
+      "batch": 1,
+      "iteration": 34,
+      "global_iter": 34,
+      "model": "RandomForest",
+      "params": {
+        "n_estimators": 500,
+        "max_depth": 8,
+        "min_samples_split": 10,
+        "min_samples_leaf": 4,
+        "max_features": 0.5
+      },
+      "accuracy": 60.3237,
+      "log_loss": 0.8792,
+      "brier": 0.1724,
+      "train_accuracy": 65.2498,
+      "overfit_gap": 4.9261,
+      "time_s": 2.2
+    },
+    {
+      "batch": 1,
+      "iteration": 35,
+      "global_iter": 35,
+      "model": "GradientBoosting",
+      "params": {
+        "n_estimators": 200,
+        "max_depth": 10,
+        "learning_rate": 0.05,
+        "subsample": 1.0,
+        "min_samples_split": 2
+      },
+      "accuracy": 57.0865,
+      "log_loss": 0.9879,
+      "brier": 0.1889,
+      "train_accuracy": 99.9882,
+      "overfit_gap": 42.9017,
+      "time_s": 50.6
+    },
+    {
+      "batch": 1,
+      "iteration": 36,
+      "global_iter": 36,
+      "model": "XGBoost",
+      "params": {
+        "n_estimators": 800,
+        "max_depth": 4,
+        "learning_rate": 0.15,
+        "subsample": 0.8,
+        "colsample_bytree": 0.6,
+        "reg_alpha": 0.1,
+        "reg_lambda": 0.5,
+        "min_child_weight": 5,
+        "gamma": 0
+      },
+      "accuracy": 56.3758,
+      "log_loss": 1.0127,
+      "brier": 0.1921,
+      "train_accuracy": 96.1402,
+      "overfit_gap": 39.7643,
+      "time_s": 1.8
+    },
+    {
+      "batch": 1,
+      "iteration": 37,
+      "global_iter": 37,
+      "model": "RandomForest",
+      "params": {
+        "n_estimators": 300,
+        "max_depth": 8,
+        "min_samples_split": 5,
+        "min_samples_leaf": 1,
+        "max_features": "sqrt"
+      },
+      "accuracy": 59.6526,
+      "log_loss": 0.8861,
+      "brier": 0.1736,
+      "train_accuracy": 64.3855,
+      "overfit_gap": 4.7329,
+      "time_s": 1.0
+    },
+    {
+      "batch": 1,
+      "iteration": 38,
+      "global_iter": 38,
+      "model": "GradientBoosting",
+      "params": {
+        "n_estimators": 300,
+        "max_depth": 8,
+        "learning_rate": 0.1,
+        "subsample": 1.0,
+        "min_samples_split": 2
+      },
+      "accuracy": 56.968,
+      "log_loss": 1.086,
+      "brier": 0.1999,
+      "train_accuracy": 100.0,
+      "overfit_gap": 43.032,
+      "time_s": 53.7
+    },
+    {
+      "batch": 1,
+      "iteration": 39,
+      "global_iter": 39,
+      "model": "XGBoost",
+      "params": {
+        "n_estimators": 800,
+        "max_depth": 6,
+        "learning_rate": 0.03,
+        "subsample": 0.9,
+        "colsample_bytree": 0.7,
+        "reg_alpha": 1.0,
+        "reg_lambda": 1.0,
+        "min_child_weight": 7,
+        "gamma": 0
+      },
+      "accuracy": 58.4287,
+      "log_loss": 0.9197,
+      "brier": 0.1792,
+      "train_accuracy": 88.4087,
+      "overfit_gap": 29.98,
+      "time_s": 3.1
+    },
+    {
+      "batch": 1,
+      "iteration": 40,
+      "global_iter": 40,
+      "model": "RandomForest",
+      "params": {
+        "n_estimators": 800,
+        "max_depth": 8,
+        "min_samples_split": 5,
+        "min_samples_leaf": 2,
+        "max_features": "sqrt"
+      },
+      "accuracy": 60.0869,
+      "log_loss": 0.8852,
+      "brier": 0.1734,
+      "train_accuracy": 64.2789,
+      "overfit_gap": 4.1921,
+      "time_s": 2.7
+    },
+    {
+      "batch": 1,
+      "iteration": 41,
+      "global_iter": 41,
+      "model": "GradientBoosting",
+      "params": {
+        "n_estimators": 300,
+        "max_depth": 10,
+        "learning_rate": 0.05,
+        "subsample": 0.8,
+        "min_samples_split": 5
+      },
+      "accuracy": 58.5077,
+      "log_loss": 1.0338,
+      "brier": 0.1926,
+      "train_accuracy": 100.0,
+      "overfit_gap": 41.4923,
+      "time_s": 56.1
+    },
+    {
+      "batch": 1,
+      "iteration": 42,
+      "global_iter": 42,
+      "model": "XGBoost",
+      "params": {
+        "n_estimators": 800,
+        "max_depth": 10,
+        "learning_rate": 0.01,
+        "subsample": 0.9,
+        "colsample_bytree": 1.0,
+        "reg_alpha": 0,
+        "reg_lambda": 1.0,
+        "min_child_weight": 5,
+        "gamma": 0
+      },
+      "accuracy": 58.9814,
+      "log_loss": 0.9138,
+      "brier": 0.1779,
+      "train_accuracy": 95.1812,
+      "overfit_gap": 36.1997,
+      "time_s": 7.3
+    },
+    {
+      "batch": 1,
+      "iteration": 43,
+      "global_iter": 43,
+      "model": "RandomForest",
+      "params": {
+        "n_estimators": 300,
+        "max_depth": 10,
+        "min_samples_split": 10,
+        "min_samples_leaf": 1,
+        "max_features": "log2"
+      },
+      "accuracy": 59.771,
+      "log_loss": 0.8862,
+      "brier": 0.1737,
+      "train_accuracy": 71.3711,
+      "overfit_gap": 11.6,
+      "time_s": 1.2
+    },
+    {
+      "batch": 1,
+      "iteration": 44,
+      "global_iter": 44,
+      "model": "GradientBoosting",
+      "params": {
+        "n_estimators": 800,
+        "max_depth": 10,
+        "learning_rate": 0.1,
+        "subsample": 1.0,
+        "min_samples_split": 2
+      },
+      "accuracy": 57.4812,
+      "log_loss": 2.1746,
+      "brier": 0.2432,
+      "train_accuracy": 100.0,
+      "overfit_gap": 42.5188,
+      "time_s": 178.9
+    },
+    {
+      "batch": 1,
+      "iteration": 45,
+      "global_iter": 45,
+      "model": "XGBoost",
+      "params": {
+        "n_estimators": 300,
+        "max_depth": 8,
+        "learning_rate": 0.03,
+        "subsample": 0.8,
+        "colsample_bytree": 0.9,
+        "reg_alpha": 0.1,
+        "reg_lambda": 1.0,
+        "min_child_weight": 5,
+        "gamma": 0.3
+      },
+      "accuracy": 58.942,
+      "log_loss": 0.9061,
+      "brier": 0.1768,
+      "train_accuracy": 86.467,
+      "overfit_gap": 27.525,
+      "time_s": 1.5
+    },
+    {
+      "batch": 1,
+      "iteration": 46,
+      "global_iter": 46,
+      "model": "RandomForest",
+      "params": {
+        "n_estimators": 200,
+        "max_depth": null,
+        "min_samples_split": 2,
+        "min_samples_leaf": 4,
+        "max_features": 0.8
+      },
+      "accuracy": 59.5341,
+      "log_loss": 0.8961,
+      "brier": 0.1753,
+      "train_accuracy": 94.3287,
+      "overfit_gap": 34.7945,
+      "time_s": 1.6
+    },
+    {
+      "batch": 1,
+      "iteration": 47,
+      "global_iter": 47,
+      "model": "GradientBoosting",
+      "params": {
+        "n_estimators": 800,
+        "max_depth": 8,
+        "learning_rate": 0.03,
+        "subsample": 0.9,
+        "min_samples_split": 5
+      },
+      "accuracy": 58.1919,
+      "log_loss": 1.0111,
+      "brier": 0.1906,
+      "train_accuracy": 100.0,
+      "overfit_gap": 41.8081,
+      "time_s": 120.9
+    },
+    {
+      "batch": 1,
+      "iteration": 48,
+      "global_iter": 48,
+      "model": "XGBoost",
+      "params": {
+        "n_estimators": 500,
+        "max_depth": 8,
+        "learning_rate": 0.03,
+        "subsample": 0.8,
+        "colsample_bytree": 0.7,
+        "reg_alpha": 0,
+        "reg_lambda": 1.0,
+        "min_child_weight": 3,
+        "gamma": 0.1
+      },
+      "accuracy": 58.9025,
+      "log_loss": 0.9264,
+      "brier": 0.18,
+      "train_accuracy": 97.3597,
+      "overfit_gap": 38.4572,
+      "time_s": 2.5
+    },
+    {
+      "batch": 1,
+      "iteration": 49,
+      "global_iter": 49,
+      "model": "RandomForest",
+      "params": {
+        "n_estimators": 500,
+        "max_depth": 10,
+        "min_samples_split": 5,
+        "min_samples_leaf": 1,
+        "max_features": 0.5
+      },
+      "accuracy": 60.1263,
+      "log_loss": 0.8825,
+      "brier": 0.1729,
+      "train_accuracy": 74.8402,
+      "overfit_gap": 14.7138,
+      "time_s": 2.3
+    },
+    {
+      "batch": 1,
+      "iteration": 50,
+      "global_iter": 50,
+      "model": "GradientBoosting",
+      "params": {
+        "n_estimators": 500,
+        "max_depth": 8,
+        "learning_rate": 0.01,
+        "subsample": 1.0,
+        "min_samples_split": 2
+      },
+      "accuracy": 59.5341,
+      "log_loss": 0.906,
+      "brier": 0.1768,
+      "train_accuracy": 87.2958,
+      "overfit_gap": 27.7616,
+      "time_s": 78.5
+    },
+    {
+      "batch": 1,
+      "iteration": 51,
+      "global_iter": 51,
+      "model": "XGBoost",
+      "params": {
+        "n_estimators": 800,
+        "max_depth": 6,
+        "learning_rate": 0.15,
+        "subsample": 0.8,
+        "colsample_bytree": 1.0,
+        "reg_alpha": 0.1,
+        "reg_lambda": 2.0,
+        "min_child_weight": 5,
+        "gamma": 0
+      },
+      "accuracy": 56.139,
+      "log_loss": 1.1821,
+      "brier": 0.2082,
+      "train_accuracy": 100.0,
+      "overfit_gap": 43.861,
+      "time_s": 2.9
+    },
+    {
+      "batch": 1,
+      "iteration": 52,
+      "global_iter": 52,
+      "model": "RandomForest",
+      "params": {
+        "n_estimators": 800,
+        "max_depth": 6,
+        "min_samples_split": 2,
+        "min_samples_leaf": 4,
+        "max_features": 0.8
+      },
+      "accuracy": 60.4422,
+      "log_loss": 0.8775,
+      "brier": 0.1721,
+      "train_accuracy": 61.5913,
+      "overfit_gap": 1.1491,
+      "time_s": 3.3
+    },
+    {
+      "batch": 1,
+      "iteration": 53,
+      "global_iter": 53,
+      "model": "GradientBoosting",
+      "params": {
+        "n_estimators": 200,
+        "max_depth": 10,
+        "learning_rate": 0.03,
+        "subsample": 0.9,
+        "min_samples_split": 5
+      },
+      "accuracy": 59.0999,
+      "log_loss": 0.9231,
+      "brier": 0.1792,
+      "train_accuracy": 99.479,
+      "overfit_gap": 40.3792,
+      "time_s": 37.2
+    },
+    {
+      "batch": 1,
+      "iteration": 54,
+      "global_iter": 54,
+      "model": "XGBoost",
+      "params": {
+        "n_estimators": 500,
+        "max_depth": 10,
+        "learning_rate": 0.05,
+        "subsample": 0.8,
+        "colsample_bytree": 0.8,
+        "reg_alpha": 0.01,
+        "reg_lambda": 2.0,
+        "min_child_weight": 3,
+        "gamma": 0.1
+      },
+      "accuracy": 58.5472,
+      "log_loss": 0.9989,
+      "brier": 0.1889,
+      "train_accuracy": 100.0,
+      "overfit_gap": 41.4528,
+      "time_s": 3.4
+    },
+    {
+      "batch": 1,
+      "iteration": 55,
+      "global_iter": 55,
+      "model": "RandomForest",
+      "params": {
+        "n_estimators": 200,
+        "max_depth": 6,
+        "min_samples_split": 10,
+        "min_samples_leaf": 4,
+        "max_features": 0.8
+      },
+      "accuracy": 60.4816,
+      "log_loss": 0.8783,
+      "brier": 0.1723,
+      "train_accuracy": 61.4847,
+      "overfit_gap": 1.0031,
+      "time_s": 1.0
+    },
+    {
+      "batch": 1,
+      "iteration": 56,
+      "global_iter": 56,
+      "model": "GradientBoosting",
+      "params": {
+        "n_estimators": 200,
+        "max_depth": 10,
+        "learning_rate": 0.05,
+        "subsample": 1.0,
+        "min_samples_split": 10
+      },
+      "accuracy": 57.5207,
+      "log_loss": 0.978,
+      "brier": 0.1876,
+      "train_accuracy": 99.9171,
+      "overfit_gap": 42.3964,
+      "time_s": 41.2
+    },
+    {
+      "batch": 1,
+      "iteration": 57,
+      "global_iter": 57,
+      "model": "XGBoost",
+      "params": {
+        "n_estimators": 800,
+        "max_depth": 6,
+        "learning_rate": 0.03,
+        "subsample": 0.9,
+        "colsample_bytree": 0.6,
+        "reg_alpha": 0.1,
+        "reg_lambda": 0.5,
+        "min_child_weight": 3,
+        "gamma": 0.3
+      },
+      "accuracy": 58.8235,
+      "log_loss": 0.9205,
+      "brier": 0.1792,
+      "train_accuracy": 89.9479,
+      "overfit_gap": 31.1244,
+      "time_s": 2.9
+    },
+    {
+      "batch": 1,
+      "iteration": 58,
+      "global_iter": 58,
+      "model": "RandomForest",
+      "params": {
+        "n_estimators": 500,
+        "max_depth": 12,
+        "min_samples_split": 10,
+        "min_samples_leaf": 4,
+        "max_features": 0.5
+      },
+      "accuracy": 60.2448,
+      "log_loss": 0.8855,
+      "brier": 0.1735,
+      "train_accuracy": 77.9896,
+      "overfit_gap": 17.7448,
+      "time_s": 2.3
+    },
+    {
+      "batch": 1,
+      "iteration": 59,
+      "global_iter": 59,
+      "model": "GradientBoosting",
+      "params": {
+        "n_estimators": 800,
+        "max_depth": 6,
+        "learning_rate": 0.01,
+        "subsample": 0.8,
+        "min_samples_split": 5
+      },
+      "accuracy": 59.1394,
+      "log_loss": 0.8951,
+      "brier": 0.1755,
+      "train_accuracy": 81.9678,
+      "overfit_gap": 22.8284,
+      "time_s": 74.6
+    },
+    {
+      "batch": 1,
+      "iteration": 60,
+      "global_iter": 60,
+      "model": "XGBoost",
+      "params": {
+        "n_estimators": 200,
+        "max_depth": 4,
+        "learning_rate": 0.01,
+        "subsample": 0.8,
+        "colsample_bytree": 0.9,
+        "reg_alpha": 0.5,
+        "reg_lambda": 0.5,
+        "min_child_weight": 3,
+        "gamma": 0.3
+      },
+      "accuracy": 60.4816,
+      "log_loss": 0.891,
+      "brier": 0.1738,
+      "train_accuracy": 59.6851,
+      "overfit_gap": -0.7966,
+      "time_s": 0.5
+    },
+    {
+      "batch": 1,
+      "iteration": 61,
+      "global_iter": 61,
+      "model": "RandomForest",
+      "params": {
+        "n_estimators": 200,
+        "max_depth": 16,
+        "min_samples_split": 10,
+        "min_samples_leaf": 1,
+        "max_features": 0.8
+      },
+      "accuracy": 58.8235,
+      "log_loss": 0.8974,
+      "brier": 0.1755,
+      "train_accuracy": 92.2804,
+      "overfit_gap": 33.4568,
+      "time_s": 1.5
+    },
+    {
+      "batch": 1,
+      "iteration": 62,
+      "global_iter": 62,
+      "model": "GradientBoosting",
+      "params": {
+        "n_estimators": 300,
+        "max_depth": 6,
+        "learning_rate": 0.05,
+        "subsample": 0.7,
+        "min_samples_split": 2
+      },
+      "accuracy": 58.4682,
+      "log_loss": 0.9224,
+      "brier": 0.18,
+      "train_accuracy": 93.9853,
+      "overfit_gap": 35.5171,
+      "time_s": 26.7
+    },
+    {
+      "batch": 1,
+      "iteration": 63,
+      "global_iter": 63,
+      "model": "XGBoost",
+      "params": {
+        "n_estimators": 500,
+        "max_depth": 12,
+        "learning_rate": 0.01,
+        "subsample": 0.7,
+        "colsample_bytree": 0.7,
+        "reg_alpha": 1.0,
+        "reg_lambda": 1.0,
+        "min_child_weight": 7,
+        "gamma": 0.2
+      },
+      "accuracy": 59.9684,
+      "log_loss": 0.8949,
+      "brier": 0.1753,
+      "train_accuracy": 86.8814,
+      "overfit_gap": 26.9129,
+      "time_s": 4.1
+    },
+    {
+      "batch": 1,
+      "iteration": 64,
+      "global_iter": 64,
+      "model": "RandomForest",
+      "params": {
+        "n_estimators": 1000,
+        "max_depth": 6,
+        "min_samples_split": 10,
+        "min_samples_leaf": 4,
+        "max_features": "log2"
+      },
+      "accuracy": 59.8895,
+      "log_loss": 0.8918,
+      "brier": 0.1746,
+      "train_accuracy": 60.798,
+      "overfit_gap": 0.9086,
+      "time_s": 2.8
+    },
+    {
+      "batch": 1,
+      "iteration": 65,
+      "global_iter": 65,
+      "model": "GradientBoosting",
+      "params": {
+        "n_estimators": 300,
+        "max_depth": 8,
+        "learning_rate": 0.15,
+        "subsample": 0.9,
+        "min_samples_split": 10
+      },
+      "accuracy": 57.3628,
+      "log_loss": 1.1994,
+      "brier": 0.2088,
+      "train_accuracy": 100.0,
+      "overfit_gap": 42.6372,
+      "time_s": 48.3
+    },
+    {
+      "batch": 1,
+      "iteration": 66,
+      "global_iter": 66,
+      "model": "XGBoost",
+      "params": {
+        "n_estimators": 300,
+        "max_depth": 12,
+        "learning_rate": 0.03,
+        "subsample": 0.8,
+        "colsample_bytree": 0.6,
+        "reg_alpha": 1.0,
+        "reg_lambda": 0.5,
+        "min_child_weight": 7,
+        "gamma": 0.3
+      },
+      "accuracy": 58.4682,
+      "log_loss": 0.9109,
+      "brier": 0.1781,
+      "train_accuracy": 95.8087,
+      "overfit_gap": 37.3404,
+      "time_s": 2.3
+    },
+    {
+      "batch": 1,
+      "iteration": 67,
+      "global_iter": 67,
+      "model": "RandomForest",
+      "params": {
+        "n_estimators": 1000,
+        "max_depth": 10,
+        "min_samples_split": 2,
+        "min_samples_leaf": 2,
+        "max_features": 0.8
+      },
+      "accuracy": 60.3632,
+      "log_loss": 0.8842,
+      "brier": 0.1732,
+      "train_accuracy": 73.3602,
+      "overfit_gap": 12.997,
+      "time_s": 5.9
+    },
+    {
+      "batch": 1,
+      "iteration": 68,
+      "global_iter": 68,
+      "model": "GradientBoosting",
+      "params": {
+        "n_estimators": 200,
+        "max_depth": 4,
+        "learning_rate": 0.15,
+        "subsample": 0.7,
+        "min_samples_split": 10
+      },
+      "accuracy": 57.4023,
+      "log_loss": 0.9377,
+      "brier": 0.1831,
+      "train_accuracy": 82.4651,
+      "overfit_gap": 25.0628,
+      "time_s": 12.2
+    },
+    {
+      "batch": 1,
+      "iteration": 69,
+      "global_iter": 69,
+      "model": "XGBoost",
+      "params": {
+        "n_estimators": 300,
+        "max_depth": 10,
+        "learning_rate": 0.1,
+        "subsample": 0.8,
+        "colsample_bytree": 0.8,
+        "reg_alpha": 0.5,
+        "reg_lambda": 1.0,
+        "min_child_weight": 5,
+        "gamma": 0
+      },
+      "accuracy": 57.5207,
+      "log_loss": 1.0336,
+      "brier": 0.1941,
+      "train_accuracy": 100.0,
+      "overfit_gap": 42.4793,
+      "time_s": 2.0
+    },
+    {
+      "batch": 1,
+      "iteration": 70,
+      "global_iter": 70,
+      "model": "RandomForest",
+      "params": {
+        "n_estimators": 200,
+        "max_depth": 8,
+        "min_samples_split": 10,
+        "min_samples_leaf": 2,
+        "max_features": 0.5
+      },
+      "accuracy": 60.6001,
+      "log_loss": 0.8804,
+      "brier": 0.1727,
+      "train_accuracy": 65.1551,
+      "overfit_gap": 4.555,
+      "time_s": 0.9
+    },
+    {
+      "batch": 1,
+      "iteration": 71,
+      "global_iter": 71,
+      "model": "GradientBoosting",
+      "params": {
+        "n_estimators": 200,
+        "max_depth": 6,
+        "learning_rate": 0.1,
+        "subsample": 0.9,
+        "min_samples_split": 5
+      },
+      "accuracy": 57.3628,
+      "log_loss": 0.9421,
+      "brier": 0.183,
+      "train_accuracy": 96.5664,
+      "overfit_gap": 39.2036,
+      "time_s": 22.9
+    },
+    {
+      "batch": 1,
+      "iteration": 72,
+      "global_iter": 72,
+      "model": "XGBoost",
+      "params": {
+        "n_estimators": 1000,
+        "max_depth": 10,
+        "learning_rate": 0.01,
+        "subsample": 0.8,
+        "colsample_bytree": 0.9,
+        "reg_alpha": 0.5,
+        "reg_lambda": 1.5,
+        "min_child_weight": 7,
+        "gamma": 0.3
+      },
+      "accuracy": 58.5867,
+      "log_loss": 0.9147,
+      "brier": 0.1785,
+      "train_accuracy": 94.9088,
+      "overfit_gap": 36.3222,
+      "time_s": 6.3
+    },
+    {
+      "batch": 1,
+      "iteration": 73,
+      "global_iter": 73,
+      "model": "RandomForest",
+      "params": {
+        "n_estimators": 200,
+        "max_depth": 10,
+        "min_samples_split": 10,
+        "min_samples_leaf": 1,
+        "max_features": 0.5
+      },
+      "accuracy": 60.3632,
+      "log_loss": 0.8827,
+      "brier": 0.173,
+      "train_accuracy": 72.2235,
+      "overfit_gap": 11.8603,
+      "time_s": 1.0
+    },
+    {
+      "batch": 1,
+      "iteration": 74,
+      "global_iter": 74,
+      "model": "GradientBoosting",
+      "params": {
+        "n_estimators": 300,
+        "max_depth": 6,
+        "learning_rate": 0.15,
+        "subsample": 0.7,
+        "min_samples_split": 10
+      },
+      "accuracy": 56.6917,
+      "log_loss": 1.0455,
+      "brier": 0.1956,
+      "train_accuracy": 100.0,
+      "overfit_gap": 43.3083,
+      "time_s": 27.6
+    },
+    {
+      "batch": 1,
+      "iteration": 75,
+      "global_iter": 75,
+      "model": "XGBoost",
+      "params": {
+        "n_estimators": 200,
+        "max_depth": 4,
+        "learning_rate": 0.03,
+        "subsample": 0.9,
+        "colsample_bytree": 0.6,
+        "reg_alpha": 0.01,
+        "reg_lambda": 1.5,
+        "min_child_weight": 5,
+        "gamma": 0.1
+      },
+      "accuracy": 59.9289,
+      "log_loss": 0.8781,
+      "brier": 0.172,
+      "train_accuracy": 61.5676,
+      "overfit_gap": 1.6387,
+      "time_s": 0.5
+    },
+    {
+      "batch": 1,
+      "iteration": 76,
+      "global_iter": 76,
+      "model": "RandomForest",
+      "params": {
+        "n_estimators": 300,
+        "max_depth": 8,
+        "min_samples_split": 2,
+        "min_samples_leaf": 1,
+        "max_features": 0.5
+      },
+      "accuracy": 60.2053,
+      "log_loss": 0.8797,
+      "brier": 0.1725,
+      "train_accuracy": 65.9247,
+      "overfit_gap": 5.7194,
+      "time_s": 1.4
+    },
+    {
+      "batch": 1,
+      "iteration": 77,
+      "global_iter": 77,
+      "model": "GradientBoosting",
+      "params": {
+        "n_estimators": 500,
+        "max_depth": 8,
+        "learning_rate": 0.03,
+        "subsample": 1.0,
+        "min_samples_split": 10
+      },
+      "accuracy": 57.047,
+      "log_loss": 0.9631,
+      "brier": 0.1858,
+      "train_accuracy": 99.3488,
+      "overfit_gap": 42.3018,
+      "time_s": 79.5
+    },
+    {
+      "batch": 1,
+      "iteration": 78,
+      "global_iter": 78,
+      "model": "XGBoost",
+      "params": {
+        "n_estimators": 200,
+        "max_depth": 4,
+        "learning_rate": 0.15,
+        "subsample": 0.8,
+        "colsample_bytree": 0.6,
+        "reg_alpha": 0.01,
+        "reg_lambda": 2.0,
+        "min_child_weight": 3,
+        "gamma": 0.3
+      },
+      "accuracy": 58.863,
+      "log_loss": 0.9019,
+      "brier": 0.1763,
+      "train_accuracy": 72.9221,
+      "overfit_gap": 14.0591,
+      "time_s": 0.5
+    },
+    {
+      "batch": 1,
+      "iteration": 79,
+      "global_iter": 79,
+      "model": "RandomForest",
+      "params": {
+        "n_estimators": 800,
+        "max_depth": 10,
+        "min_samples_split": 2,
+        "min_samples_leaf": 2,
+        "max_features": "sqrt"
+      },
+      "accuracy": 60.0079,
+      "log_loss": 0.8846,
+      "brier": 0.1734,
+      "train_accuracy": 73.8219,
+      "overfit_gap": 13.814,
+      "time_s": 2.4
+    },
+    {
+      "batch": 1,
+      "iteration": 80,
+      "global_iter": 80,
+      "model": "GradientBoosting",
+      "params": {
+        "n_estimators": 800,
+        "max_depth": 6,
+        "learning_rate": 0.05,
+        "subsample": 0.7,
+        "min_samples_split": 5
+      },
+      "accuracy": 57.955,
+      "log_loss": 1.0117,
+      "brier": 0.1913,
+      "train_accuracy": 99.9882,
+      "overfit_gap": 42.0332,
+      "time_s": 62.4
+    },
+    {
+      "batch": 1,
+      "iteration": 81,
+      "global_iter": 81,
+      "model": "XGBoost",
+      "params": {
+        "n_estimators": 500,
+        "max_depth": 4,
+        "learning_rate": 0.05,
+        "subsample": 0.8,
+        "colsample_bytree": 0.8,
+        "reg_alpha": 1.0,
+        "reg_lambda": 1.5,
+        "min_child_weight": 3,
+        "gamma": 0
+      },
+      "accuracy": 59.3762,
+      "log_loss": 0.8976,
+      "brier": 0.1756,
+      "train_accuracy": 71.8802,
+      "overfit_gap": 12.5039,
+      "time_s": 1.2
+    },
+    {
+      "batch": 1,
+      "iteration": 82,
+      "global_iter": 82,
+      "model": "RandomForest",
+      "params": {
+        "n_estimators": 500,
+        "max_depth": 16,
+        "min_samples_split": 2,
+        "min_samples_leaf": 2,
+        "max_features": "log2"
+      },
+      "accuracy": 59.771,
+      "log_loss": 0.89,
+      "brier": 0.1743,
+      "train_accuracy": 97.6557,
+      "overfit_gap": 37.8847,
+      "time_s": 1.8
+    },
+    {
+      "batch": 1,
+      "iteration": 83,
+      "global_iter": 83,
+      "model": "GradientBoosting",
+      "params": {
+        "n_estimators": 500,
+        "max_depth": 8,
+        "learning_rate": 0.01,
+        "subsample": 0.8,
+        "min_samples_split": 10
+      },
+      "accuracy": 59.5341,
+      "log_loss": 0.8993,
+      "brier": 0.1761,
+      "train_accuracy": 89.0126,
+      "overfit_gap": 29.4784,
+      "time_s": 57.6
+    },
+    {
+      "batch": 1,
+      "iteration": 84,
+      "global_iter": 84,
+      "model": "XGBoost",
+      "params": {
+        "n_estimators": 1000,
+        "max_depth": 8,
+        "learning_rate": 0.15,
+        "subsample": 0.7,
+        "colsample_bytree": 1.0,
+        "reg_alpha": 0.01,
+        "reg_lambda": 1.5,
+        "min_child_weight": 5,
+        "gamma": 0.2
+      },
+      "accuracy": 56.0205,
+      "log_loss": 1.1258,
+      "brier": 0.2043,
+      "train_accuracy": 100.0,
+      "overfit_gap": 43.9795,
+      "time_s": 2.5
+    },
+    {
+      "batch": 1,
+      "iteration": 85,
+      "global_iter": 85,
+      "model": "RandomForest",
+      "params": {
+        "n_estimators": 200,
+        "max_depth": null,
+        "min_samples_split": 5,
+        "min_samples_leaf": 4,
+        "max_features": 0.8
+      },
+      "accuracy": 59.5341,
+      "log_loss": 0.8961,
+      "brier": 0.1753,
+      "train_accuracy": 94.3287,
+      "overfit_gap": 34.7945,
+      "time_s": 1.4
+    },
+    {
+      "batch": 1,
+      "iteration": 86,
+      "global_iter": 86,
+      "model": "GradientBoosting",
+      "params": {
+        "n_estimators": 800,
+        "max_depth": 6,
+        "learning_rate": 0.01,
+        "subsample": 0.8,
+        "min_samples_split": 2
+      },
+      "accuracy": 59.2973,
+      "log_loss": 0.8941,
+      "brier": 0.1752,
+      "train_accuracy": 82.2283,
+      "overfit_gap": 22.931,
+      "time_s": 67.8
+    },
+    {
+      "batch": 1,
+      "iteration": 87,
+      "global_iter": 87,
+      "model": "XGBoost",
+      "params": {
+        "n_estimators": 1000,
+        "max_depth": 6,
+        "learning_rate": 0.1,
+        "subsample": 0.7,
+        "colsample_bytree": 1.0,
+        "reg_alpha": 0.01,
+        "reg_lambda": 1.0,
+        "min_child_weight": 1,
+        "gamma": 0
+      },
+      "accuracy": 56.4548,
+      "log_loss": 1.2025,
+      "brier": 0.2088,
+      "train_accuracy": 100.0,
+      "overfit_gap": 43.5452,
+      "time_s": 3.7
+    },
+    {
+      "batch": 1,
+      "iteration": 88,
+      "global_iter": 88,
+      "model": "RandomForest",
+      "params": {
+        "n_estimators": 500,
+        "max_depth": 10,
+        "min_samples_split": 10,
+        "min_samples_leaf": 4,
+        "max_features": "sqrt"
+      },
+      "accuracy": 59.85,
+      "log_loss": 0.884,
+      "brier": 0.1731,
+      "train_accuracy": 70.2463,
+      "overfit_gap": 10.3963,
+      "time_s": 1.5
+    },
+    {
+      "batch": 1,
+      "iteration": 89,
+      "global_iter": 89,
+      "model": "GradientBoosting",
+      "params": {
+        "n_estimators": 500,
+        "max_depth": 4,
+        "learning_rate": 0.15,
+        "subsample": 0.9,
+        "min_samples_split": 2
+      },
+      "accuracy": 56.2969,
+      "log_loss": 0.9899,
+      "brier": 0.1903,
+      "train_accuracy": 97.6557,
+      "overfit_gap": 41.3588,
+      "time_s": 33.0
+    },
+    {
+      "batch": 1,
+      "iteration": 90,
+      "global_iter": 90,
+      "model": "XGBoost",
+      "params": {
+        "n_estimators": 800,
+        "max_depth": 12,
+        "learning_rate": 0.05,
+        "subsample": 0.9,
+        "colsample_bytree": 1.0,
+        "reg_alpha": 0.01,
+        "reg_lambda": 2.0,
+        "min_child_weight": 1,
+        "gamma": 0.3
+      },
+      "accuracy": 58.7051,
+      "log_loss": 0.9493,
+      "brier": 0.1828,
+      "train_accuracy": 100.0,
+      "overfit_gap": 41.2949,
+      "time_s": 2.8
+    },
+    {
+      "batch": 1,
+      "iteration": 91,
+      "global_iter": 91,
+      "model": "RandomForest",
+      "params": {
+        "n_estimators": 800,
+        "max_depth": null,
+        "min_samples_split": 10,
+        "min_samples_leaf": 4,
+        "max_features": "log2"
+      },
+      "accuracy": 59.9684,
+      "log_loss": 0.8861,
+      "brier": 0.1737,
+      "train_accuracy": 88.314,
+      "overfit_gap": 28.3456,
+      "time_s": 2.9
+    },
+    {
+      "batch": 1,
+      "iteration": 92,
+      "global_iter": 92,
+      "model": "GradientBoosting",
+      "params": {
+        "n_estimators": 300,
+        "max_depth": 4,
+        "learning_rate": 0.1,
+        "subsample": 0.9,
+        "min_samples_split": 2
+      },
+      "accuracy": 57.876,
+      "log_loss": 0.9208,
+      "brier": 0.1804,
+      "train_accuracy": 82.8795,
+      "overfit_gap": 25.0034,
+      "time_s": 18.9
+    },
+    {
+      "batch": 1,
+      "iteration": 93,
+      "global_iter": 93,
+      "model": "XGBoost",
+      "params": {
+        "n_estimators": 800,
+        "max_depth": 4,
+        "learning_rate": 0.1,
+        "subsample": 0.7,
+        "colsample_bytree": 0.6,
+        "reg_alpha": 0.5,
+        "reg_lambda": 0.5,
+        "min_child_weight": 5,
+        "gamma": 0
+      },
+      "accuracy": 57.2049,
+      "log_loss": 0.9651,
+      "brier": 0.1868,
+      "train_accuracy": 90.09,
+      "overfit_gap": 32.8851,
+      "time_s": 1.8
+    },
+    {
+      "batch": 1,
+      "iteration": 94,
+      "global_iter": 94,
+      "model": "RandomForest",
+      "params": {
+        "n_estimators": 1000,
+        "max_depth": 16,
+        "min_samples_split": 10,
+        "min_samples_leaf": 2,
+        "max_features": "log2"
+      },
+      "accuracy": 59.9289,
+      "log_loss": 0.8868,
+      "brier": 0.1737,
+      "train_accuracy": 88.9889,
+      "overfit_gap": 29.0599,
+      "time_s": 3.6
+    },
+    {
+      "batch": 1,
+      "iteration": 95,
+      "global_iter": 95,
+      "model": "GradientBoosting",
+      "params": {
+        "n_estimators": 300,
+        "max_depth": 10,
+        "learning_rate": 0.05,
+        "subsample": 0.8,
+        "min_samples_split": 10
+      },
+      "accuracy": 58.3498,
+      "log_loss": 1.0208,
+      "brier": 0.1916,
+      "train_accuracy": 100.0,
+      "overfit_gap": 41.6502,
+      "time_s": 45.4
+    },
+    {
+      "batch": 1,
+      "iteration": 96,
+      "global_iter": 96,
+      "model": "XGBoost",
+      "params": {
+        "n_estimators": 500,
+        "max_depth": 10,
+        "learning_rate": 0.01,
+        "subsample": 0.7,
+        "colsample_bytree": 0.6,
+        "reg_alpha": 0.5,
+        "reg_lambda": 2.0,
+        "min_child_weight": 3,
+        "gamma": 0.2
+      },
+      "accuracy": 59.85,
+      "log_loss": 0.8943,
+      "brier": 0.1751,
+      "train_accuracy": 87.6273,
+      "overfit_gap": 27.7773,
+      "time_s": 3.3
+    },
+    {
+      "batch": 1,
+      "iteration": 97,
+      "global_iter": 97,
+      "model": "RandomForest",
+      "params": {
+        "n_estimators": 800,
+        "max_depth": 8,
+        "min_samples_split": 2,
+        "min_samples_leaf": 1,
+        "max_features": "sqrt"
+      },
+      "accuracy": 59.9289,
+      "log_loss": 0.8857,
+      "brier": 0.1735,
+      "train_accuracy": 64.7052,
+      "overfit_gap": 4.7762,
+      "time_s": 2.5
+    },
+    {
+      "batch": 1,
+      "iteration": 98,
+      "global_iter": 98,
+      "model": "GradientBoosting",
+      "params": {
+        "n_estimators": 800,
+        "max_depth": 8,
+        "learning_rate": 0.05,
+        "subsample": 0.9,
+        "min_samples_split": 5
+      },
+      "accuracy": 57.7181,
+      "log_loss": 1.1432,
+      "brier": 0.2022,
+      "train_accuracy": 100.0,
+      "overfit_gap": 42.2819,
+      "time_s": 102.4
+    },
+    {
+      "batch": 1,
+      "iteration": 99,
+      "global_iter": 99,
+      "model": "XGBoost",
+      "params": {
+        "n_estimators": 500,
+        "max_depth": 12,
+        "learning_rate": 0.05,
+        "subsample": 0.7,
+        "colsample_bytree": 1.0,
+        "reg_alpha": 0.5,
+        "reg_lambda": 0.5,
+        "min_child_weight": 3,
+        "gamma": 0.2
+      },
+      "accuracy": 57.6392,
+      "log_loss": 0.9961,
+      "brier": 0.1894,
+      "train_accuracy": 100.0,
+      "overfit_gap": 42.3608,
+      "time_s": 3.3
+    },
+    {
+      "batch": 1,
+      "iteration": 100,
+      "global_iter": 100,
+      "model": "RandomForest",
+      "params": {
+        "n_estimators": 300,
+        "max_depth": 12,
+        "min_samples_split": 2,
+        "min_samples_leaf": 4,
+        "max_features": 0.8
+      },
+      "accuracy": 60.3237,
+      "log_loss": 0.889,
+      "brier": 0.1739,
+      "train_accuracy": 79.3275,
+      "overfit_gap": 19.0038,
+      "time_s": 1.9
+    }
+  ]
+}

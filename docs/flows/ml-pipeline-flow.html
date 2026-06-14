@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mondial-Xboost — ML Pipeline Flow</title>
+  <style>
+    :root {
+      --bg: #060b10;
+      --surface: #0d1117;
+      --surface-2: #161b22;
+      --border: #30363d;
+      --text: #e6edf3;
+      --text-muted: #8b949e;
+      --cyan: #39d0d4;
+      --purple: #bc8cff;
+      --amber: #d29922;
+      --green: #3fb950;
+      --red: #f85149;
+      --shadow: 0 16px 48px rgba(0,0,0,.32);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      line-height: 1.6;
+    }
+    .shell { max-width: 1200px; margin: 0 auto; padding: 40px 24px; }
+    header {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 24px;
+      margin-bottom: 32px;
+    }
+    h1 { margin: 0 0 8px; font-size: 2.2rem; color: var(--cyan); }
+    .subtitle { color: var(--text-muted); font-size: 1rem; }
+
+    .layer-title { color: var(--text-muted); font-size: .75rem; text-transform: uppercase; letter-spacing: .12em; margin: 24px 0 10px; }
+    .pipeline {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    @media (max-width: 900px) { .pipeline { grid-template-columns: 1fr; } }
+
+    .col { display: flex; flex-direction: column; gap: 12px; }
+    .node {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: var(--shadow);
+    }
+    .node h3 { margin: 0 0 6px; font-size: .95rem; }
+    .node p { margin: 0; font-size: .82rem; color: var(--text-muted); }
+    .source { border-color: rgba(57,208,212,.35); }
+    .source h3 { color: var(--cyan); }
+    .transform { border-color: rgba(188,140,255,.35); }
+    .transform h3 { color: var(--purple); }
+    .model { border-color: rgba(210,153,34,.35); }
+    .model h3 { color: var(--amber); }
+    .consume { border-color: rgba(63,185,80,.35); }
+    .consume h3 { color: var(--green); }
+
+    .connector {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      font-size: 1.4rem;
+    }
+    @media (max-width: 900px) { .connector { transform: rotate(90deg); margin: 4px 0; } }
+
+    .legend {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 32px;
+      font-size: .85rem;
+      color: var(--text-muted);
+    }
+    .legend-item { display: flex; align-items: center; gap: 8px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+
+    footer { margin-top: 40px; color: var(--text-muted); font-size: .85rem; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <h1>Mondial-Xboost ML Pipeline</h1>
+      <p class="subtitle">Flujo de datos desde el CSV histórico hasta la predicción consumida por .NET</p>
+    </header>
+
+    <div class="layer-title">Fuentes de datos</div>
+    <div class="pipeline">
+      <div class="col">
+        <div class="node source">
+          <h3>Oloraculo.Web/Data/historical_results.csv</h3>
+          <p>49,443 partidos históricos desde 1872. Fuente única de verdad.</p>
+        </div>
+      </div>
+      <div class="col connector">→</div>
+      <div class="col">
+        <div class="node source">
+          <h3>Fixtures futuros</h3>
+          <p>Partidos a predecir vía CLI, JSON o bridge C#.</p>
+        </div>
+      </div>
+      <div class="col"></div>
+    </div>
+
+    <div class="layer-title">Feature engineering</div>
+    <div class="pipeline">
+      <div class="col">
+        <div class="node transform">
+          <h3>compute_elo_ratings</h3>
+          <p>Elo global con decay temporal + Elo reciente de 8 años.</p>
+        </div>
+      </div>
+      <div class="col">
+        <div class="node transform">
+          <h3>_compute_team_rolling</h3>
+          <p>Stats locales/visitante de últimos 5 y 10 partidos.</p>
+        </div>
+      </div>
+      <div class="col">
+        <div class="node transform">
+          <h3>_compute_h2h</h3>
+          <p>Head-to-head: wins diff, goles promedio, último resultado.</p>
+        </div>
+      </div>
+      <div class="col">
+        <div class="node transform">
+          <h3>FEATURE_COLS (23)</h3>
+          <p>Matriz final con targets outcome, home_score, away_score.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="layer-title">Modelos</div>
+    <div class="pipeline">
+      <div class="col">
+        <div class="node model">
+          <h3>XGBoostFootballPredictor</h3>
+          <p>Clasificador 1X2 calibrado isotónicamente.</p>
+        </div>
+      </div>
+      <div class="col">
+        <div class="node model">
+          <h3>Home goals regressor</h3>
+          <p>XGBoost regresión para goles local.</p>
+        </div>
+      </div>
+      <div class="col">
+        <div class="node model">
+          <h3>Away goals regressor</h3>
+          <p>XGBoost regresión para goles visitante.</p>
+        </div>
+      </div>
+      <div class="col">
+        <div class="node model">
+          <h3>model_manifest.json</h3>
+          <p>Hash de dataset, features, hiperparámetros y métricas.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="layer-title">Consumo</div>
+    <div class="pipeline">
+      <div class="col">
+        <div class="node consume">
+          <h3>predictors/api.py</h3>
+          <p>Bridge FastAPI expone /predict y /health.</p>
+        </div>
+      </div>
+      <div class="col connector">→</div>
+      <div class="col">
+        <div class="node consume">
+          <h3>XGBoostBridgeService.cs</h3>
+          <p>Cliente .NET Blazor consume el bridge.</p>
+        </div>
+      </div>
+      <div class="col connector">→</div>
+      <div class="col">
+        <div class="node consume">
+          <h3>UI / CLI</h3>
+          <p>mondial CLI, scripts/predict.py y dashboard web.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="legend">
+      <div class="legend-item"><span class="dot" style="background: var(--cyan)"></span> Fuente</div>
+      <div class="legend-item"><span class="dot" style="background: var(--purple)"></span> Transformación</div>
+      <div class="legend-item"><span class="dot" style="background: var(--amber)"></span> Modelo</div>
+      <div class="legend-item"><span class="dot" style="background: var(--green)"></span> Consumo</div>
+    </div>
+
+    <footer>
+      Generado el 2026-06-14 · Estado: actualizado con Exp-02 Elo decay
+    </footer>
+  </div>
+</body>
+</html>

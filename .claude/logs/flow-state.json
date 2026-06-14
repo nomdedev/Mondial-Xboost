@@ -1,0 +1,16 @@
+{
+  "flows": {
+    "ml-pipeline": {
+      "status": "generated",
+      "path": "docs/flows/ml-pipeline-flow.html",
+      "name": "Mondial-Xboost ML Pipeline",
+      "lastUpdated": "2026-06-14T19:00:00Z"
+    },
+    "experiments": {
+      "status": "generated",
+      "path": "docs/flows/experiments-flow.html",
+      "name": "Experiment Results Flow",
+      "lastUpdated": "2026-06-14T19:00:00Z"
+    }
+  }
+}

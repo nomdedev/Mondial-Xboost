@@ -1,0 +1,23 @@
+{
+  "batch": 1,
+  "model": "XGBoost",
+  "method": "optuna",
+  "params": {
+    "n_estimators": 410,
+    "max_depth": 5,
+    "learning_rate": 0.01044588814078602,
+    "subsample": 0.6034319422463172,
+    "colsample_bytree": 0.6451782901992434,
+    "reg_alpha": 0.023419445318988156,
+    "reg_lambda": 0.3902047553559881,
+    "min_child_weight": 8,
+    "gamma": 0.9585656980087417
+  },
+  "val_accuracy": 60.7211,
+  "accuracy": 60.1658,
+  "log_loss": 0.8805,
+  "brier": 0.1724,
+  "train_accuracy": 62.6218,
+  "overfit_gap": 2.4559,
+  "walk_forward_acc": 58.9256
+}

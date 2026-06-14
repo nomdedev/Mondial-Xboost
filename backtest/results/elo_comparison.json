@@ -1,0 +1,2219 @@
+{
+  "timestamp": "2026-06-14T16:12:02.329513+00:00",
+  "internal_methodology": {
+    "initial_elo": 1500.0,
+    "k_range": "20-60 by tournament importance",
+    "home_advantage_points": 100,
+    "goal_adjusted_k": false,
+    "source_file": "Oloraculo.Web/Data/historical_results.csv"
+  },
+  "external_source": "https://eloratings.net/ (World Football Elo Ratings)",
+  "total_internal_teams": 336,
+  "total_external_teams": 244,
+  "matched_teams": 235,
+  "matched_stable_teams": 222,
+  "all_teams_stats": {
+    "count": 235,
+    "mean_absolute_difference": 194.06,
+    "median_absolute_difference": 145.17,
+    "max_absolute_difference": 1084.87,
+    "mean_difference": 176.8
+  },
+  "stable_teams_stats": {
+    "count": 222,
+    "mean_absolute_difference": 162.34,
+    "median_absolute_difference": 133.81,
+    "max_absolute_difference": 792.69,
+    "mean_difference": 144.08
+  },
+  "top100_teams_stats": {
+    "count": 100,
+    "mean_absolute_difference": 78.26,
+    "median_absolute_difference": 67.86,
+    "max_absolute_difference": 267.01,
+    "mean_difference": 37.71
+  },
+  "correlation": 0.9391669261328139,
+  "verdict": "PASS",
+  "top_differences": [
+    {
+      "team": "Northern Mariana Islands",
+      "internal_elo": 1224.69,
+      "external_elo": 432,
+      "absolute_difference": 792.69
+    },
+    {
+      "team": "Falkland Islands",
+      "internal_elo": 1349.85,
+      "external_elo": 571,
+      "absolute_difference": 778.85
+    },
+    {
+      "team": "Tonga",
+      "internal_elo": 1215.7,
+      "external_elo": 520,
+      "absolute_difference": 695.7
+    },
+    {
+      "team": "Cook Islands",
+      "internal_elo": 1271.04,
+      "external_elo": 622,
+      "absolute_difference": 649.04
+    },
+    {
+      "team": "Tuvalu",
+      "internal_elo": 1353.17,
+      "external_elo": 756,
+      "absolute_difference": 597.17
+    },
+    {
+      "team": "Samoa",
+      "internal_elo": 1322.86,
+      "external_elo": 728,
+      "absolute_difference": 594.86
+    },
+    {
+      "team": "Greenland",
+      "internal_elo": 1471.12,
+      "external_elo": 945,
+      "absolute_difference": 526.12
+    },
+    {
+      "team": "Turks and Caicos Islands",
+      "internal_elo": 1157.94,
+      "external_elo": 657,
+      "absolute_difference": 500.94
+    },
+    {
+      "team": "Bonaire",
+      "internal_elo": 1310.78,
+      "external_elo": 817,
+      "absolute_difference": 493.78
+    },
+    {
+      "team": "United States Virgin Islands",
+      "internal_elo": 1120.13,
+      "external_elo": 628,
+      "absolute_difference": 492.13
+    }
+  ],
+  "unmatched_external_teams_count": 0,
+  "unmatched_internal_teams_count": 101,
+  "per_team": [
+    {
+      "team": "Afghanistan",
+      "normalized_name": "Afghanistan",
+      "internal_elo": 1264.47,
+      "external_elo": 961,
+      "difference": 303.47,
+      "absolute_difference": 303.47,
+      "provisional": false
+    },
+    {
+      "team": "Albania",
+      "normalized_name": "Albania",
+      "internal_elo": 1635.78,
+      "external_elo": 1616,
+      "difference": 19.78,
+      "absolute_difference": 19.78,
+      "provisional": false
+    },
+    {
+      "team": "Algeria",
+      "normalized_name": "Algeria",
+      "internal_elo": 1876.94,
+      "external_elo": 1772,
+      "difference": 104.94,
+      "absolute_difference": 104.94,
+      "provisional": false
+    },
+    {
+      "team": "Andorra",
+      "normalized_name": "Andorra",
+      "internal_elo": 1147.54,
+      "external_elo": 1080,
+      "difference": 67.54,
+      "absolute_difference": 67.54,
+      "provisional": false
+    },
+    {
+      "team": "Angola",
+      "normalized_name": "Angola",
+      "internal_elo": 1527.75,
+      "external_elo": 1542,
+      "difference": -14.25,
+      "absolute_difference": 14.25,
+      "provisional": false
+    },
+    {
+      "team": "Anguilla",
+      "normalized_name": "Anguilla",
+      "internal_elo": 1073.61,
+      "external_elo": 646,
+      "difference": 427.61,
+      "absolute_difference": 427.61,
+      "provisional": false
+    },
+    {
+      "team": "Antigua and Barbuda",
+      "normalized_name": "Antigua and Barbuda",
+      "internal_elo": 1239.28,
+      "external_elo": 895,
+      "difference": 344.28,
+      "absolute_difference": 344.28,
+      "provisional": false
+    },
+    {
+      "team": "Argentina",
+      "normalized_name": "Argentina",
+      "internal_elo": 1947.72,
+      "external_elo": 2115,
+      "difference": -167.28,
+      "absolute_difference": 167.28,
+      "provisional": false
+    },
+    {
+      "team": "Armenia",
+      "normalized_name": "Armenia",
+      "internal_elo": 1448.31,
+      "external_elo": 1373,
+      "difference": 75.31,
+      "absolute_difference": 75.31,
+      "provisional": false
+    },
+    {
+      "team": "Aruba",
+      "normalized_name": "Aruba",
+      "internal_elo": 1257.54,
+      "external_elo": 978,
+      "difference": 279.54,
+      "absolute_difference": 279.54,
+      "provisional": false
+    },
+    {
+      "team": "Australia",
+      "normalized_name": "Australia",
+      "internal_elo": 1843.1,
+      "external_elo": 1777,
+      "difference": 66.1,
+      "absolute_difference": 66.1,
+      "provisional": false
+    },
+    {
+      "team": "Austria",
+      "normalized_name": "Austria",
+      "internal_elo": 1813.21,
+      "external_elo": 1830,
+      "difference": -16.79,
+      "absolute_difference": 16.79,
+      "provisional": false
+    },
+    {
+      "team": "Azerbaijan",
+      "normalized_name": "Azerbaijan",
+      "internal_elo": 1393.76,
+      "external_elo": 1322,
+      "difference": 71.76,
+      "absolute_difference": 71.76,
+      "provisional": false
+    },
+    {
+      "team": "Bahamas",
+      "normalized_name": "Bahamas",
+      "internal_elo": 1149.55,
+      "external_elo": 685,
+      "difference": 464.55,
+      "absolute_difference": 464.55,
+      "provisional": false
+    },
+    {
+      "team": "Bahrain",
+      "normalized_name": "Bahrain",
+      "internal_elo": 1496.19,
+      "external_elo": 1414,
+      "difference": 82.19,
+      "absolute_difference": 82.19,
+      "provisional": false
+    },
+    {
+      "team": "Bangladesh",
+      "normalized_name": "Bangladesh",
+      "internal_elo": 1175.56,
+      "external_elo": 942,
+      "difference": 233.56,
+      "absolute_difference": 233.56,
+      "provisional": false
+    },
+    {
+      "team": "Barbados",
+      "normalized_name": "Barbados",
+      "internal_elo": 1223.52,
+      "external_elo": 898,
+      "difference": 325.52,
+      "absolute_difference": 325.52,
+      "provisional": false
+    },
+    {
+      "team": "Belarus",
+      "normalized_name": "Belarus",
+      "internal_elo": 1548.04,
+      "external_elo": 1522,
+      "difference": 26.04,
+      "absolute_difference": 26.04,
+      "provisional": false
+    },
+    {
+      "team": "Belgium",
+      "normalized_name": "Belgium",
+      "internal_elo": 1818.91,
+      "external_elo": 1894,
+      "difference": -75.09,
+      "absolute_difference": 75.09,
+      "provisional": false
+    },
+    {
+      "team": "Belize",
+      "normalized_name": "Belize",
+      "internal_elo": 1301.93,
+      "external_elo": 1073,
+      "difference": 228.93,
+      "absolute_difference": 228.93,
+      "provisional": false
+    },
+    {
+      "team": "Benin",
+      "normalized_name": "Benin",
+      "internal_elo": 1572.44,
+      "external_elo": 1405,
+      "difference": 167.44,
+      "absolute_difference": 167.44,
+      "provisional": false
+    },
+    {
+      "team": "Bermuda",
+      "normalized_name": "Bermuda",
+      "internal_elo": 1358.37,
+      "external_elo": 1117,
+      "difference": 241.37,
+      "absolute_difference": 241.37,
+      "provisional": false
+    },
+    {
+      "team": "Bhutan",
+      "normalized_name": "Bhutan",
+      "internal_elo": 1018.38,
+      "external_elo": 623,
+      "difference": 395.38,
+      "absolute_difference": 395.38,
+      "provisional": false
+    },
+    {
+      "team": "Bolivia",
+      "normalized_name": "Bolivia",
+      "internal_elo": 1713.59,
+      "external_elo": 1621,
+      "difference": 92.59,
+      "absolute_difference": 92.59,
+      "provisional": false
+    },
+    {
+      "team": "Bonaire",
+      "normalized_name": "Bonaire, Saint Eustatius and Saba",
+      "internal_elo": 1310.78,
+      "external_elo": 817,
+      "difference": 493.78,
+      "absolute_difference": 493.78,
+      "provisional": false
+    },
+    {
+      "team": "Bosnia and Herzegovina",
+      "normalized_name": "Bosnia and Herzegovina",
+      "internal_elo": 1719.94,
+      "external_elo": 1616,
+      "difference": 103.94,
+      "absolute_difference": 103.94,
+      "provisional": false
+    },
+    {
+      "team": "Botswana",
+      "normalized_name": "Botswana",
+      "internal_elo": 1386.68,
+      "external_elo": 1267,
+      "difference": 119.68,
+      "absolute_difference": 119.68,
+      "provisional": false
+    },
+    {
+      "team": "Brazil",
+      "normalized_name": "Brazil",
+      "internal_elo": 1870.48,
+      "external_elo": 1978,
+      "difference": -107.52,
+      "absolute_difference": 107.52,
+      "provisional": false
+    },
+    {
+      "team": "British Virgin Islands",
+      "normalized_name": "British Virgin Islands",
+      "internal_elo": 1116.16,
+      "external_elo": 743,
+      "difference": 373.16,
+      "absolute_difference": 373.16,
+      "provisional": false
+    },
+    {
+      "team": "Brunei",
+      "normalized_name": "Brunei Darussalam",
+      "internal_elo": 1045.31,
+      "external_elo": 572,
+      "difference": 473.31,
+      "absolute_difference": 473.31,
+      "provisional": false
+    },
+    {
+      "team": "Bulgaria",
+      "normalized_name": "Bulgaria",
+      "internal_elo": 1514.5,
+      "external_elo": 1458,
+      "difference": 56.5,
+      "absolute_difference": 56.5,
+      "provisional": false
+    },
+    {
+      "team": "Burkina Faso",
+      "normalized_name": "Burkina Faso",
+      "internal_elo": 1675.41,
+      "external_elo": 1529,
+      "difference": 146.41,
+      "absolute_difference": 146.41,
+      "provisional": false
+    },
+    {
+      "team": "Burundi",
+      "normalized_name": "Burundi",
+      "internal_elo": 1375.41,
+      "external_elo": 1285,
+      "difference": 90.41,
+      "absolute_difference": 90.41,
+      "provisional": false
+    },
+    {
+      "team": "Cambodia",
+      "normalized_name": "Cambodia",
+      "internal_elo": 1086.11,
+      "external_elo": 871,
+      "difference": 215.11,
+      "absolute_difference": 215.11,
+      "provisional": false
+    },
+    {
+      "team": "Cameroon",
+      "normalized_name": "Cameroon",
+      "internal_elo": 1652.18,
+      "external_elo": 1614,
+      "difference": 38.18,
+      "absolute_difference": 38.18,
+      "provisional": false
+    },
+    {
+      "team": "Canada",
+      "normalized_name": "Canada",
+      "internal_elo": 1708.05,
+      "external_elo": 1767,
+      "difference": -58.95,
+      "absolute_difference": 58.95,
+      "provisional": false
+    },
+    {
+      "team": "Cape Verde",
+      "normalized_name": "Cabo Verde",
+      "internal_elo": 1763.64,
+      "external_elo": 1578,
+      "difference": 185.64,
+      "absolute_difference": 185.64,
+      "provisional": false
+    },
+    {
+      "team": "Cayman Islands",
+      "normalized_name": "Cayman Islands",
+      "internal_elo": 1182.68,
+      "external_elo": 800,
+      "difference": 382.68,
+      "absolute_difference": 382.68,
+      "provisional": false
+    },
+    {
+      "team": "Central African Republic",
+      "normalized_name": "Central African Republic",
+      "internal_elo": 1388.49,
+      "external_elo": 1236,
+      "difference": 152.49,
+      "absolute_difference": 152.49,
+      "provisional": false
+    },
+    {
+      "team": "Chad",
+      "normalized_name": "Chad",
+      "internal_elo": 1242.07,
+      "external_elo": 1073,
+      "difference": 169.07,
+      "absolute_difference": 169.07,
+      "provisional": false
+    },
+    {
+      "team": "Chagos Islands",
+      "normalized_name": "Chagos Islands",
+      "internal_elo": 1446.34,
+      "external_elo": 782,
+      "difference": 664.34,
+      "absolute_difference": 664.34,
+      "provisional": true
+    },
+    {
+      "team": "Chile",
+      "normalized_name": "Chile",
+      "internal_elo": 1717.79,
+      "external_elo": 1717,
+      "difference": 0.79,
+      "absolute_difference": 0.79,
+      "provisional": false
+    },
+    {
+      "team": "China",
+      "normalized_name": "China",
+      "internal_elo": 1523.97,
+      "external_elo": 1424,
+      "difference": 99.97,
+      "absolute_difference": 99.97,
+      "provisional": false
+    },
+    {
+      "team": "Colombia",
+      "normalized_name": "Colombia",
+      "internal_elo": 1899.79,
+      "external_elo": 1982,
+      "difference": -82.21,
+      "absolute_difference": 82.21,
+      "provisional": false
+    },
+    {
+      "team": "Comoros",
+      "normalized_name": "Comoros",
+      "internal_elo": 1459.59,
+      "external_elo": 1374,
+      "difference": 85.59,
+      "absolute_difference": 85.59,
+      "provisional": false
+    },
+    {
+      "team": "Congo",
+      "normalized_name": "Congo Republic",
+      "internal_elo": 1354.21,
+      "external_elo": 1207,
+      "difference": 147.21,
+      "absolute_difference": 147.21,
+      "provisional": false
+    },
+    {
+      "team": "Cook Islands",
+      "normalized_name": "Cook Islands",
+      "internal_elo": 1271.04,
+      "external_elo": 622,
+      "difference": 649.04,
+      "absolute_difference": 649.04,
+      "provisional": false
+    },
+    {
+      "team": "Costa Rica",
+      "normalized_name": "Costa Rica",
+      "internal_elo": 1691.62,
+      "external_elo": 1608,
+      "difference": 83.62,
+      "absolute_difference": 83.62,
+      "provisional": false
+    },
+    {
+      "team": "Croatia",
+      "normalized_name": "Croatia",
+      "internal_elo": 1945.84,
+      "external_elo": 1912,
+      "difference": 33.84,
+      "absolute_difference": 33.84,
+      "provisional": false
+    },
+    {
+      "team": "Cuba",
+      "normalized_name": "Cuba",
+      "internal_elo": 1419.1,
+      "external_elo": 1239,
+      "difference": 180.1,
+      "absolute_difference": 180.1,
+      "provisional": false
+    },
+    {
+      "team": "Curaçao",
+      "normalized_name": "Curaçao",
+      "internal_elo": 1701.01,
+      "external_elo": 1434,
+      "difference": 267.01,
+      "absolute_difference": 267.01,
+      "provisional": false
+    },
+    {
+      "team": "Cyprus",
+      "normalized_name": "Cyprus",
+      "internal_elo": 1355.75,
+      "external_elo": 1314,
+      "difference": 41.75,
+      "absolute_difference": 41.75,
+      "provisional": false
+    },
+    {
+      "team": "Czechoslovakia",
+      "normalized_name": "Czechia",
+      "internal_elo": 1714.98,
+      "external_elo": 1712,
+      "difference": 2.98,
+      "absolute_difference": 2.98,
+      "provisional": false
+    },
+    {
+      "team": "DR Congo",
+      "normalized_name": "DR Congo",
+      "internal_elo": 1824.24,
+      "external_elo": 1652,
+      "difference": 172.24,
+      "absolute_difference": 172.24,
+      "provisional": false
+    },
+    {
+      "team": "Denmark",
+      "normalized_name": "Denmark",
+      "internal_elo": 1807.1,
+      "external_elo": 1869,
+      "difference": -61.9,
+      "absolute_difference": 61.9,
+      "provisional": false
+    },
+    {
+      "team": "Djibouti",
+      "normalized_name": "Djibouti",
+      "internal_elo": 1137.38,
+      "external_elo": 940,
+      "difference": 197.38,
+      "absolute_difference": 197.38,
+      "provisional": false
+    },
+    {
+      "team": "Dominica",
+      "normalized_name": "Dominica",
+      "internal_elo": 1234.02,
+      "external_elo": 934,
+      "difference": 300.02,
+      "absolute_difference": 300.02,
+      "provisional": false
+    },
+    {
+      "team": "Dominican Republic",
+      "normalized_name": "Dominican Republic",
+      "internal_elo": 1431.8,
+      "external_elo": 1283,
+      "difference": 148.8,
+      "absolute_difference": 148.8,
+      "provisional": false
+    },
+    {
+      "team": "Ecuador",
+      "normalized_name": "Ecuador",
+      "internal_elo": 1922.84,
+      "external_elo": 1938,
+      "difference": -15.16,
+      "absolute_difference": 15.16,
+      "provisional": false
+    },
+    {
+      "team": "Egypt",
+      "normalized_name": "Egypt",
+      "internal_elo": 1830.47,
+      "external_elo": 1696,
+      "difference": 134.47,
+      "absolute_difference": 134.47,
+      "provisional": false
+    },
+    {
+      "team": "El Salvador",
+      "normalized_name": "El Salvador",
+      "internal_elo": 1467.27,
+      "external_elo": 1342,
+      "difference": 125.27,
+      "absolute_difference": 125.27,
+      "provisional": false
+    },
+    {
+      "team": "England",
+      "normalized_name": "United Kingdom",
+      "internal_elo": 1890.61,
+      "external_elo": 2024,
+      "difference": -133.39,
+      "absolute_difference": 133.39,
+      "provisional": false
+    },
+    {
+      "team": "Equatorial Guinea",
+      "normalized_name": "Equatorial Guinea",
+      "internal_elo": 1454.12,
+      "external_elo": 1380,
+      "difference": 74.12,
+      "absolute_difference": 74.12,
+      "provisional": false
+    },
+    {
+      "team": "Eritrea",
+      "normalized_name": "Eritrea",
+      "internal_elo": 1253.22,
+      "external_elo": 1201,
+      "difference": 52.22,
+      "absolute_difference": 52.22,
+      "provisional": false
+    },
+    {
+      "team": "Estonia",
+      "normalized_name": "Estonia",
+      "internal_elo": 1364.87,
+      "external_elo": 1360,
+      "difference": 4.87,
+      "absolute_difference": 4.87,
+      "provisional": false
+    },
+    {
+      "team": "Eswatini",
+      "normalized_name": "Eswatini",
+      "internal_elo": 1330.06,
+      "external_elo": 1148,
+      "difference": 182.06,
+      "absolute_difference": 182.06,
+      "provisional": false
+    },
+    {
+      "team": "Ethiopia",
+      "normalized_name": "Ethiopia",
+      "internal_elo": 1410.51,
+      "external_elo": 1287,
+      "difference": 123.51,
+      "absolute_difference": 123.51,
+      "provisional": false
+    },
+    {
+      "team": "Falkland Islands",
+      "normalized_name": "Falkland Islands",
+      "internal_elo": 1349.85,
+      "external_elo": 571,
+      "difference": 778.85,
+      "absolute_difference": 778.85,
+      "provisional": false
+    },
+    {
+      "team": "Faroe Islands",
+      "normalized_name": "Faroe Islands",
+      "internal_elo": 1415.76,
+      "external_elo": 1386,
+      "difference": 29.76,
+      "absolute_difference": 29.76,
+      "provisional": false
+    },
+    {
+      "team": "Fiji",
+      "normalized_name": "Fiji",
+      "internal_elo": 1476.31,
+      "external_elo": 1104,
+      "difference": 372.31,
+      "absolute_difference": 372.31,
+      "provisional": false
+    },
+    {
+      "team": "Finland",
+      "normalized_name": "Finland",
+      "internal_elo": 1562.3,
+      "external_elo": 1536,
+      "difference": 26.3,
+      "absolute_difference": 26.3,
+      "provisional": false
+    },
+    {
+      "team": "France",
+      "normalized_name": "France",
+      "internal_elo": 1923.41,
+      "external_elo": 2063,
+      "difference": -139.59,
+      "absolute_difference": 139.59,
+      "provisional": false
+    },
+    {
+      "team": "French Guiana",
+      "normalized_name": "French Guiana",
+      "internal_elo": 1439.93,
+      "external_elo": 1223,
+      "difference": 216.93,
+      "absolute_difference": 216.93,
+      "provisional": false
+    },
+    {
+      "team": "Gabon",
+      "normalized_name": "Gabon",
+      "internal_elo": 1569.47,
+      "external_elo": 1401,
+      "difference": 168.47,
+      "absolute_difference": 168.47,
+      "provisional": false
+    },
+    {
+      "team": "Gambia",
+      "normalized_name": "Gambia",
+      "internal_elo": 1501.32,
+      "external_elo": 1419,
+      "difference": 82.32,
+      "absolute_difference": 82.32,
+      "provisional": false
+    },
+    {
+      "team": "Georgia",
+      "normalized_name": "Georgia",
+      "internal_elo": 1602.1,
+      "external_elo": 1654,
+      "difference": -51.9,
+      "absolute_difference": 51.9,
+      "provisional": false
+    },
+    {
+      "team": "Germany",
+      "normalized_name": "Germany",
+      "internal_elo": 1833.78,
+      "external_elo": 1932,
+      "difference": -98.22,
+      "absolute_difference": 98.22,
+      "provisional": false
+    },
+    {
+      "team": "Ghana",
+      "normalized_name": "Ghana",
+      "internal_elo": 1679.87,
+      "external_elo": 1510,
+      "difference": 169.87,
+      "absolute_difference": 169.87,
+      "provisional": false
+    },
+    {
+      "team": "Gibraltar",
+      "normalized_name": "Gibraltar",
+      "internal_elo": 1115.54,
+      "external_elo": 1011,
+      "difference": 104.54,
+      "absolute_difference": 104.54,
+      "provisional": false
+    },
+    {
+      "team": "Greece",
+      "normalized_name": "Greece",
+      "internal_elo": 1711.88,
+      "external_elo": 1744,
+      "difference": -32.12,
+      "absolute_difference": 32.12,
+      "provisional": false
+    },
+    {
+      "team": "Greenland",
+      "normalized_name": "Greenland",
+      "internal_elo": 1471.12,
+      "external_elo": 945,
+      "difference": 526.12,
+      "absolute_difference": 526.12,
+      "provisional": false
+    },
+    {
+      "team": "Grenada",
+      "normalized_name": "Grenada",
+      "internal_elo": 1336.69,
+      "external_elo": 1098,
+      "difference": 238.69,
+      "absolute_difference": 238.69,
+      "provisional": false
+    },
+    {
+      "team": "Guadeloupe",
+      "normalized_name": "Guadeloupe",
+      "internal_elo": 1502.07,
+      "external_elo": 1338,
+      "difference": 164.07,
+      "absolute_difference": 164.07,
+      "provisional": false
+    },
+    {
+      "team": "Guam",
+      "normalized_name": "Guam",
+      "internal_elo": 1049.89,
+      "external_elo": 706,
+      "difference": 343.89,
+      "absolute_difference": 343.89,
+      "provisional": false
+    },
+    {
+      "team": "Guatemala",
+      "normalized_name": "Guatemala",
+      "internal_elo": 1608.55,
+      "external_elo": 1504,
+      "difference": 104.55,
+      "absolute_difference": 104.55,
+      "provisional": false
+    },
+    {
+      "team": "Guinea",
+      "normalized_name": "Guinea",
+      "internal_elo": 1548.62,
+      "external_elo": 1463,
+      "difference": 85.62,
+      "absolute_difference": 85.62,
+      "provisional": false
+    },
+    {
+      "team": "Guinea-Bissau",
+      "normalized_name": "Guinea-Bissau",
+      "internal_elo": 1363.4,
+      "external_elo": 1248,
+      "difference": 115.4,
+      "absolute_difference": 115.4,
+      "provisional": false
+    },
+    {
+      "team": "Guyana",
+      "normalized_name": "Guyana",
+      "internal_elo": 1450.86,
+      "external_elo": 1292,
+      "difference": 158.86,
+      "absolute_difference": 158.86,
+      "provisional": false
+    },
+    {
+      "team": "Haiti",
+      "normalized_name": "Haiti",
+      "internal_elo": 1698.96,
+      "external_elo": 1548,
+      "difference": 150.96,
+      "absolute_difference": 150.96,
+      "provisional": false
+    },
+    {
+      "team": "Honduras",
+      "normalized_name": "Honduras",
+      "internal_elo": 1637.06,
+      "external_elo": 1570,
+      "difference": 67.06,
+      "absolute_difference": 67.06,
+      "provisional": false
+    },
+    {
+      "team": "Hong Kong",
+      "normalized_name": "Hong Kong",
+      "internal_elo": 1298.99,
+      "external_elo": 1101,
+      "difference": 197.99,
+      "absolute_difference": 197.99,
+      "provisional": false
+    },
+    {
+      "team": "Hungary",
+      "normalized_name": "Hungary",
+      "internal_elo": 1719.49,
+      "external_elo": 1710,
+      "difference": 9.49,
+      "absolute_difference": 9.49,
+      "provisional": false
+    },
+    {
+      "team": "Iceland",
+      "normalized_name": "Iceland",
+      "internal_elo": 1599.69,
+      "external_elo": 1568,
+      "difference": 31.69,
+      "absolute_difference": 31.69,
+      "provisional": false
+    },
+    {
+      "team": "India",
+      "normalized_name": "India",
+      "internal_elo": 1229.36,
+      "external_elo": 1128,
+      "difference": 101.36,
+      "absolute_difference": 101.36,
+      "provisional": false
+    },
+    {
+      "team": "Indonesia",
+      "normalized_name": "Indonesia",
+      "internal_elo": 1488.22,
+      "external_elo": 1372,
+      "difference": 116.22,
+      "absolute_difference": 116.22,
+      "provisional": false
+    },
+    {
+      "team": "Iran",
+      "normalized_name": "Iran",
+      "internal_elo": 1828.73,
+      "external_elo": 1772,
+      "difference": 56.73,
+      "absolute_difference": 56.73,
+      "provisional": false
+    },
+    {
+      "team": "Iraq",
+      "normalized_name": "Iraq",
+      "internal_elo": 1786.72,
+      "external_elo": 1607,
+      "difference": 179.72,
+      "absolute_difference": 179.72,
+      "provisional": false
+    },
+    {
+      "team": "Israel",
+      "normalized_name": "Israel",
+      "internal_elo": 1611.81,
+      "external_elo": 1647,
+      "difference": -35.19,
+      "absolute_difference": 35.19,
+      "provisional": false
+    },
+    {
+      "team": "Italy",
+      "normalized_name": "Italy",
+      "internal_elo": 1831.61,
+      "external_elo": 1869,
+      "difference": -37.39,
+      "absolute_difference": 37.39,
+      "provisional": false
+    },
+    {
+      "team": "Ivory Coast",
+      "normalized_name": "Côte d'Ivoire",
+      "internal_elo": 1793.52,
+      "external_elo": 1695,
+      "difference": 98.52,
+      "absolute_difference": 98.52,
+      "provisional": false
+    },
+    {
+      "team": "Jamaica",
+      "normalized_name": "Jamaica",
+      "internal_elo": 1642.3,
+      "external_elo": 1527,
+      "difference": 115.3,
+      "absolute_difference": 115.3,
+      "provisional": false
+    },
+    {
+      "team": "Japan",
+      "normalized_name": "Japan",
+      "internal_elo": 1951.99,
+      "external_elo": 1906,
+      "difference": 45.99,
+      "absolute_difference": 45.99,
+      "provisional": false
+    },
+    {
+      "team": "Jordan",
+      "normalized_name": "Jordan",
+      "internal_elo": 1722.9,
+      "external_elo": 1680,
+      "difference": 42.9,
+      "absolute_difference": 42.9,
+      "provisional": false
+    },
+    {
+      "team": "Kazakhstan",
+      "normalized_name": "Kazakhstan",
+      "internal_elo": 1493.38,
+      "external_elo": 1428,
+      "difference": 65.38,
+      "absolute_difference": 65.38,
+      "provisional": false
+    },
+    {
+      "team": "Kenya",
+      "normalized_name": "Kenya",
+      "internal_elo": 1462.03,
+      "external_elo": 1363,
+      "difference": 99.03,
+      "absolute_difference": 99.03,
+      "provisional": false
+    },
+    {
+      "team": "Kiribati",
+      "normalized_name": "Kiribati",
+      "internal_elo": 1416.33,
+      "external_elo": 544,
+      "difference": 872.33,
+      "absolute_difference": 872.33,
+      "provisional": true
+    },
+    {
+      "team": "Kosovo",
+      "normalized_name": "Kosovo",
+      "internal_elo": 1705.8,
+      "external_elo": 1715,
+      "difference": -9.2,
+      "absolute_difference": 9.2,
+      "provisional": false
+    },
+    {
+      "team": "Kurdistan",
+      "normalized_name": "Kurdistan",
+      "internal_elo": 1520.83,
+      "external_elo": 1424,
+      "difference": 96.83,
+      "absolute_difference": 96.83,
+      "provisional": true
+    },
+    {
+      "team": "Kuwait",
+      "normalized_name": "Kuwait",
+      "internal_elo": 1448.51,
+      "external_elo": 1332,
+      "difference": 116.51,
+      "absolute_difference": 116.51,
+      "provisional": false
+    },
+    {
+      "team": "Kyrgyzstan",
+      "normalized_name": "Kyrgyzstan",
+      "internal_elo": 1465.27,
+      "external_elo": 1295,
+      "difference": 170.27,
+      "absolute_difference": 170.27,
+      "provisional": false
+    },
+    {
+      "team": "Laos",
+      "normalized_name": "Laos",
+      "internal_elo": 1035.85,
+      "external_elo": 734,
+      "difference": 301.85,
+      "absolute_difference": 301.85,
+      "provisional": false
+    },
+    {
+      "team": "Latvia",
+      "normalized_name": "Latvia",
+      "internal_elo": 1346.04,
+      "external_elo": 1288,
+      "difference": 58.04,
+      "absolute_difference": 58.04,
+      "provisional": false
+    },
+    {
+      "team": "Lebanon",
+      "normalized_name": "Lebanon",
+      "internal_elo": 1462.56,
+      "external_elo": 1288,
+      "difference": 174.56,
+      "absolute_difference": 174.56,
+      "provisional": false
+    },
+    {
+      "team": "Lesotho",
+      "normalized_name": "Lesotho",
+      "internal_elo": 1434.89,
+      "external_elo": 1198,
+      "difference": 236.89,
+      "absolute_difference": 236.89,
+      "provisional": false
+    },
+    {
+      "team": "Liberia",
+      "normalized_name": "Liberia",
+      "internal_elo": 1449.17,
+      "external_elo": 1304,
+      "difference": 145.17,
+      "absolute_difference": 145.17,
+      "provisional": false
+    },
+    {
+      "team": "Libya",
+      "normalized_name": "Libya",
+      "internal_elo": 1554.14,
+      "external_elo": 1420,
+      "difference": 134.14,
+      "absolute_difference": 134.14,
+      "provisional": false
+    },
+    {
+      "team": "Liechtenstein",
+      "normalized_name": "Liechtenstein",
+      "internal_elo": 1061.76,
+      "external_elo": 895,
+      "difference": 166.76,
+      "absolute_difference": 166.76,
+      "provisional": false
+    },
+    {
+      "team": "Lithuania",
+      "normalized_name": "Lithuania",
+      "internal_elo": 1342.29,
+      "external_elo": 1279,
+      "difference": 63.29,
+      "absolute_difference": 63.29,
+      "provisional": false
+    },
+    {
+      "team": "Luxembourg",
+      "normalized_name": "Luxembourg",
+      "internal_elo": 1409.86,
+      "external_elo": 1450,
+      "difference": -40.14,
+      "absolute_difference": 40.14,
+      "provisional": false
+    },
+    {
+      "team": "Macau",
+      "normalized_name": "Macau",
+      "internal_elo": 942.85,
+      "external_elo": 589,
+      "difference": 353.85,
+      "absolute_difference": 353.85,
+      "provisional": false
+    },
+    {
+      "team": "Madagascar",
+      "normalized_name": "Madagascar",
+      "internal_elo": 1530.31,
+      "external_elo": 1380,
+      "difference": 150.31,
+      "absolute_difference": 150.31,
+      "provisional": false
+    },
+    {
+      "team": "Malawi",
+      "normalized_name": "Malawi",
+      "internal_elo": 1420.55,
+      "external_elo": 1239,
+      "difference": 181.55,
+      "absolute_difference": 181.55,
+      "provisional": false
+    },
+    {
+      "team": "Malaysia",
+      "normalized_name": "Malaysia",
+      "internal_elo": 1478.73,
+      "external_elo": 1293,
+      "difference": 185.73,
+      "absolute_difference": 185.73,
+      "provisional": false
+    },
+    {
+      "team": "Maldives",
+      "normalized_name": "Maldives",
+      "internal_elo": 1082.39,
+      "external_elo": 801,
+      "difference": 281.39,
+      "absolute_difference": 281.39,
+      "provisional": false
+    },
+    {
+      "team": "Mali",
+      "normalized_name": "Mali",
+      "internal_elo": 1663.61,
+      "external_elo": 1588,
+      "difference": 75.61,
+      "absolute_difference": 75.61,
+      "provisional": false
+    },
+    {
+      "team": "Malta",
+      "normalized_name": "Malta",
+      "internal_elo": 1338.2,
+      "external_elo": 1255,
+      "difference": 83.2,
+      "absolute_difference": 83.2,
+      "provisional": false
+    },
+    {
+      "team": "Marshall Islands",
+      "normalized_name": "Marshall Islands",
+      "internal_elo": 1481.71,
+      "external_elo": 559,
+      "difference": 922.71,
+      "absolute_difference": 922.71,
+      "provisional": true
+    },
+    {
+      "team": "Martinique",
+      "normalized_name": "Martinique",
+      "internal_elo": 1507.37,
+      "external_elo": 1312,
+      "difference": 195.37,
+      "absolute_difference": 195.37,
+      "provisional": false
+    },
+    {
+      "team": "Mauritania",
+      "normalized_name": "Mauritania",
+      "internal_elo": 1419.29,
+      "external_elo": 1329,
+      "difference": 90.29,
+      "absolute_difference": 90.29,
+      "provisional": false
+    },
+    {
+      "team": "Mauritius",
+      "normalized_name": "Mauritius",
+      "internal_elo": 1241.8,
+      "external_elo": 1073,
+      "difference": 168.8,
+      "absolute_difference": 168.8,
+      "provisional": false
+    },
+    {
+      "team": "Mayotte",
+      "normalized_name": "Mayotte",
+      "internal_elo": 1440.88,
+      "external_elo": 1216,
+      "difference": 224.88,
+      "absolute_difference": 224.88,
+      "provisional": false
+    },
+    {
+      "team": "Mexico",
+      "normalized_name": "Mexico",
+      "internal_elo": 1783.66,
+      "external_elo": 1881,
+      "difference": -97.34,
+      "absolute_difference": 97.34,
+      "provisional": false
+    },
+    {
+      "team": "Micronesia",
+      "normalized_name": "Micronesia, Fed. Sts.",
+      "internal_elo": 1458.72,
+      "external_elo": 564,
+      "difference": 894.72,
+      "absolute_difference": 894.72,
+      "provisional": true
+    },
+    {
+      "team": "Moldova",
+      "normalized_name": "Moldova",
+      "internal_elo": 1284.77,
+      "external_elo": 1270,
+      "difference": 14.77,
+      "absolute_difference": 14.77,
+      "provisional": false
+    },
+    {
+      "team": "Monaco",
+      "normalized_name": "Monaco",
+      "internal_elo": 1498.27,
+      "external_elo": 903,
+      "difference": 595.27,
+      "absolute_difference": 595.27,
+      "provisional": true
+    },
+    {
+      "team": "Mongolia",
+      "normalized_name": "Mongolia",
+      "internal_elo": 1085.52,
+      "external_elo": 726,
+      "difference": 359.52,
+      "absolute_difference": 359.52,
+      "provisional": false
+    },
+    {
+      "team": "Montenegro",
+      "normalized_name": "Montenegro",
+      "internal_elo": 1486.74,
+      "external_elo": 1461,
+      "difference": 25.74,
+      "absolute_difference": 25.74,
+      "provisional": false
+    },
+    {
+      "team": "Montserrat",
+      "normalized_name": "Montserrat",
+      "internal_elo": 1342.23,
+      "external_elo": 972,
+      "difference": 370.23,
+      "absolute_difference": 370.23,
+      "provisional": false
+    },
+    {
+      "team": "Morocco",
+      "normalized_name": "Morocco",
+      "internal_elo": 1960.59,
+      "external_elo": 1840,
+      "difference": 120.59,
+      "absolute_difference": 120.59,
+      "provisional": false
+    },
+    {
+      "team": "Mozambique",
+      "normalized_name": "Mozambique",
+      "internal_elo": 1499.9,
+      "external_elo": 1342,
+      "difference": 157.9,
+      "absolute_difference": 157.9,
+      "provisional": false
+    },
+    {
+      "team": "Myanmar",
+      "normalized_name": "Myanmar",
+      "internal_elo": 1191.54,
+      "external_elo": 984,
+      "difference": 207.54,
+      "absolute_difference": 207.54,
+      "provisional": false
+    },
+    {
+      "team": "Namibia",
+      "normalized_name": "Namibia",
+      "internal_elo": 1459.63,
+      "external_elo": 1303,
+      "difference": 156.63,
+      "absolute_difference": 156.63,
+      "provisional": false
+    },
+    {
+      "team": "Nepal",
+      "normalized_name": "Nepal",
+      "internal_elo": 1149.4,
+      "external_elo": 893,
+      "difference": 256.4,
+      "absolute_difference": 256.4,
+      "provisional": false
+    },
+    {
+      "team": "Netherlands",
+      "normalized_name": "Netherlands",
+      "internal_elo": 1833.0,
+      "external_elo": 1948,
+      "difference": -115.0,
+      "absolute_difference": 115.0,
+      "provisional": false
+    },
+    {
+      "team": "New Caledonia",
+      "normalized_name": "New Caledonia",
+      "internal_elo": 1568.21,
+      "external_elo": 1286,
+      "difference": 282.21,
+      "absolute_difference": 282.21,
+      "provisional": false
+    },
+    {
+      "team": "New Zealand",
+      "normalized_name": "New Zealand",
+      "internal_elo": 1708.85,
+      "external_elo": 1562,
+      "difference": 146.85,
+      "absolute_difference": 146.85,
+      "provisional": false
+    },
+    {
+      "team": "Nicaragua",
+      "normalized_name": "Nicaragua",
+      "internal_elo": 1488.3,
+      "external_elo": 1333,
+      "difference": 155.3,
+      "absolute_difference": 155.3,
+      "provisional": false
+    },
+    {
+      "team": "Niger",
+      "normalized_name": "Niger",
+      "internal_elo": 1528.4,
+      "external_elo": 1382,
+      "difference": 146.4,
+      "absolute_difference": 146.4,
+      "provisional": false
+    },
+    {
+      "team": "Nigeria",
+      "normalized_name": "Nigeria",
+      "internal_elo": 1758.66,
+      "external_elo": 1767,
+      "difference": -8.34,
+      "absolute_difference": 8.34,
+      "provisional": false
+    },
+    {
+      "team": "Niue",
+      "normalized_name": "Niue",
+      "internal_elo": 1494.0,
+      "external_elo": 496,
+      "difference": 998.0,
+      "absolute_difference": 998.0,
+      "provisional": true
+    },
+    {
+      "team": "North Korea",
+      "normalized_name": "North Korea",
+      "internal_elo": 1485.89,
+      "external_elo": 1375,
+      "difference": 110.89,
+      "absolute_difference": 110.89,
+      "provisional": false
+    },
+    {
+      "team": "North Macedonia",
+      "normalized_name": "North Macedonia",
+      "internal_elo": 1633.65,
+      "external_elo": 1589,
+      "difference": 44.65,
+      "absolute_difference": 44.65,
+      "provisional": false
+    },
+    {
+      "team": "Northern Ireland",
+      "normalized_name": "Northern Ireland",
+      "internal_elo": 1591.47,
+      "external_elo": 1605,
+      "difference": -13.53,
+      "absolute_difference": 13.53,
+      "provisional": false
+    },
+    {
+      "team": "Northern Mariana Islands",
+      "normalized_name": "Northern Mariana Islands",
+      "internal_elo": 1224.69,
+      "external_elo": 432,
+      "difference": 792.69,
+      "absolute_difference": 792.69,
+      "provisional": false
+    },
+    {
+      "team": "Norway",
+      "normalized_name": "Norway",
+      "internal_elo": 1845.34,
+      "external_elo": 1914,
+      "difference": -68.66,
+      "absolute_difference": 68.66,
+      "provisional": false
+    },
+    {
+      "team": "Oman",
+      "normalized_name": "Oman",
+      "internal_elo": 1579.45,
+      "external_elo": 1480,
+      "difference": 99.45,
+      "absolute_difference": 99.45,
+      "provisional": false
+    },
+    {
+      "team": "Pakistan",
+      "normalized_name": "Pakistan",
+      "internal_elo": 1085.44,
+      "external_elo": 909,
+      "difference": 176.44,
+      "absolute_difference": 176.44,
+      "provisional": false
+    },
+    {
+      "team": "Palau",
+      "normalized_name": "Palau",
+      "internal_elo": 1486.87,
+      "external_elo": 402,
+      "difference": 1084.87,
+      "absolute_difference": 1084.87,
+      "provisional": true
+    },
+    {
+      "team": "Palestine",
+      "normalized_name": "Palestine",
+      "internal_elo": 1584.68,
+      "external_elo": 1465,
+      "difference": 119.68,
+      "absolute_difference": 119.68,
+      "provisional": false
+    },
+    {
+      "team": "Panama",
+      "normalized_name": "Panama",
+      "internal_elo": 1773.7,
+      "external_elo": 1730,
+      "difference": 43.7,
+      "absolute_difference": 43.7,
+      "provisional": false
+    },
+    {
+      "team": "Papua New Guinea",
+      "normalized_name": "Papua New Guinea",
+      "internal_elo": 1430.8,
+      "external_elo": 1135,
+      "difference": 295.8,
+      "absolute_difference": 295.8,
+      "provisional": false
+    },
+    {
+      "team": "Paraguay",
+      "normalized_name": "Paraguay",
+      "internal_elo": 1946.19,
+      "external_elo": 1780,
+      "difference": 166.19,
+      "absolute_difference": 166.19,
+      "provisional": false
+    },
+    {
+      "team": "Peru",
+      "normalized_name": "Peru",
+      "internal_elo": 1694.06,
+      "external_elo": 1700,
+      "difference": -5.94,
+      "absolute_difference": 5.94,
+      "provisional": false
+    },
+    {
+      "team": "Philippines",
+      "normalized_name": "Philippines",
+      "internal_elo": 1333.2,
+      "external_elo": 1179,
+      "difference": 154.2,
+      "absolute_difference": 154.2,
+      "provisional": false
+    },
+    {
+      "team": "Poland",
+      "normalized_name": "Poland",
+      "internal_elo": 1730.86,
+      "external_elo": 1710,
+      "difference": 20.86,
+      "absolute_difference": 20.86,
+      "provisional": false
+    },
+    {
+      "team": "Portugal",
+      "normalized_name": "Portugal",
+      "internal_elo": 1835.35,
+      "external_elo": 1989,
+      "difference": -153.65,
+      "absolute_difference": 153.65,
+      "provisional": false
+    },
+    {
+      "team": "Puerto Rico",
+      "normalized_name": "Puerto Rico",
+      "internal_elo": 1397.17,
+      "external_elo": 1135,
+      "difference": 262.17,
+      "absolute_difference": 262.17,
+      "provisional": false
+    },
+    {
+      "team": "Qatar",
+      "normalized_name": "Qatar",
+      "internal_elo": 1631.54,
+      "external_elo": 1447,
+      "difference": 184.54,
+      "absolute_difference": 184.54,
+      "provisional": false
+    },
+    {
+      "team": "Republic of Ireland",
+      "normalized_name": "Ireland",
+      "internal_elo": 1710.48,
+      "external_elo": 1699,
+      "difference": 11.48,
+      "absolute_difference": 11.48,
+      "provisional": false
+    },
+    {
+      "team": "Romania",
+      "normalized_name": "Romania",
+      "internal_elo": 1619.0,
+      "external_elo": 1639,
+      "difference": -20.0,
+      "absolute_difference": 20.0,
+      "provisional": false
+    },
+    {
+      "team": "Russia",
+      "normalized_name": "Russia",
+      "internal_elo": 1778.79,
+      "external_elo": 1772,
+      "difference": 6.79,
+      "absolute_difference": 6.79,
+      "provisional": false
+    },
+    {
+      "team": "Rwanda",
+      "normalized_name": "Rwanda",
+      "internal_elo": 1403.15,
+      "external_elo": 1336,
+      "difference": 67.15,
+      "absolute_difference": 67.15,
+      "provisional": false
+    },
+    {
+      "team": "Réunion",
+      "normalized_name": "Réunion",
+      "internal_elo": 1558.66,
+      "external_elo": 1345,
+      "difference": 213.66,
+      "absolute_difference": 213.66,
+      "provisional": false
+    },
+    {
+      "team": "Saint Barthélemy",
+      "normalized_name": "St. Barths",
+      "internal_elo": 1463.08,
+      "external_elo": 725,
+      "difference": 738.08,
+      "absolute_difference": 738.08,
+      "provisional": true
+    },
+    {
+      "team": "Saint Kitts and Nevis",
+      "normalized_name": "St. Kitts and Nevis",
+      "internal_elo": 1308.38,
+      "external_elo": 1029,
+      "difference": 279.38,
+      "absolute_difference": 279.38,
+      "provisional": false
+    },
+    {
+      "team": "Saint Lucia",
+      "normalized_name": "St. Lucia",
+      "internal_elo": 1307.65,
+      "external_elo": 1003,
+      "difference": 304.65,
+      "absolute_difference": 304.65,
+      "provisional": false
+    },
+    {
+      "team": "Saint Martin",
+      "normalized_name": "Saint-Martin",
+      "internal_elo": 1337.88,
+      "external_elo": 1042,
+      "difference": 295.88,
+      "absolute_difference": 295.88,
+      "provisional": false
+    },
+    {
+      "team": "Saint Vincent and the Grenadines",
+      "normalized_name": "St. Vincent and the Grenadines",
+      "internal_elo": 1338.9,
+      "external_elo": 1141,
+      "difference": 197.9,
+      "absolute_difference": 197.9,
+      "provisional": false
+    },
+    {
+      "team": "Samoa",
+      "normalized_name": "Samoa",
+      "internal_elo": 1322.86,
+      "external_elo": 728,
+      "difference": 594.86,
+      "absolute_difference": 594.86,
+      "provisional": false
+    },
+    {
+      "team": "San Marino",
+      "normalized_name": "San Marino",
+      "internal_elo": 906.01,
+      "external_elo": 825,
+      "difference": 81.01,
+      "absolute_difference": 81.01,
+      "provisional": false
+    },
+    {
+      "team": "Saudi Arabia",
+      "normalized_name": "Saudi Arabia",
+      "internal_elo": 1709.47,
+      "external_elo": 1576,
+      "difference": 133.47,
+      "absolute_difference": 133.47,
+      "provisional": false
+    },
+    {
+      "team": "Scotland",
+      "normalized_name": "Scotland",
+      "internal_elo": 1767.93,
+      "external_elo": 1782,
+      "difference": -14.07,
+      "absolute_difference": 14.07,
+      "provisional": false
+    },
+    {
+      "team": "Senegal",
+      "normalized_name": "Senegal",
+      "internal_elo": 1922.83,
+      "external_elo": 1860,
+      "difference": 62.83,
+      "absolute_difference": 62.83,
+      "provisional": false
+    },
+    {
+      "team": "Serbia",
+      "normalized_name": "Serbia",
+      "internal_elo": 1711.74,
+      "external_elo": 1734,
+      "difference": -22.26,
+      "absolute_difference": 22.26,
+      "provisional": false
+    },
+    {
+      "team": "Seychelles",
+      "normalized_name": "Seychelles",
+      "internal_elo": 1081.13,
+      "external_elo": 853,
+      "difference": 228.13,
+      "absolute_difference": 228.13,
+      "provisional": false
+    },
+    {
+      "team": "Sierra Leone",
+      "normalized_name": "Sierra Leone",
+      "internal_elo": 1498.22,
+      "external_elo": 1341,
+      "difference": 157.22,
+      "absolute_difference": 157.22,
+      "provisional": false
+    },
+    {
+      "team": "Singapore",
+      "normalized_name": "Singapore",
+      "internal_elo": 1339.38,
+      "external_elo": 1134,
+      "difference": 205.38,
+      "absolute_difference": 205.38,
+      "provisional": false
+    },
+    {
+      "team": "Sint Maarten",
+      "normalized_name": "Sint Maarten",
+      "internal_elo": 1383.94,
+      "external_elo": 975,
+      "difference": 408.94,
+      "absolute_difference": 408.94,
+      "provisional": false
+    },
+    {
+      "team": "Slovakia",
+      "normalized_name": "Slovakia",
+      "internal_elo": 1683.26,
+      "external_elo": 1667,
+      "difference": 16.26,
+      "absolute_difference": 16.26,
+      "provisional": false
+    },
+    {
+      "team": "Slovenia",
+      "normalized_name": "Slovenia",
+      "internal_elo": 1686.72,
+      "external_elo": 1682,
+      "difference": 4.72,
+      "absolute_difference": 4.72,
+      "provisional": false
+    },
+    {
+      "team": "Solomon Islands",
+      "normalized_name": "Solomon Islands",
+      "internal_elo": 1458.71,
+      "external_elo": 1054,
+      "difference": 404.71,
+      "absolute_difference": 404.71,
+      "provisional": false
+    },
+    {
+      "team": "Somalia",
+      "normalized_name": "Somalia",
+      "internal_elo": 1162.61,
+      "external_elo": 979,
+      "difference": 183.61,
+      "absolute_difference": 183.61,
+      "provisional": false
+    },
+    {
+      "team": "South Africa",
+      "normalized_name": "South Africa",
+      "internal_elo": 1694.6,
+      "external_elo": 1511,
+      "difference": 183.6,
+      "absolute_difference": 183.6,
+      "provisional": false
+    },
+    {
+      "team": "South Korea",
+      "normalized_name": "South Korea",
+      "internal_elo": 1831.08,
+      "external_elo": 1786,
+      "difference": 45.08,
+      "absolute_difference": 45.08,
+      "provisional": false
+    },
+    {
+      "team": "South Sudan",
+      "normalized_name": "South Sudan",
+      "internal_elo": 1331.86,
+      "external_elo": 1109,
+      "difference": 222.86,
+      "absolute_difference": 222.86,
+      "provisional": false
+    },
+    {
+      "team": "Spain",
+      "normalized_name": "Spain",
+      "internal_elo": 1973.27,
+      "external_elo": 2157,
+      "difference": -183.73,
+      "absolute_difference": 183.73,
+      "provisional": false
+    },
+    {
+      "team": "Sri Lanka",
+      "normalized_name": "Sri Lanka",
+      "internal_elo": 1099.07,
+      "external_elo": 836,
+      "difference": 263.07,
+      "absolute_difference": 263.07,
+      "provisional": false
+    },
+    {
+      "team": "Sudan",
+      "normalized_name": "Sudan",
+      "internal_elo": 1486.21,
+      "external_elo": 1350,
+      "difference": 136.21,
+      "absolute_difference": 136.21,
+      "provisional": false
+    },
+    {
+      "team": "Suriname",
+      "normalized_name": "Suriname",
+      "internal_elo": 1581.43,
+      "external_elo": 1431,
+      "difference": 150.43,
+      "absolute_difference": 150.43,
+      "provisional": false
+    },
+    {
+      "team": "Sweden",
+      "normalized_name": "Sweden",
+      "internal_elo": 1721.22,
+      "external_elo": 1712,
+      "difference": 9.22,
+      "absolute_difference": 9.22,
+      "provisional": false
+    },
+    {
+      "team": "Switzerland",
+      "normalized_name": "Switzerland",
+      "internal_elo": 1836.35,
+      "external_elo": 1865,
+      "difference": -28.65,
+      "absolute_difference": 28.65,
+      "provisional": false
+    },
+    {
+      "team": "Syria",
+      "normalized_name": "Syria",
+      "internal_elo": 1579.73,
+      "external_elo": 1479,
+      "difference": 100.73,
+      "absolute_difference": 100.73,
+      "provisional": false
+    },
+    {
+      "team": "São Tomé and Príncipe",
+      "normalized_name": "Sao Tome and Principe",
+      "internal_elo": 1199.92,
+      "external_elo": 1035,
+      "difference": 164.92,
+      "absolute_difference": 164.92,
+      "provisional": false
+    },
+    {
+      "team": "Tahiti",
+      "normalized_name": "Tahiti",
+      "internal_elo": 1511.76,
+      "external_elo": 1177,
+      "difference": 334.76,
+      "absolute_difference": 334.76,
+      "provisional": false
+    },
+    {
+      "team": "Taiwan",
+      "normalized_name": "Taiwan",
+      "internal_elo": 1086.37,
+      "external_elo": 822,
+      "difference": 264.37,
+      "absolute_difference": 264.37,
+      "provisional": false
+    },
+    {
+      "team": "Tajikistan",
+      "normalized_name": "Tajikistan",
+      "internal_elo": 1467.03,
+      "external_elo": 1285,
+      "difference": 182.03,
+      "absolute_difference": 182.03,
+      "provisional": false
+    },
+    {
+      "team": "Tanzania",
+      "normalized_name": "Tanzania",
+      "internal_elo": 1399.37,
+      "external_elo": 1313,
+      "difference": 86.37,
+      "absolute_difference": 86.37,
+      "provisional": false
+    },
+    {
+      "team": "Thailand",
+      "normalized_name": "Thailand",
+      "internal_elo": 1509.44,
+      "external_elo": 1376,
+      "difference": 133.44,
+      "absolute_difference": 133.44,
+      "provisional": false
+    },
+    {
+      "team": "Tibet",
+      "normalized_name": "Tibet",
+      "internal_elo": 1377.61,
+      "external_elo": 629,
+      "difference": 748.61,
+      "absolute_difference": 748.61,
+      "provisional": true
+    },
+    {
+      "team": "Timor-Leste",
+      "normalized_name": "Timor-Leste",
+      "internal_elo": 1017.95,
+      "external_elo": 734,
+      "difference": 283.95,
+      "absolute_difference": 283.95,
+      "provisional": false
+    },
+    {
+      "team": "Togo",
+      "normalized_name": "Togo",
+      "internal_elo": 1457.53,
+      "external_elo": 1379,
+      "difference": 78.53,
+      "absolute_difference": 78.53,
+      "provisional": false
+    },
+    {
+      "team": "Tonga",
+      "normalized_name": "Tonga",
+      "internal_elo": 1215.7,
+      "external_elo": 520,
+      "difference": 695.7,
+      "absolute_difference": 695.7,
+      "provisional": false
+    },
+    {
+      "team": "Trinidad and Tobago",
+      "normalized_name": "Trinidad and Tobago",
+      "internal_elo": 1533.13,
+      "external_elo": 1386,
+      "difference": 147.13,
+      "absolute_difference": 147.13,
+      "provisional": false
+    },
+    {
+      "team": "Tunisia",
+      "normalized_name": "Tunisia",
+      "internal_elo": 1759.3,
+      "external_elo": 1628,
+      "difference": 131.3,
+      "absolute_difference": 131.3,
+      "provisional": false
+    },
+    {
+      "team": "Turkey",
+      "normalized_name": "Türkiye",
+      "internal_elo": 1907.67,
+      "external_elo": 1911,
+      "difference": -3.33,
+      "absolute_difference": 3.33,
+      "provisional": false
+    },
+    {
+      "team": "Turkmenistan",
+      "normalized_name": "Turkmenistan",
+      "internal_elo": 1376.18,
+      "external_elo": 1209,
+      "difference": 167.18,
+      "absolute_difference": 167.18,
+      "provisional": false
+    },
+    {
+      "team": "Turks and Caicos Islands",
+      "normalized_name": "Turks and Caicos Islands",
+      "internal_elo": 1157.94,
+      "external_elo": 657,
+      "difference": 500.94,
+      "absolute_difference": 500.94,
+      "provisional": false
+    },
+    {
+      "team": "Tuvalu",
+      "normalized_name": "Tuvalu",
+      "internal_elo": 1353.17,
+      "external_elo": 756,
+      "difference": 597.17,
+      "absolute_difference": 597.17,
+      "provisional": false
+    },
+    {
+      "team": "Uganda",
+      "normalized_name": "Uganda",
+      "internal_elo": 1540.02,
+      "external_elo": 1394,
+      "difference": 146.02,
+      "absolute_difference": 146.02,
+      "provisional": false
+    },
+    {
+      "team": "Ukraine",
+      "normalized_name": "Ukraine",
+      "internal_elo": 1800.62,
+      "external_elo": 1780,
+      "difference": 20.62,
+      "absolute_difference": 20.62,
+      "provisional": false
+    },
+    {
+      "team": "United States",
+      "normalized_name": "United States",
+      "internal_elo": 1705.22,
+      "external_elo": 1780,
+      "difference": -74.78,
+      "absolute_difference": 74.78,
+      "provisional": false
+    },
+    {
+      "team": "United States Virgin Islands",
+      "normalized_name": "United States Virgin Islands",
+      "internal_elo": 1120.13,
+      "external_elo": 628,
+      "difference": 492.13,
+      "absolute_difference": 492.13,
+      "provisional": false
+    },
+    {
+      "team": "Uruguay",
+      "normalized_name": "Uruguay",
+      "internal_elo": 1854.17,
+      "external_elo": 1892,
+      "difference": -37.83,
+      "absolute_difference": 37.83,
+      "provisional": false
+    },
+    {
+      "team": "Uzbekistan",
+      "normalized_name": "Uzbekistan",
+      "internal_elo": 1805.71,
+      "external_elo": 1714,
+      "difference": 91.71,
+      "absolute_difference": 91.71,
+      "provisional": false
+    },
+    {
+      "team": "Vanuatu",
+      "normalized_name": "Vanuatu",
+      "internal_elo": 1444.02,
+      "external_elo": 1118,
+      "difference": 326.02,
+      "absolute_difference": 326.02,
+      "provisional": false
+    },
+    {
+      "team": "Vatican City",
+      "normalized_name": "Vatican",
+      "internal_elo": 1455.41,
+      "external_elo": 692,
+      "difference": 763.41,
+      "absolute_difference": 763.41,
+      "provisional": true
+    },
+    {
+      "team": "Venezuela",
+      "normalized_name": "Venezuela",
+      "internal_elo": 1729.15,
+      "external_elo": 1733,
+      "difference": -3.85,
+      "absolute_difference": 3.85,
+      "provisional": false
+    },
+    {
+      "team": "Vietnam",
+      "normalized_name": "Vietnam",
+      "internal_elo": 1437.2,
+      "external_elo": 1351,
+      "difference": 86.2,
+      "absolute_difference": 86.2,
+      "provisional": false
+    },
+    {
+      "team": "Wales",
+      "normalized_name": "Wales",
+      "internal_elo": 1702.07,
+      "external_elo": 1682,
+      "difference": 20.07,
+      "absolute_difference": 20.07,
+      "provisional": false
+    },
+    {
+      "team": "Wallis Islands and Futuna",
+      "normalized_name": "Wallis and Futuna Islands",
+      "internal_elo": 1402.99,
+      "external_elo": 699,
+      "difference": 703.99,
+      "absolute_difference": 703.99,
+      "provisional": true
+    },
+    {
+      "team": "Western Sahara",
+      "normalized_name": "Western Sahara",
+      "internal_elo": 1476.1,
+      "external_elo": 996,
+      "difference": 480.1,
+      "absolute_difference": 480.1,
+      "provisional": true
+    },
+    {
+      "team": "Yemen",
+      "normalized_name": "Yemen",
+      "internal_elo": 1333.11,
+      "external_elo": 1195,
+      "difference": 138.11,
+      "absolute_difference": 138.11,
+      "provisional": false
+    },
+    {
+      "team": "Zambia",
+      "normalized_name": "Zambia",
+      "internal_elo": 1487.57,
+      "external_elo": 1371,
+      "difference": 116.57,
+      "absolute_difference": 116.57,
+      "provisional": false
+    },
+    {
+      "team": "Zanzibar",
+      "normalized_name": "Zanzibar",
+      "internal_elo": 1497.6,
+      "external_elo": 1320,
+      "difference": 177.6,
+      "absolute_difference": 177.6,
+      "provisional": false
+    },
+    {
+      "team": "Zimbabwe",
+      "normalized_name": "Zimbabwe",
+      "internal_elo": 1412.93,
+      "external_elo": 1372,
+      "difference": 40.93,
+      "absolute_difference": 40.93,
+      "provisional": false
+    }
+  ]
+}

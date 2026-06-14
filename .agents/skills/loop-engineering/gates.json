@@ -1,0 +1,137 @@
+{
+  "version": "2.0.0",
+  "project": "Oloraculo xBoost",
+  "thresholds": {
+    "elo_top100_mean_abs_diff": 100,
+    "elo_top100_correlation": 0.90,
+    "backtest_log_loss": 1.05,
+    "backtest_brier": 0.22,
+    "backtest_accuracy": 0.45,
+    "backtest_roi": -0.05,
+    "prediction_prob_sum_tolerance": 0.01,
+    "test_coverage_warning": 0.70,
+    "max_pylint_score": 8.0
+  },
+  "phases": [
+    {
+      "phase": 3,
+      "name": "Backend / Data",
+      "gates": [
+        {
+          "id": "feature_schema",
+          "name": "Feature schema consistent",
+          "command": "python -c \"from predictors.feature_engineering import FEATURE_COLS; print(len(FEATURE_COLS))\"",
+          "evidence": "data/features/train_historical.parquet",
+          "criteria": "Parquet columns match FEATURE_COLS; no NaN in critical columns",
+          "required": true
+        },
+        {
+          "id": "elo_calibration",
+          "name": "Elo vs World Football Elo",
+          "command": "python scripts/compare_elo_worldfootball.py",
+          "evidence": "backtest/results/elo_comparison.json",
+          "criteria": "top100.mean_absolute_difference < 100 pts and correlation > 0.90",
+          "required": true
+        },
+        {
+          "id": "no_leakage",
+          "name": "No temporal leakage",
+          "command": "python scripts/audit_leakage.py",
+          "evidence": "backtest/results/audit_leakage.json",
+          "criteria": "No FAIL findings",
+          "required": true
+        },
+        {
+          "id": "player_weights_ok",
+          "name": "Player weights valid",
+          "command": "python -c \"from predictors.player_weights import PlayerWeightingEngine; weights = PlayerWeightingEngine.DEFAULT_WEIGHTS; assert abs(sum(weights.values()) - 1.0) < 1e-6; print('OK')\"",
+          "evidence": "predictors/player_weights.py",
+          "criteria": "Weights sum to 1.0",
+          "required": false
+        }
+      ]
+    },
+    {
+      "phase": 5,
+      "name": "Develop",
+      "gates": [
+        {
+          "id": "dotnet_build",
+          "name": ".NET build",
+          "command": "dotnet build Oloraculo.sln --no-restore",
+          "evidence": "build output",
+          "criteria": "Exit code 0",
+          "required": true
+        },
+        {
+          "id": "dotnet_format",
+          "name": ".NET format check",
+          "command": "dotnet format Oloraculo.sln --verify-no-changes",
+          "evidence": "format output",
+          "criteria": "No formatting changes required",
+          "required": false
+        },
+        {
+          "id": "python_lint",
+          "name": "Python lint",
+          "command": "python -m ruff check predictors/feature_engineering.py predictors/xgboost_engine.py predictors/api.py predictors/player_weights.py backtest/world_cup_backtest.py scripts/verify-gates.py scripts/run-data-council.py scripts/run-bridge-smoke-test.py scripts/run-backtest-gate.py scripts/loop_engineering.py tests/",
+          "evidence": "lint output",
+          "criteria": "No lint errors",
+          "required": false
+        },
+        {
+          "id": "secret_scan",
+          "name": "Secret scan",
+          "command": "python scripts/verify-gates.py --gate secret_scan",
+          "evidence": "secret scan output",
+          "criteria": "No secrets in code or logs",
+          "required": true
+        }
+      ]
+    },
+    {
+      "phase": 6,
+      "name": "QA",
+      "gates": [
+        {
+          "id": "dotnet_test",
+          "name": ".NET unit tests",
+          "command": "dotnet test Oloraculo.Web.Tests --no-build",
+          "evidence": "test output",
+          "criteria": "≥90% tests passing",
+          "required": true
+        },
+        {
+          "id": "pytest",
+          "name": "Python unit tests",
+          "command": "pytest tests/ -q",
+          "evidence": "pytest output",
+          "criteria": "All tests passing",
+          "required": true
+        },
+        {
+          "id": "backtest_baseline",
+          "name": "World Cup backtest baseline",
+          "command": "python scripts/run-backtest-gate.py",
+          "evidence": "backtest/results/world_cup_backtest_summary.json",
+          "criteria": "log_loss < 1.05, brier < 0.22, accuracy > 45%",
+          "required": true,
+          "timeout": 900
+        },
+        {
+          "id": "bridge_smoke",
+          "name": "C# <-> Python bridge smoke test",
+          "command": "python scripts/run-bridge-smoke-test.py",
+          "evidence": "backtest/results/bridge_smoke.json",
+          "criteria": "Probabilities sum to ~1, predictions coherent",
+          "required": true
+        }
+      ]
+    }
+  ],
+  "actions_on_failure": {
+    "3": "Bounce to Phase 2 (architecture / contracts)",
+    "5": "Bounce to Phase 4 (security) if secret scan fails; otherwise to developer",
+    "6": "Bounce to Phase 5 with detailed test plan"
+  }
+}

@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# Mondial-Xboost convenience wrapper (Git Bash / WSL / Linux / macOS)
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Prefer project virtual environment
+PYTHON="${ROOT}/venv/Scripts/python.exe"
+if [ ! -f "$PYTHON" ]; then
+    PYTHON="${ROOT}/.venv/Scripts/python.exe"
+fi
+if [ ! -f "$PYTHON" ]; then
+    PYTHON="${ROOT}/venv/bin/python"
+fi
+if [ ! -f "$PYTHON" ]; then
+    PYTHON="${ROOT}/.venv/bin/python"
+fi
+if [ ! -f "$PYTHON" ]; then
+    PYTHON="python3"
+fi
+
+exec "$PYTHON" "${ROOT}/scripts/mondial_cli.py" "$@"
