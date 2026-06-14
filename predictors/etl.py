@@ -432,7 +432,7 @@ class ETLPipeline:
     # ===== Step 5: Add External Features =====
 
     def add_elo_features(self, features_df: pd.DataFrame,
-                         elo_csv: str = "Oloraculo.Web/elo_snapshot.csv") -> pd.DataFrame:
+                         elo_csv: str = "MondialXboost.Web/elo_snapshot.csv") -> pd.DataFrame:
         """Add Elo rating features from existing CSV."""
         elo_path = Path(elo_csv)
         if not elo_path.exists():

@@ -89,5 +89,5 @@ def save_manifest(manifest: dict[str, Any], path: Path | str | None = None) -> P
 def hash_dataset(csv_path: Path | str | None = None) -> str:
     """Return a short SHA-256 hash of the canonical dataset."""
     if csv_path is None:
-        csv_path = Path(__file__).parent.parent / "Oloraculo.Web" / "Data" / "historical_results.csv"
+        csv_path = Path(__file__).parent.parent / "MondialXboost.Web" / "Data" / "historical_results.csv"
     return _hash_file(Path(csv_path))

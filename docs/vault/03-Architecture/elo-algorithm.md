@@ -4,7 +4,7 @@
 Estimar la fuerza relativa de cada selección nacional a partir del historial de resultados. El valor de Elo se usa como feature principal (`elo_diff`) en el modelo XGBoost y como predictor baseline en la escalera C#.
 
 ## Fuente de datos
-- `Oloraculo.Web/Data/historical_results.csv` (~49K partidos internacionales desde 1872).
+- `MondialXboost.Web/Data/historical_results.csv` (~49K partidos internacionales desde 1872).
 - Columnas requeridas: `date`, `home_team`, `away_team`, `home_score`, `away_score`, `tournament`, `neutral`.
 
 ## Implementación

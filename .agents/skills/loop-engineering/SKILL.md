@@ -75,15 +75,15 @@ Los comandos asumen que el directorio de trabajo es la raíz del repo.
 ### Fase 5 — Develop
 | Gate | Comando | Criterio |
 |------|---------|----------|
-| Build | `dotnet build Oloraculo.sln` | Exit code 0 |
-| Format | `dotnet format Oloraculo.sln --verify-no-changes` | Sin cambios de formato |
+| Build | `dotnet build Mondial-Xboost.sln` | Exit code 0 |
+| Format | `dotnet format Mondial-Xboost.sln --verify-no-changes` | Sin cambios de formato |
 | Python lint | `python -m ruff check predictors scripts backtest tests` | Sin errores |
 | Code review | `reviewer` agent | Veredicto APPROVED / MINOR |
 
 ### Fase 6 — QA
 | Gate | Comando | Evidencia | Criterio |
 |------|---------|-----------|----------|
-| .NET tests | `dotnet test Oloraculo.Web.Tests` | test output | ≥90% passing |
+| .NET tests | `dotnet test MondialXboost.Web.Tests` | test output | ≥90% passing |
 | Python tests | `pytest tests/ -q` | pytest output | 100% passing |
 | Backtest baseline | `python scripts/run-backtest-gate.py` | `backtest/results/world_cup_backtest_summary.json` | log_loss < 1.05, brier < 0.22, acc > 45% |
 | Bridge smoke | `python scripts/run-bridge-smoke-test.py` | `backtest/results/bridge_smoke.json` | Probs suman ~1, picks válidos |

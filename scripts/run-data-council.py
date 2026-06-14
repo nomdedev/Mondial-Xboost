@@ -121,7 +121,7 @@ def check_schema_and_duplicates() -> dict[str, Any]:
             "feature_cols_count": len(FEATURE_COLS),
             "duplicate_matches": int(duplicate_matches),
             "output": "; ".join(issues) if issues else "No duplicate matches found",
-            "evidence": "Oloraculo.Web/Data/historical_results.csv",
+            "evidence": "MondialXboost.Web/Data/historical_results.csv",
         }
     except Exception as exc:
         return {"gate": "schema_and_duplicates", "status": "FAIL", "output": str(exc), "evidence": ""}
@@ -137,7 +137,7 @@ def main() -> int:
 
     report = {
         "generated_at": datetime.now(UTC).isoformat(),
-        "project": "Oloraculo xBoost",
+        "project": "MondialXboost xBoost",
         "verdict": "BLOCK" if any(c["status"] == "FAIL" for c in checks) else "PASS",
         "checks": checks,
     }

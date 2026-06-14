@@ -42,7 +42,7 @@ feature engineering. Todo debe ser reproducible, idempotente y libre de leakage.
 1. **Conectores a API-Football v3**
    - Fixtures, estadísticas, alineaciones, lesionados, eventos.
    - Manejo de rate limits, paginación y reintentos.
-   - Mapeo a modelos en `Oloraculo.Web/Models/ApiFootballModels/`.
+   - Mapeo a modelos en `MondialXboost.Web/Models/ApiFootballModels/`.
 
 2. **Scrapers de noticias y disponibilidad**
    - Selenium para sitios con JavaScript.
@@ -59,7 +59,7 @@ feature engineering. Todo debe ser reproducible, idempotente y libre de leakage.
    - Features de disponibilidad (jugadores clave ausentes).
 
 5. **Caché de datos**
-   - SQLite a través de `OloraculoDbContext`.
+   - SQLite a través de `Mondial-XboostDbContext`.
    - Parquet para datasets de ML si se prefiere.
 
 ---

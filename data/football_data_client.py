@@ -81,7 +81,7 @@ def fetch_all(leagues: Iterable[str] | None = None, seasons: Iterable[str] | Non
 
 def standardize_to_mondial-xboost_format(df: pd.DataFrame) -> pd.DataFrame:
     """
-    Convert football-data columns into Oloraculo historical_results format.
+    Convert football-data columns into Mondial-Xboost historical_results format.
     Only includes matches where FTR (full-time result) is present.
     """
     required = {"Date", "HomeTeam", "AwayTeam", "FTHG", "FTAG", "FTR"}

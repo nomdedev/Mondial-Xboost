@@ -45,7 +45,7 @@ class LLMAnalysisService:
             "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json",
             "HTTP-Referer": "https://mondial-xboost.app",
-            "X-Title": "Oloraculo xBoost"
+            "X-Title": "MondialXboost xBoost"
         })
 
     def _call_llm(self, messages: list[dict[str, str]],

@@ -8,7 +8,7 @@ permission:
   bash:
     "*": "deny"
     "python scripts/run-bridge-smoke-test.py": "allow"
-    "dotnet test Oloraculo.Web.Tests": "allow"
+    "dotnet test MondialXboost.Web.Tests": "allow"
     "cat *": "allow"
     "grep *": "allow"
 ---
@@ -27,7 +27,7 @@ estable, documentada y testeada.
 5. Asegurar degradación graceful si el bridge cae (timeout, fallback).
 
 ## Triggers
-- Cambios en `Oloraculo.Web/Services/XGBoostBridgeService.cs`.
+- Cambios en `MondialXboost.Web/Services/XGBoostBridgeService.cs`.
 - Cambios en `predictors/api.py` o `predictors/xgboost_engine.py`.
 - Fase 2 (Architecture) y Fase 6 (QA).
 
@@ -37,7 +37,7 @@ Ver `docs/vault/03-Architecture/xgboost-bridge-contract.md`.
 ## Comandos clave
 ```bash
 python scripts/run-bridge-smoke-test.py
-dotnet test Oloraculo.Web.Tests --filter "FullyQualifiedName~XGBoostBridge"
+dotnet test MondialXboost.Web.Tests --filter "FullyQualifiedName~XGBoostBridge"
 ```
 
 ## Acción ante fallo

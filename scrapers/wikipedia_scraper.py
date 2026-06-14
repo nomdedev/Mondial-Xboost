@@ -50,7 +50,7 @@ class WikipediaScraper:
         self.CACHE_DIR.mkdir(parents=True, exist_ok=True)
         self.session = requests.Session()
         self.session.headers.update({
-            "User-Agent": "Oloraculo xBoost/1.0 (Research Project)"
+            "User-Agent": "MondialXboost xBoost/1.0 (Research Project)"
         })
     
     def _get_page(self, url: str) -> Optional[BeautifulSoup]:

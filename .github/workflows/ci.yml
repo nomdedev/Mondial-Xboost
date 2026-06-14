@@ -19,16 +19,16 @@ jobs:
           dotnet-version: "9.0.x"
 
       - name: Restore
-        run: dotnet restore Oloraculo.sln
+        run: dotnet restore MondialXboost.sln
 
       - name: Build
-        run: dotnet build Oloraculo.sln --no-restore --configuration Release
+        run: dotnet build MondialXboost.sln --no-restore --configuration Release
 
       - name: Test
-        run: dotnet test Oloraculo.Web.Tests --no-build --configuration Release
+        run: dotnet test MondialXboost.Web.Tests --no-build --configuration Release
 
       - name: Vulnerable packages check
-        run: dotnet list Oloraculo.sln package --vulnerable --include-transitive 2>&1 | tee vulnerable.log
+        run: dotnet list MondialXboost.sln package --vulnerable --include-transitive 2>&1 | tee vulnerable.log
 
   python:
     name: Python Lint & Test
@@ -91,10 +91,10 @@ jobs:
           pip install -r requirements.txt -r requirements-dev.txt
 
       - name: Restore .NET packages
-        run: dotnet restore Oloraculo.sln
+        run: dotnet restore MondialXboost.sln
 
       - name: Build .NET (Debug)
-        run: dotnet build Oloraculo.sln --no-restore --configuration Debug
+        run: dotnet build MondialXboost.sln --no-restore --configuration Debug
 
       - name: Run verify-gates
         run: python scripts/verify-gates.py

@@ -1,0 +1,109 @@
+@page "/performance"
+@rendermode InteractiveServer
+@inject EvaluationService Evaluation
+@inject MondialXboostDbContext Db
+
+<PageTitle>Rendimiento</PageTitle>
+
+<MudStack Spacing="3">
+    <div class="page-head">
+        <MudText Typo="Typo.h3">Rendimiento</MudText>
+        <MudText Typo="Typo.body1" Color="Color.Secondary">Predicciones guardadas evaluadas con Brier, RPS, log loss y precisión del favorito.</MudText>
+    </div>
+
+    @if (!_loaded)
+    {
+        <MudPaper Class="surface-card" Elevation="0">
+            <MudSkeleton Height="32px" Width="35%" />
+            <MudSkeleton Height="34px" Class="skeleton-row" />
+            <MudSkeleton Height="34px" Class="skeleton-row" />
+            <MudProgressLinear Class="inline-progress" Color="Color.Primary" Indeterminate="true" />
+        </MudPaper>
+    }
+    else if (_performance.Count == 0)
+    {
+        <MudAlert Severity="Severity.Warning" Variant="Variant.Outlined">Todavía no hay evaluaciones.</MudAlert>
+    }
+    else
+    {
+        <MudPaper Class="surface-card" Elevation="0">
+            <MudText Typo="Typo.h6">Puntajes por modelo</MudText>
+            <MudTable Items="_performance" Dense="true" Hover="true" Elevation="0" Class="dense-table">
+                <HeaderContent>
+                    <MudTh>Modelo</MudTh>
+                    <MudTh Class="num">N</MudTh>
+                    <MudTh Class="num">Favorito</MudTh>
+                    <MudTh Class="num">RPS</MudTh>
+                    <MudTh Class="num">Brier</MudTh>
+                    <MudTh Class="num">Log loss</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Modelo">@context.ModelName</MudTd>
+                    <MudTd DataLabel="N" Class="num">@context.Count</MudTd>
+                    <MudTd DataLabel="Favorito" Class="num">@context.TopPickAccuracy.ToString("P0")</MudTd>
+                    <MudTd DataLabel="RPS" Class="num">@context.MeanRps.ToString("0.000")</MudTd>
+                    <MudTd DataLabel="Brier" Class="num">@context.MeanBrier.ToString("0.000")</MudTd>
+                    <MudTd DataLabel="Log loss" Class="num">@context.MeanLogLoss.ToString("0.000")</MudTd>
+                </RowTemplate>
+            </MudTable>
+        </MudPaper>
+
+        <MudGrid Spacing="2">
+            <MudItem xs="12" md="6">
+                <MudPaper Class="surface-card" Elevation="0">
+                    <MudText Typo="Typo.h6">Mejores aciertos</MudText>
+                    <MudTable Items="_best" Dense="true" Hover="true" Elevation="0" Class="dense-table">
+                        <HeaderContent><MudTh>Partido</MudTh><MudTh Class="num">RPS</MudTh></HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="Partido">
+                                <span class="matchup-label">
+                                    <TeamLabel TeamId="@context.HomeTeamId" Name="@Name(context.HomeTeamId)" Compact="true" />
+                                    <strong>@context.HomeGoals-@context.AwayGoals</strong>
+                                    <TeamLabel TeamId="@context.AwayTeamId" Name="@Name(context.AwayTeamId)" Compact="true" />
+                                </span>
+                            </MudTd>
+                            <MudTd DataLabel="RPS" Class="num">@context.RankedProbabilityScore.ToString("0.000")</MudTd>
+                        </RowTemplate>
+                    </MudTable>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12" md="6">
+                <MudPaper Class="surface-card" Elevation="0">
+                    <MudText Typo="Typo.h6">Errores con exceso de confianza</MudText>
+                    <MudTable Items="_worst" Dense="true" Hover="true" Elevation="0" Class="dense-table">
+                        <HeaderContent><MudTh>Partido</MudTh><MudTh Class="num">Log loss</MudTh></HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="Partido">
+                                <span class="matchup-label">
+                                    <TeamLabel TeamId="@context.HomeTeamId" Name="@Name(context.HomeTeamId)" Compact="true" />
+                                    <strong>@context.HomeGoals-@context.AwayGoals</strong>
+                                    <TeamLabel TeamId="@context.AwayTeamId" Name="@Name(context.AwayTeamId)" Compact="true" />
+                                </span>
+                            </MudTd>
+                            <MudTd DataLabel="Log loss" Class="num">@context.LogLoss.ToString("0.000")</MudTd>
+                        </RowTemplate>
+                    </MudTable>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    }
+</MudStack>
+
+@code {
+    private IReadOnlyList<ModelPerformanceRow> _performance = [];
+    private IReadOnlyList<PredictionEvaluation> _best = [];
+    private IReadOnlyList<PredictionEvaluation> _worst = [];
+    private Dictionary<string, string> _names = [];
+    private bool _loaded;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _names = await Db.Teams.ToDictionaryAsync(t => t.Id, t => t.Name);
+        _performance = await Evaluation.PerformanceAsync();
+        _best = await Evaluation.BestCallsAsync();
+        _worst = await Evaluation.OverconfidentFailuresAsync();
+        _loaded = true;
+    }
+
+    private string Name(string id) => _names.TryGetValue(id, out var name) ? name : id;
+}

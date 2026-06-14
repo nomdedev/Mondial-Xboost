@@ -7,8 +7,8 @@ Pipeline definida en `.github/workflows/ci.yml`.
 - [ ] Setup .NET 9 SDK.
 - [ ] Setup Python 3.11.
 - [ ] `dotnet restore`.
-- [ ] `dotnet build Oloraculo.sln`.
-- [ ] `dotnet test Oloraculo.Web.Tests`.
+- [ ] `dotnet build Mondial-Xboost.sln`.
+- [ ] `dotnet test MondialXboost.Web.Tests`.
 - [ ] `pip install -r requirements.txt`.
 - [ ] `pytest tests/ -q`.
 - [ ] `python scripts/verify-gates.py`.

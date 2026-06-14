@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Oloráculo xBoost — Data Flow</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #060b10;
+      --panel: #0d1420;
+      --cyan: #00e5ff;
+      --purple: #a855f7;
+      --amber: #f59e0b;
+      --green: #22c55e;
+      --pink: #ec4899;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --grid: rgba(0,229,255,0.05);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+      min-height: 100vh;
+      overflow-x: auto;
+    }
+    .scanlines {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: repeating-linear-gradient(0deg, rgba(0,0,0,0.15) 0, rgba(0,0,0,0.15) 1px, transparent 1px, transparent 4px);
+      z-index: 9999;
+      opacity: 0.4;
+    }
+    header {
+      padding: 24px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(148,163,184,0.15);
+      position: sticky;
+      top: 0;
+      background: rgba(6,11,16,0.92);
+      backdrop-filter: blur(8px);
+      z-index: 100;
+    }
+    h1 {
+      margin: 0;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.6rem;
+      letter-spacing: 1px;
+      text-shadow: 0 0 12px var(--cyan);
+    }
+    .badge {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.75rem;
+      padding: 6px 14px;
+      border-radius: 999px;
+      border: 1px solid currentColor;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+    }
+    .badge.dev { color: var(--cyan); box-shadow: 0 0 10px rgba(0,229,255,0.25); }
+    .subtitle { color: var(--muted); font-size: 0.85rem; margin-top: 6px; }
+
+    .stage {
+      display: flex;
+      justify-content: space-between;
+      padding: 48px 32px;
+      min-width: 1300px;
+      position: relative;
+    }
+    .col {
+      flex: 1;
+      min-width: 220px;
+      max-width: 260px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      position: relative;
+      z-index: 2;
+    }
+    .col-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.85rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding-bottom: 10px;
+      border-bottom: 2px solid currentColor;
+      margin-bottom: 6px;
+    }
+    .col.sources .col-title { color: var(--cyan); }
+    .col.etl .col-title { color: var(--purple); }
+    .col.features .col-title { color: var(--amber); }
+    .col.ml .col-title { color: var(--green); }
+    .col.output .col-title { color: var(--pink); }
+
+    .node {
+      background: var(--panel);
+      border: 1px solid rgba(148,163,184,0.2);
+      border-left: 4px solid currentColor;
+      border-radius: 8px;
+      padding: 14px 16px;
+      font-size: 0.8rem;
+      cursor: default;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+      position: relative;
+    }
+    .node:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+    }
+    .node .name { font-weight: 700; display: block; margin-bottom: 4px; }
+    .node .meta { color: var(--muted); font-size: 0.7rem; }
+
+    .node.sources { color: var(--cyan); }
+    .node.etl { color: var(--purple); }
+    .node.features { color: var(--amber); }
+    .node.ml { color: var(--green); }
+    .node.output { color: var(--pink); }
+
+    #svg-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none;
+    }
+    path.connector {
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-dasharray: 8 6;
+      animation: flow 1.2s linear infinite;
+      opacity: 0.6;
+    }
+    @keyframes flow {
+      to { stroke-dashoffset: -28; }
+    }
+
+    .tooltip {
+      position: absolute;
+      background: rgba(13,20,32,0.96);
+      border: 1px solid rgba(148,163,184,0.3);
+      border-radius: 8px;
+      padding: 12px 14px;
+      max-width: 320px;
+      font-size: 0.78rem;
+      color: var(--text);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity 0.15s ease, transform 0.15s ease;
+      z-index: 1000;
+    }
+    .tooltip.visible { opacity: 1; transform: translateY(0); }
+    .tooltip strong { color: var(--cyan); }
+
+    footer {
+      padding: 24px 32px;
+      border-top: 1px solid rgba(148,163,184,0.15);
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 0.75rem;
+    }
+    .legend-item { display: flex; align-items: center; gap: 8px; }
+    .dot { width: 10px; height: 10px; border-radius: 2px; }
+  </style>
+</head>
+<body>
+  <div class="scanlines"></div>
+
+  <header>
+    <div>
+      <h1>Oloráculo xBoost — Data Flow</h1>
+      <div class="subtitle">Desde las fuentes de datos hasta la predicción final expuesta en la UI</div>
+    </div>
+    <div class="badge dev">En Desarrollo</div>
+  </header>
+
+  <main class="stage" id="stage">
+    <svg id="svg-layer"></svg>
+
+    <section class="col sources">
+      <div class="col-title">Fuentes de Datos</div>
+      <div class="node sources" id="src-hist" data-tt="CSV local con ~49K partidos internacionales desde 1872. Columnas: date, home_team, away_team, home_score, away_score, tournament, neutral.">
+        <span class="name">historical_results.csv</span>
+        <span class="meta">~49K partidos · local</span>
+      </div>
+      <div class="node sources" id="src-api" data-tt="API-Football v3: fixtures, alineaciones, estadísticas de jugadores, eventos y lesionados. Requiere API key y respeta rate limits.">
+        <span class="name">API-Football v3</span>
+        <span class="meta">REST · fixtures & stats</span>
+      </div>
+      <div class="node sources" id="src-fd" data-tt="football-data.co.uk: resultados históricos y odds de bookmakers para ligas europeas. Útil para features de mercado y calibración.">
+        <span class="name">football-data.co.uk</span>
+        <span class="meta">CSV · odds & ligas</span>
+      </div>
+      <div class="node sources" id="src-news" data-tt="Scrapers de noticias (requests / Selenium) para extraer disponibilidad de jugadores, lesiones y bajas de última hora.">
+        <span class="name">News Scrapers</span>
+        <span class="meta">lesiones & disponibilidad</span>
+      </div>
+    </section>
+
+    <section class="col etl">
+      <div class="col-title">ETL / Curación</div>
+      <div class="node etl" id="etl-names" data-tt="Unifica nombres de equipos entre fuentes: home_team_name → home_team, normaliza acentos y abreviaturas.">
+        <span class="name">Name Normalizer</span>
+        <span class="meta">home_team / away_team</span>
+      </div>
+      <div class="node etl" id="etl-scores" data-tt="Convierte goles a home_score / away_score, valida que sean enteros no negativos y descarta filas inválidas.">
+        <span class="name">Score Validator</span>
+        <span class="meta">home_score / away_score</span>
+      </div>
+      <div class="node etl" id="etl-dates" data-tt="Parsea fechas a datetime, detecta neutral venue y ordena cronológicamente para evitar leakage.">
+        <span class="name">Date & Venue Parser</span>
+        <span class="meta">date · neutral</span>
+      </div>
+      <div class="node etl" id="etl-dedup" data-tt="Elimina duplicados por (date, home_team, away_team). Registra filas descartadas para auditoría.">
+        <span class="name">Deduplicator</span>
+        <span class="meta">(date, home, away) único</span>
+      </div>
+    </section>
+
+    <section class="col features">
+      <div class="col-title">Feature Engineering</div>
+      <div class="node features" id="feat-elo" data-tt="compute_elo_ratings(): rating previo al partido con K por importancia del torneo y ventaja local +100. Genera elo_diff y flags provisionales.">
+        <span class="name">Elo Engine</span>
+        <span class="meta">home_elo_before · away_elo_before</span>
+      </div>
+      <div class="node features" id="feat-form" data-tt="_compute_team_rolling(): medias móviles de puntos, goles anotados/recibidos y tasas de victoria/empate/derrota en ventanas 5 y 10. shift(1) evita leakage.">
+        <span class="name">Team Form</span>
+        <span class="meta">points_avg_5/10 · goals_avg_10</span>
+      </div>
+      <div class="node features" id="feat-h2h" data-tt="_compute_h2h(): último resultado entre rivales, goles promedio, diferencia de victorias y años desde el último enfrentamiento.">
+        <span class="name">Head-to-Head</span>
+        <span class="meta">h2h_last_result · h2h_wins_diff</span>
+      </div>
+      <div class="node features" id="feat-players" data-tt="PlayerWeightingEngine: convierte stats individuales en attack_modifier, defense_modifier y squad_depth_score para ajustar expected goals.">
+        <span class="name">Player Weights</span>
+        <span class="meta">attack · defense · depth</span>
+      </div>
+    </section>
+
+    <section class="col ml">
+      <div class="col-title">ML + Bridge</div>
+      <div class="node ml" id="ml-train" data-tt="XGBoostFootballPredictor.fit(): entrena XGBClassifier multiclass para outcome 1X2 y dos XGBRegressor para goles local/visitante.">
+        <span class="name">XGBoost Training</span>
+        <span class="meta">multi:softprob · reg:squarederror</span>
+      </div>
+      <div class="node ml" id="ml-cal" data-tt="CalibratedClassifierCV con método isotónico (mejor config de autoresearch). Reduce sobreconfianza y mejora log-loss/Brier.">
+        <span class="name">Isotonic Calibration</span>
+        <span class="meta">CalibratedClassifierCV</span>
+      </div>
+      <div class="node ml" id="ml-save" data-tt="Persistencia con pickle en data/models/: outcome, home_goals, away_goals y meta.json con feature_cols.">
+        <span class="name">Model Store</span>
+        <span class="meta">data/models/*.pkl</span>
+      </div>
+      <div class="node ml" id="ml-api" data-tt="FastAPI bridge en localhost:8000. Endpoints /health, /train, /predict. Convierte numpy floats a float nativo para evitar errores de serialización.">
+        <span class="name">FastAPI Bridge</span>
+        <span class="meta">127.0.0.1:8000</span>
+      </div>
+    </section>
+
+    <section class="col output">
+      <div class="col-title">App + Output</div>
+      <div class="node output" id="out-cs" data-tt="XGBoostBridgeService: cliente HttpClient en .NET que serializa MatchContext y recibe probabilidades desde el bridge Python.">
+        <span class="name">C# Bridge Service</span>
+        <span class="meta">MondialXboost.Web/Services/</span>
+      </div>
+      <div class="node output" id="out-pred" data-tt="XGBoostPredictor implementa IPredictor con Priority=6. Si el bridge falla, se marca Degraded y baja la escalera.">
+        <span class="name">IPredictor Ladder</span>
+        <span class="meta">Priority 6 · fallback</span>
+      </div>
+      <div class="node output" id="out-ens" data-tt="Ensemble ponderado que combina XGBoost, Elo, Poisson/Dixon-Coles y análisis LLM. Pesos backtesteados y normalizados.">
+        <span class="name">Ensemble</span>
+        <span class="meta">XGBoost + Elo + Poisson + LLM</span>
+      </div>
+      <div class="node output" id="out-ui" data-tt="Blazor Server UI + dashboards HTML. Exporta README/JSON con picks, probabilidades, expected goals y métricas diarias.">
+        <span class="name">UI & Export</span>
+        <span class="meta">Blazor · README · JSON</span>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="legend-item"><span class="dot" style="background:var(--cyan)"></span>Fuentes</div>
+    <div class="legend-item"><span class="dot" style="background:var(--purple)"></span>ETL</div>
+    <div class="legend-item"><span class="dot" style="background:var(--amber)"></span>Features</div>
+    <div class="legend-item"><span class="dot" style="background:var(--green)"></span>ML + Bridge</div>
+    <div class="legend-item"><span class="dot" style="background:var(--pink)"></span>App + Output</div>
+    <div style="margin-left:auto">Generado con flow-visualizer + ui-ux-pro-max skills</div>
+  </footer>
+
+  <div class="tooltip" id="tooltip"></div>
+
+  <script>
+    const connections = [
+      ['src-hist','etl-names'],
+      ['src-api','etl-names'],
+      ['src-fd','etl-scores'],
+      ['src-news','etl-dates'],
+      ['etl-names','feat-elo'],
+      ['etl-scores','feat-elo'],
+      ['etl-dates','feat-form'],
+      ['etl-dedup','feat-form'],
+      ['feat-elo','ml-train'],
+      ['feat-form','ml-train'],
+      ['feat-h2h','ml-train'],
+      ['feat-players','out-ens'],
+      ['ml-train','ml-cal'],
+      ['ml-cal','ml-save'],
+      ['ml-save','ml-api'],
+      ['ml-api','out-cs'],
+      ['out-cs','out-pred'],
+      ['out-pred','out-ens'],
+      ['out-ens','out-ui'],
+    ];
+
+    const svg = document.getElementById('svg-layer');
+    const stage = document.getElementById('stage');
+    const tooltip = document.getElementById('tooltip');
+    const colors = {
+      'src-hist':'#00e5ff','src-api':'#00e5ff','src-fd':'#00e5ff','src-news':'#00e5ff',
+      'etl-names':'#a855f7','etl-scores':'#a855f7','etl-dates':'#a855f7','etl-dedup':'#a855f7',
+      'feat-elo':'#f59e0b','feat-form':'#f59e0b','feat-h2h':'#f59e0b','feat-players':'#f59e0b',
+      'ml-train':'#22c55e','ml-cal':'#22c55e','ml-save':'#22c55e','ml-api':'#22c55e',
+      'out-cs':'#ec4899','out-pred':'#ec4899','out-ens':'#ec4899','out-ui':'#ec4899',
+    };
+
+    function getAnchor(id, side) {
+      const el = document.getElementById(id);
+      const rect = el.getBoundingClientRect();
+      const stageRect = stage.getBoundingClientRect();
+      const x = side === 'right' ? rect.right - stageRect.left : rect.left - stageRect.left;
+      const y = rect.top + rect.height / 2 - stageRect.top;
+      return { x, y };
+    }
+
+    function draw() {
+      svg.innerHTML = '';
+      svg.setAttribute('width', stage.scrollWidth);
+      svg.setAttribute('height', stage.scrollHeight);
+      connections.forEach(([from, to]) => {
+        const a = getAnchor(from, 'right');
+        const b = getAnchor(to, 'left');
+        const cp1 = { x: a.x + (b.x - a.x) * 0.5, y: a.y };
+        const cp2 = { x: a.x + (b.x - a.x) * 0.5, y: b.y };
+        const d = `M ${a.x} ${a.y} C ${cp1.x} ${cp1.y}, ${cp2.x} ${cp2.y}, ${b.x} ${b.y}`;
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('d', d);
+        path.setAttribute('class', 'connector');
+        path.setAttribute('stroke', colors[from] || '#94a3b8');
+        svg.appendChild(path);
+      });
+    }
+
+    document.querySelectorAll('.node').forEach(node => {
+      node.addEventListener('mouseenter', (e) => {
+        const text = node.getAttribute('data-tt');
+        if (!text) return;
+        tooltip.innerHTML = text;
+        tooltip.classList.add('visible');
+      });
+      node.addEventListener('mousemove', (e) => {
+        tooltip.style.left = (e.pageX + 14) + 'px';
+        tooltip.style.top = (e.pageY + 14) + 'px';
+      });
+      node.addEventListener('mouseleave', () => tooltip.classList.remove('visible'));
+    });
+
+    window.addEventListener('load', draw);
+    window.addEventListener('resize', draw);
+  </script>
+</body>
+</html>

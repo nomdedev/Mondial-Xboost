@@ -63,8 +63,8 @@ secrets.json
 ## OS files
 .DS_Store
 Thumbs.db
-/Oloraculo.Web/Data/Downloads/20260316_135132.mp4
-/Oloraculo.Web/Data/Downloads/desktop.ini
+/MondialXboost.Web/Data/Downloads/20260316_135132.mp4
+/MondialXboost.Web/Data/Downloads/desktop.ini
 
 ## Python virtual environments
 venv/

@@ -56,7 +56,7 @@ Seguridad. Colaboras con el agente reviewer y respondes a hallazgos de QA.
    - Manejo de errores, timeouts y serialización.
 
 3. **Desarrollar servicios backend**
-   - Servicios en `Oloraculo.Web/Services/`.
+   - Servicios en `MondialXboost.Web/Services/`.
    - Inyección de dependencias, `ILogger<T>`, `CancellationToken`.
 
 4. **Implementar scrapers**
@@ -64,8 +64,8 @@ Seguridad. Colaboras con el agente reviewer y respondes a hallazgos de QA.
    - Rate limits, reintentos, almacenamiento de evidencia.
 
 5. **Mantener modelos EF Core**
-   - Entidades en `Oloraculo.Web/Models/`.
-   - Configuración en `Oloraculo.Web/DAL/OloraculoDbContext.cs`.
+   - Entidades en `MondialXboost.Web/Models/`.
+   - Configuración en `MondialXboost.Web/DAL/Mondial-XboostDbContext.cs`.
    - Migrations cuando sea necesario.
 
 6. **Escribir tests**
@@ -89,7 +89,7 @@ Seguridad. Colaboras con el agente reviewer y respondes a hallazgos de QA.
 
 ## Qué NO Haces Sin Confirmación
 
-- Modificar `Oloraculo.Web/Program.cs`.
+- Modificar `MondialXboost.Web/Program.cs`.
 - Cambiar el schema de la base de datos sin aprobación del architect.
 - Instalar nuevos paquetes NuGet o pip.
 - Cambiar contratos `IPredictor` o del puente C# ↔ Python.

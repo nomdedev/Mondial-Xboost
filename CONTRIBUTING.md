@@ -5,7 +5,7 @@
 El único motor ML activo es **XGBoost**. No agregues nuevos algoritmos sin evidencia de mejora en backtest.
 
 ```
-Oloraculo.Web/Data/historical_results.csv
+MondialXboost.Web/Data/historical_results.csv
         ↓
 predictors/feature_engineering.py  →  FEATURE_COLS
         ↓
@@ -13,7 +13,7 @@ predictors/xgboost_engine.py       →  XGBoostFootballPredictor
         ↓
 predictors/api.py                  →  FastAPI bridge
         ↓
-Oloraculo.Web/Services/XGBoostBridgeService.cs
+MondialXboost.Web/Services/XGBoostBridgeService.cs
 ```
 
 ## CLI local

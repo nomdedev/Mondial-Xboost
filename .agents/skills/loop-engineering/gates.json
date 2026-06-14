@@ -1,6 +1,6 @@
 {
   "version": "2.0.0",
-  "project": "Oloraculo xBoost",
+  "project": "MondialXboost xBoost",
   "thresholds": {
     "elo_top100_mean_abs_diff": 100,
     "elo_top100_correlation": 0.90,
@@ -58,7 +58,7 @@
         {
           "id": "dotnet_build",
           "name": ".NET build",
-          "command": "dotnet build Oloraculo.sln --no-restore",
+          "command": "dotnet build MondialXboost.sln --no-restore",
           "evidence": "build output",
           "criteria": "Exit code 0",
           "required": true
@@ -66,7 +66,7 @@
         {
           "id": "dotnet_format",
           "name": ".NET format check",
-          "command": "dotnet format Oloraculo.sln --verify-no-changes",
+          "command": "dotnet format MondialXboost.sln --verify-no-changes",
           "evidence": "format output",
           "criteria": "No formatting changes required",
           "required": false
@@ -96,7 +96,7 @@
         {
           "id": "dotnet_test",
           "name": ".NET unit tests",
-          "command": "dotnet test Oloraculo.Web.Tests --no-build",
+          "command": "dotnet test MondialXboost.Web.Tests --no-build",
           "evidence": "test output",
           "criteria": "≥90% tests passing",
           "required": true

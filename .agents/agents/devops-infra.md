@@ -55,7 +55,7 @@ rápido cuando algo falla.
 5. Confirmar que no hay archivos `.env` commiteados.
 
 **Deploy checklist:**
-- [ ] Build exitoso (`dotnet build Oloraculo.sln`)
+- [ ] Build exitoso (`dotnet build Mondial-Xboost.sln`)
 - [ ] Tests pasando (`dotnet test` y `pytest`)
 - [ ] Lint limpio (warnings del compilador C#, flake8/ruff en Python si está configurado)
 - [ ] Dependencias de Python venv instaladas (`pip install -r requirements.txt`)
@@ -66,7 +66,7 @@ rápido cuando algo falla.
 **Comandos de deploy:**
 ```bash
 # .NET publish
-dotnet publish Oloraculo.Web/Oloraculo.Web.csproj -c Release -o ./publish
+dotnet publish MondialXboost.Web/MondialXboost.Web.csproj -c Release -o ./publish
 
 # Python environment
 python -m venv .venv
@@ -118,8 +118,8 @@ Crear o mantener `.github/workflows/ci.yml`:
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS dotnet-builder
 WORKDIR /src
 COPY . .
-RUN dotnet restore Oloraculo.sln
-RUN dotnet publish Oloraculo.Web/Oloraculo.Web.csproj -c Release -o /app/publish
+RUN dotnet restore Mondial-Xboost.sln
+RUN dotnet publish MondialXboost.Web/MondialXboost.Web.csproj -c Release -o /app/publish
 
 # ---------- Python stage ----------
 FROM python:3.11-slim AS python-runner
@@ -135,7 +135,7 @@ WORKDIR /app
 ENV ASPNETCORE_ENVIRONMENT=Production
 COPY --from=dotnet-builder /app/publish .
 EXPOSE 8080
-ENTRYPOINT ["dotnet", "Oloraculo.Web.dll"]
+ENTRYPOINT ["dotnet", "MondialXboost.Web.dll"]
 ```
 
 **`.dockerignore` (crear si falta):**
@@ -197,7 +197,7 @@ pip list --outdated 2>/dev/null | head -20
 
 #### B. Build Health
 ```bash
-dotnet build Oloraculo.sln
+dotnet build Mondial-Xboost.sln
 dotnet test
 cd tests && pytest
 ```

@@ -54,7 +54,7 @@ def load_state() -> dict[str, Any]:
         with open(STATE_PATH, encoding="utf-8") as f:
             return json.load(f)
     return {
-        "project": "Oloraculo xBoost",
+        "project": "MondialXboost xBoost",
         "version": "2.0.0",
         "updatedAt": datetime.now(UTC).isoformat(),
         "activeFeatures": [],

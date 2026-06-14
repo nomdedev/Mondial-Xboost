@@ -278,7 +278,7 @@ def build_comparison(internal: pd.DataFrame, external: list[dict]) -> dict:
             "k_range": "20-60 by tournament importance",
             "home_advantage_points": 100,
             "goal_adjusted_k": False,
-            "source_file": "Oloraculo.Web/Data/historical_results.csv",
+            "source_file": "MondialXboost.Web/Data/historical_results.csv",
         },
         "external_source": "https://eloratings.net/ (World Football Elo Ratings)",
         "total_internal_teams": int(len(internal)),

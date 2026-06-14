@@ -14,7 +14,7 @@ Mondial-Xboost predice resultados de partidos de fútbol para el Mundial 2026. E
 
 ## Arquitectura en una línea
 
-- `Oloraculo.Web/` → app .NET 9 Blazor Server.
+- `MondialXboost.Web/` → app .NET 9 Blazor Server.
 - `predictors/` → Python: feature engineering, XGBoost, FastAPI bridge.
 - `tests/` → pytest.
 - `scripts/` → utilidades de entrenamiento, gates, backtest.

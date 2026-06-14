@@ -20,5 +20,5 @@ Ver `docs/vault/03-Architecture/xgboost-bridge-contract.md`.
 
 ```bash
 python scripts/run-bridge-smoke-test.py
-dotnet test Oloraculo.Web.Tests --filter "FullyQualifiedName~XGBoostBridge"
+dotnet test MondialXboost.Web.Tests --filter "FullyQualifiedName~XGBoostBridge"
 ```

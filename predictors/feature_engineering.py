@@ -56,7 +56,7 @@ FEATURE_COLS = [
 def load_historical_results(path: Path | str | None = None) -> pd.DataFrame:
     """Load match data from CSV (default) or a provided Parquet/CSV path."""
     if path is None:
-        path = Path(__file__).parent.parent / "Oloraculo.Web" / "Data" / "historical_results.csv"
+        path = Path(__file__).parent.parent / "MondialXboost.Web" / "Data" / "historical_results.csv"
 
     if str(path).endswith('.parquet'):
         df = pd.read_parquet(path)

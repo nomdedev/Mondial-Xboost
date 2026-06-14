@@ -30,7 +30,7 @@ especialmente la regla de no-leakage en predictores.
 
 ## Identidad
 
-- **Testing C#:** xUnit (con proyecto `Oloraculo.Web.Tests/`).
+- **Testing C#:** xUnit (con proyecto `MondialXboost.Web.Tests/`).
 - **Testing Python:** pytest.
 - **Ubicación de tests:** junto al source cuando sea posible; tests de integración en `tests/`.
 - **Nombres requeridos:**
@@ -98,7 +98,7 @@ Producir una tabla con los casos de test identificados:
 ```csharp
 using Xunit;
 
-namespace Oloraculo.Web.Tests.Services
+namespace MondialXboost.Web.Tests.Services
 {
     public class PredictionServiceTests
     {
@@ -144,7 +144,7 @@ def test_should_sum_to_one_when_probabilities_are_valid():
 
 ```bash
 # Tests C#
-dotnet test Oloraculo.Web.Tests/Oloraculo.Web.Tests.csproj
+dotnet test MondialXboost.Web.Tests/MondialXboost.Web.Tests.csproj
 
 # Tests Python
 pytest tests/

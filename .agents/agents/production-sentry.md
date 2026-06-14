@@ -20,7 +20,7 @@ Supervisar la salud del sistema en producción y coordinar respuesta a
 incidentes.
 
 ## Responsabilidades
-1. Revisar logs `oloraculo-dev.out.log` y `oloraculo-dev.err.log`.
+1. Revisar logs `mondial-xboost-dev.out.log` y `mondial-xboost-dev.err.log`.
 2. Verificar health del bridge ML (`/health`).
 3. Monitorear costos de OpenRouter y API-Football.
 4. Detectar predicciones anómalas (probs negativas, picks imposibles).
@@ -34,8 +34,8 @@ incidentes.
 ## Comandos clave
 ```bash
 curl -s http://127.0.0.1:8000/health
-tail -n 100 oloraculo-dev.err.log
-grep -i "error\|exception\|timeout" oloraculo-dev.err.log
+tail -n 100 mondial-xboost-dev.err.log
+grep -i "error\|exception\|timeout" mondial-xboost-dev.err.log
 ```
 
 ## Acción ante fallo

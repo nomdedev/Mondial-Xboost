@@ -2,9 +2,9 @@
 
 ## Componentes
 
-- **C#**: `Oloraculo.Web.Services.XGBoostBridgeService`
+- **C#**: `MondialXboost.Web.Services.XGBoostBridgeService`
 - **Python**: `predictors.api:app` (FastAPI)
-- **URL base**: configurable via `OloraculoConfig.XGBoostBridgeUrl` (default `http://127.0.0.1:8000`)
+- **URL base**: configurable via `Mondial-XboostConfig.XGBoostBridgeUrl` (default `http://127.0.0.1:8000`)
 
 ## Endpoints
 
@@ -81,7 +81,7 @@ Además, `train_and_save()` genera/actualiza `data/models/model_manifest.json` c
 ## Evolución
 
 Cualquier cambio en este contrato requiere actualizar simultáneamente:
-- `Oloraculo.Web/Services/XGBoostBridgeService.cs`
+- `MondialXboost.Web/Services/XGBoostBridgeService.cs`
 - `predictors/api.py`
 - `tests/test_api.py`
-- `Oloraculo.Web.Tests/Services/XGBoostBridgeServiceTests.cs`
+- `MondialXboost.Web.Tests/Services/XGBoostBridgeServiceTests.cs`

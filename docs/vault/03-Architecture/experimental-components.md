@@ -13,7 +13,7 @@ predictors/xgboost_engine.py       →  XGBoostFootballPredictor
         ↓
 predictors/api.py                  →  FastAPI bridge
         ↓
-Oloraculo.Web/Services/XGBoostBridgeService.cs
+MondialXboost.Web/Services/XGBoostBridgeService.cs
 ```
 
 ## Componentes aún no integrados
@@ -33,7 +33,7 @@ Oloraculo.Web/Services/XGBoostBridgeService.cs
 ### 3. `predictors/etl.py`
 - **Qué hace:** ETL alternativo que descarga datos de football-data.co.uk, Wikipedia y API-Football.
 - **Estado:** funcional pero no usado por el entrenamiento canónico.
-- **Por qué no está integrado:** el dataset canónico actual proviene de `Oloraculo.Web/Data/historical_results.csv`.
+- **Por qué no está integrado:** el dataset canónico actual proviene de `MondialXboost.Web/Data/historical_results.csv`.
 - **Próximo paso:** unificar ETLs para que generen el mismo schema y alimenten `historical_results.csv`.
 
 ### 4. `scrapers/`

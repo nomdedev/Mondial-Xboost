@@ -25,7 +25,7 @@ FLOW_MAP = [
     ("scripts/", "__all__", "All flows"),
     ("backtest/", "__all__", "All flows"),
     ("docs/vault/05-Research/", "__all__", "All flows"),
-    ("Oloraculo.Web/Data/", "__all__", "All flows"),
+    ("MondialXboost.Web/Data/", "__all__", "All flows"),
     ("data/models/", "__all__", "All flows"),
 ]
 

@@ -56,10 +56,10 @@ Endpoints:
 - `POST /train` — reentrena con histórico actual.
 - `POST /predict` — devuelve probabilidades y expected goals.
 
-Cliente C#: `Oloraculo.Web/Services/XGBoostBridgeService.cs`
+Cliente C#: `MondialXboost.Web/Services/XGBoostBridgeService.cs`
 
 ## 6. Predicción en C#
-`Oloraculo.Web/Predictors/XGBoostPredictor.cs` implementa `IPredictor` y consume el bridge Python como predictor principal. La app .NET conserva predictores clásicos (Elo, Poisson, etc.) en la escalera, pero el pipeline canónico Python se basa exclusivamente en XGBoost.
+`MondialXboost.Web/Predictors/XGBoostPredictor.cs` implementa `IPredictor` y consume el bridge Python como predictor principal. La app .NET conserva predictores clásicos (Elo, Poisson, etc.) en la escalera, pero el pipeline canónico Python se basa exclusivamente en XGBoost.
 
 ## 7. Salidas
 - Probabilidades 1X2 normalizadas.

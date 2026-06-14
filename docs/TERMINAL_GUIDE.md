@@ -162,9 +162,9 @@ Salida: `backtest/results/world_cup_backtest_summary.json`.
 
 ```powershell
 dotnet restore
-dotnet build Oloraculo.Web
+dotnet build MondialXboost.Web
 dotnet test
-dotnet run --project Oloraculo.Web
+dotnet run --project MondialXboost.Web
 ```
 
 ## 11. Makefile / helpers

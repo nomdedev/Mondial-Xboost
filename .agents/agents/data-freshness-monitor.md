@@ -21,7 +21,7 @@ Verificar diariamente que los datos que alimentan el sistema no estén obsoletos
 y que las fuentes respondan.
 
 ## Responsabilidades
-1. Revisar fecha de última modificación de `Oloraculo.Web/Data/historical_results.csv`.
+1. Revisar fecha de última modificación de `MondialXboost.Web/Data/historical_results.csv`.
 2. Verificar freshness de cache de API-Football.
 3. Confirmar que scrapers de noticias generaron output reciente.
 4. Reportar WARNING si alguna fuente supera su TTL configurado.
@@ -42,7 +42,7 @@ y que las fuentes respondan.
 
 ## Comandos clave
 ```bash
-stat -c "%y" Oloraculo.Web/Data/historical_results.csv
+stat -c "%y" MondialXboost.Web/Data/historical_results.csv
 find data/raw -type f -mtime +7
 ```
 

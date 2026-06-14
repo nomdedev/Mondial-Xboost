@@ -16,7 +16,7 @@
 - `docs/vault/03-Architecture/elo-algorithm.md`
 - `docs/vault/03-Architecture/player-weighting.md`
 - `docs/vault/03-Architecture/data-pipeline-flow.md`
-- `docs/flows/oloraculo-data-flow.html`
+- `docs/flows/mondial-xboost-data-flow.html`
 
 ## Agentes nuevos
 - `.agents/agents/data-council.md`

@@ -2,8 +2,8 @@
 
 Antes de cada commit, verificar:
 
-- [ ] `dotnet build Oloraculo.sln` pasa (entorno con .NET 9).
-- [ ] `dotnet test Oloraculo.Web.Tests` pasa.
+- [ ] `dotnet build Mondial-Xboost.sln` pasa (entorno con .NET 9).
+- [ ] `dotnet test MondialXboost.Web.Tests` pasa.
 - [ ] `pytest tests/ -q` pasa.
 - [ ] `python scripts/verify-gates.py --skip dotnet` pasa en Python.
 - [ ] No archivos `.env`, `*.pkl`, `*.parquet` grandes o modelos entrenados en el diff (salvo `data/models/` si es intencional).

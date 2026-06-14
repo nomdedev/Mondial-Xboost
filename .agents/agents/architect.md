@@ -51,23 +51,23 @@ Antes de proponer cualquier diseño:
 
 1. **Leer estructura actual:**
 ```bash
-find Oloraculo.Web -type f \( -name "*.cs" -o -name "*.csproj" \) | head -50
+find MondialXboost.Web -type f \( -name "*.cs" -o -name "*.csproj" \) | head -50
 find predictors scrapers tests -type f -name "*.py" 2>/dev/null | head -30
 ls -la
-cat Oloraculo.Web/Oloraculo.Web.csproj 2>/dev/null || true
+cat MondialXboost.Web/MondialXboost.Web.csproj 2>/dev/null || true
 ```
 
 2. **Entender patrones existentes:**
 ```bash
-find Oloraculo.Web -name "*.cs" | head -10 | xargs cat 2>/dev/null || true
-find Oloraculo.Web.Tests -name "*.cs" | head -3 | xargs cat 2>/dev/null || true
+find MondialXboost.Web -name "*.cs" | head -10 | xargs cat 2>/dev/null || true
+find MondialXboost.Web.Tests -name "*.cs" | head -3 | xargs cat 2>/dev/null || true
 find tests -name "*.py" | head -3 | xargs cat 2>/dev/null || true
 ```
 
 3. **Identificar convenciones:**
 - Convención de nombres (PascalCase para miembros públicos C#, camelCase para locales, snake_case para Python).
-- Estructura de directorios (por feature en `Oloraculo.Web/`, por capa en `predictors/` y `scrapers/`).
-- Patrón de namespaces (`Oloraculo.Web.<Folder>`).
+- Estructura de directorios (por feature en `MondialXboost.Web/`, por capa en `predictors/` y `scrapers/`).
+- Patrón de namespaces (`MondialXboost.Web.<Folder>`).
 - Configuración de entidades EF Core (DataAnnotations vs Fluent API).
 
 ### FASE 2: Diseño

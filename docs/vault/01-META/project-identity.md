@@ -9,7 +9,7 @@ Sistema de predicción de resultados del Mundial 2026 combinando modelos estadí
 - OpenRouter (LLM), API-Football v3
 
 ## Estructura clave
-- `Oloraculo.Web/` — App C# y predictores clásicos
+- `MondialXboost.Web/` — App C# y predictores clásicos
 - `predictors/` — ML Python + FastAPI bridge
 - `scrapers/` — Scrapers de noticias
 - `tests/` — pytest

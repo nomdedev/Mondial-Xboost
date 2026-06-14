@@ -32,18 +32,18 @@ Las reglas de seguridad son **innegociables**. Cualquier violación es CRÍTICA.
 ```bash
 # Credenciales hardcodeadas en C# y Python
 grep -rn "password\s*=\|api_key\s*=\|secret\s*=\|token\s*=\|apikey\s*=" \
-  Oloraculo.Web/ predictors/ scrapers/ tests/ \
+  MondialXboost.Web/ predictors/ scrapers/ tests/ \
   --include="*.cs" --include="*.py" --include="*.json" --include="*.env" -i
 
 # Patrón de key de API-Football
-grep -rn "x-apisports-key" Oloraculo.Web/ predictors/ scrapers/ tests/ \
+grep -rn "x-apisports-key" MondialXboost.Web/ predictors/ scrapers/ tests/ \
   --include="*.cs" --include="*.py"
 
 # AWS keys
-grep -rnE "AKIA[A-Z0-9]{16}" Oloraculo.Web/ predictors/ scrapers/ tests/
+grep -rnE "AKIA[A-Z0-9]{16}" MondialXboost.Web/ predictors/ scrapers/ tests/
 
 # Private keys
-grep -rn "BEGIN.*PRIVATE KEY" Oloraculo.Web/ predictors/ scrapers/ tests/
+grep -rn "BEGIN.*PRIVATE KEY" MondialXboost.Web/ predictors/ scrapers/ tests/
 
 # .env files commiteados
 git log --all --full-history -- "*.env" 2>/dev/null | head -5
@@ -71,25 +71,25 @@ safety check -r requirements.txt 2>/dev/null || echo "safety not installed"
 
 ```bash
 # SQL raw concatenado
-grep -rn "FromSqlRaw\|ExecuteSqlCommand" Oloraculo.Web/ --include="*.cs"
+grep -rn "FromSqlRaw\|ExecuteSqlCommand" MondialXboost.Web/ --include="*.cs"
 
 # SQL injection por interpolación de strings en queries
 grep -rn "\$\".*SELECT\|\$\".*INSERT\|\$\".*UPDATE\|\$\".*DELETE" \
-  Oloraculo.Web/ --include="*.cs"
+  MondialXboost.Web/ --include="*.cs"
 
 # XSS en Blazor: MarkupString con input no confiable
-grep -rn "MarkupString" Oloraculo.Web/ --include="*.razor" --include="*.cs"
+grep -rn "MarkupString" MondialXboost.Web/ --include="*.razor" --include="*.cs"
 
 # eval / dynamic code
 grep -rn "\.Invoke\|Activator\.CreateInstance\|Assembly\.Load" \
-  Oloraculo.Web/ --include="*.cs"
+  MondialXboost.Web/ --include="*.cs"
 
 # Deserialización sin restricciones de tipo
-grep -rn "JsonSerializer\.Deserialize" Oloraculo.Web/ --include="*.cs"
+grep -rn "JsonSerializer\.Deserialize" MondialXboost.Web/ --include="*.cs"
 
 # CORS allow-all
 grep -rn "AllowAnyOrigin\|AllowAnyMethod\|AllowAnyHeader" \
-  Oloraculo.Web/ --include="*.cs"
+  MondialXboost.Web/ --include="*.cs"
 ```
 
 ## Módulo 3b — Análisis de Código (Python)
@@ -121,10 +121,10 @@ grep -rn "API_KEY\|SECRET\|TOKEN" predictors/ scrapers/ tests/ --include="*.py" 
 cat .gitignore | grep -E "\.env"
 
 # secrets en appsettings
-grep -rn "ConnectionStrings\|ApiKey\|Secret" Oloraculo.Web/appsettings*.json -i
+grep -rn "ConnectionStrings\|ApiKey\|Secret" MondialXboost.Web/appsettings*.json -i
 
 # User secrets (permitido) vs secrets commiteados (no permitido)
-grep -rn "UserSecrets" Oloraculo.Web/*.csproj
+grep -rn "UserSecrets" MondialXboost.Web/*.csproj
 ```
 
 ---
@@ -133,7 +133,7 @@ grep -rn "UserSecrets" Oloraculo.Web/*.csproj
 
 ```bash
 # Rate-limit headers / retries
-grep -rn "Retry-After\|429\|RateLimit" Oloraculo.Web/ predictors/ scrapers/ \
+grep -rn "Retry-After\|429\|RateLimit" MondialXboost.Web/ predictors/ scrapers/ \
   --include="*.cs" --include="*.py" -i
 
 # Referencias a robots.txt
