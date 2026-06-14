@@ -56,5 +56,5 @@ Resultados de 98 trials en Google Colab (temporal split, ~50k partidos):
 - `api/main.py` ya no está disponible; cualquier consumidor directo debe migrar.
 
 ## Compliance
-- `scripts/verify-gates.py` verifica que no existan imports de `xgboost_predictor` en código productivo.
+- `scripts/verify_gates.py` verifica que no existan imports de `xgboost_predictor` en código productivo.
 - `bridge-integrator` agent es el dueño de mantener el contrato actualizado.

@@ -8,8 +8,8 @@ permission:
   edit: deny
   bash:
     "*": "deny"
-    "python scripts/run-backtest-gate.py": "allow"
-    "python scripts/run-bridge-smoke-test.py": "allow"
+    "python scripts/run_backtest_gate.py": "allow"
+    "python scripts/run_bridge_smoke_test.py": "allow"
     "cat *": "allow"
     "grep *": "allow"
 ---
@@ -21,7 +21,7 @@ Asegurar que solo modelos que superan los gates de calidad lleguen a
 producción. No entrena modelos; evalúa los resultados del entrenamiento.
 
 ## Responsabilidades
-1. Ejecutar `scripts/run-backtest-gate.py` para el modelo candidato.
+1. Ejecutar `scripts/run_backtest_gate.py` para el modelo candidato.
 2. Comparar métricas contra baseline (`backtest/results/world_cup_backtest_summary.json`).
 3. Revisar calibración (ECE) y overfitting.
 4. Verificar que el modelo use `FEATURE_COLS` canónico.
@@ -44,8 +44,8 @@ producción. No entrena modelos; evalúa los resultados del entrenamiento.
 
 ## Comandos clave
 ```bash
-python scripts/run-backtest-gate.py
-python scripts/run-bridge-smoke-test.py
+python scripts/run_backtest_gate.py
+python scripts/run_bridge_smoke_test.py
 ```
 
 ## Acción ante fallo

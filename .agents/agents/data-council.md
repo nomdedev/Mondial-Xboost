@@ -12,7 +12,7 @@ permission:
     "cat *": "allow"
     "find *": "allow"
     "grep *": "allow"
-    "python scripts/run-data-council.py": "allow"
+    "python scripts/run_data_council.py": "allow"
     "python scripts/compare_elo_worldfootball.py": "allow"
     "python scripts/audit_leakage.py": "allow"
 ---
@@ -49,14 +49,14 @@ Orquestador/Data Engineer
  Elo  Player Drift  Leakage
    └────┼────┴────────┘
         ▼
-   python scripts/run-data-council.py
+   python scripts/run_data_council.py
         │
    PASS / WARNING / BLOCK
 ```
 
 ## Comando principal
 ```bash
-python scripts/run-data-council.py
+python scripts/run_data_council.py
 ```
 
 El reporte consolidado se guarda en `.agents/logs/data-council-report.json`.

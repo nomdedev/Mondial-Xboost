@@ -1,6 +1,6 @@
 # Bridge Integration Gates — Mondial-Xboost
 
-Ejecutar con `python scripts/run-bridge-smoke-test.py`.
+Ejecutar con `python scripts/run_bridge_smoke_test.py`.
 
 ## Gates
 
@@ -19,6 +19,6 @@ Ver `docs/vault/03-Architecture/xgboost-bridge-contract.md`.
 ## Comandos
 
 ```bash
-python scripts/run-bridge-smoke-test.py
+python scripts/run_bridge_smoke_test.py
 dotnet test MondialXboost.Web.Tests --filter "FullyQualifiedName~XGBoostBridge"
 ```

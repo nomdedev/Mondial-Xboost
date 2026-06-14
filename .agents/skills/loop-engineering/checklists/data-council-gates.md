@@ -1,6 +1,6 @@
 # Data Council Gates — Mondial-Xboost
 
-Ejecutar con `python scripts/run-data-council.py`.
+Ejecutar con `python scripts/run_data_council.py`.
 
 ## Gates
 
@@ -8,7 +8,7 @@ Ejecutar con `python scripts/run-data-council.py`.
   - Evidencia: `backtest/results/elo_comparison.json`
   - Criterio: `top100.mean_absolute_difference < 100` pts y `correlation > 0.90`
 
-- [ ] **player_weights_ok**: `python scripts/run-data-council.py`
+- [ ] **player_weights_ok**: `python scripts/run_data_council.py`
   - Evidencia: `.agents/logs/data-council-report.json`
   - Criterio: `sum(DEFAULT_WEIGHTS.values()) == 1.0`
 

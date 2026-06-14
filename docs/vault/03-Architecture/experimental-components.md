@@ -45,6 +45,6 @@ MondialXboost.Web/Services/XGBoostBridgeService.cs
 ## Criterio para promover un componente a canónico
 
 1. Tener fuente de datos estable y reproducible.
-2. Demostrar mejora estadísticamente significativa en backtest (`run-backtest-gate.py`).
+2. Demostrar mejora estadísticamente significativa en backtest (`run_backtest_gate.py`).
 3. Pasar audit de `data-leakage-auditor` y `ml-model-gatekeeper`.
 4. Actualizar `FEATURE_COLS`, documentación y tests.

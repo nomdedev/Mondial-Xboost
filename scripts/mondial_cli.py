@@ -168,17 +168,17 @@ def cmd_lint(_args: argparse.Namespace) -> int:
 
 def cmd_gates(_args: argparse.Namespace) -> int:
     """Run verification gates."""
-    return _run([PYTHON, "scripts/verify-gates.py"])
+    return _run([PYTHON, "scripts/verify_gates.py"])
 
 
 def cmd_backtest(_args: argparse.Namespace) -> int:
     """Run the World Cup backtest gate."""
-    return _run([PYTHON, "scripts/run-backtest-gate.py"])
+    return _run([PYTHON, "scripts/run_backtest_gate.py"])
 
 
 def cmd_bridge(_args: argparse.Namespace) -> int:
     """Run the C# <-> Python bridge smoke test."""
-    return _run([PYTHON, "scripts/run-bridge-smoke-test.py"])
+    return _run([PYTHON, "scripts/run_bridge_smoke_test.py"])
 
 
 def cmd_elo(_args: argparse.Namespace) -> int:
@@ -203,7 +203,7 @@ def cmd_loop(args: argparse.Namespace) -> int:
 
 def cmd_data_council(_args: argparse.Namespace) -> int:
     """Run the data council review."""
-    return _run([PYTHON, "scripts/run-data-council.py"])
+    return _run([PYTHON, "scripts/run_data_council.py"])
 
 
 def cmd_dashboard(_args: argparse.Namespace) -> int:
@@ -551,7 +551,7 @@ def build_parser() -> argparse.ArgumentParser:
     lint_parser.set_defaults(func=cmd_lint)
 
     # gates
-    gates_parser = subparsers.add_parser("gates", help="Ejecuta verify-gates", description="Corre todos los gates de calidad del pipeline.")
+    gates_parser = subparsers.add_parser("gates", help="Ejecuta verify_gates", description="Corre todos los gates de calidad del pipeline.")
     gates_parser.set_defaults(func=cmd_gates)
 
     # backtest

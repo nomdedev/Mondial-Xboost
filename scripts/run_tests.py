@@ -2,9 +2,9 @@
 Run tests from the terminal with a friendly summary.
 
 Usage:
-    python scripts/run-tests.py
-    python scripts/run-tests.py --fast
-    python scripts/run-tests.py --gate
+    python scripts/run_tests.py
+    python scripts/run_tests.py --fast
+    python scripts/run_tests.py --gate
 """
 
 from __future__ import annotations
@@ -54,7 +54,7 @@ def print_summary(checks: list[dict]) -> None:
 def main() -> int:
     parser = argparse.ArgumentParser(description="Run project tests and gates")
     parser.add_argument("--fast", action="store_true", help="Skip slow gates (backtest, bridge)")
-    parser.add_argument("--gate", action="store_true", help="Also run verify-gates")
+    parser.add_argument("--gate", action="store_true", help="Also run verify_gates")
     args = parser.parse_args()
 
     checks = []
@@ -85,7 +85,7 @@ def main() -> int:
 
     # 3. Data council (fast)
     code, out, err, elapsed = run_command(
-        [sys.executable, "scripts/run-data-council.py"],
+        [sys.executable, "scripts/run_data_council.py"],
         "Data council"
     )
     checks.append({"name": "Data council", "status": "PASS" if code == 0 else "FAIL", "time": elapsed})
@@ -93,7 +93,7 @@ def main() -> int:
     # 4. Backtest gate (slow)
     if not args.fast:
         code, out, err, elapsed = run_command(
-            [sys.executable, "scripts/run-backtest-gate.py"],
+            [sys.executable, "scripts/run_backtest_gate.py"],
             "World Cup backtest gate"
         )
         checks.append({"name": "Backtest gate", "status": "PASS" if code == 0 else "FAIL", "time": elapsed})
@@ -107,20 +107,20 @@ def main() -> int:
     # 5. Bridge smoke test (slow)
     if not args.fast:
         code, out, err, elapsed = run_command(
-            [sys.executable, "scripts/run-bridge-smoke-test.py"],
+            [sys.executable, "scripts/run_bridge_smoke_test.py"],
             "Bridge smoke test"
         )
         checks.append({"name": "Bridge smoke test", "status": "PASS" if code == 0 else "FAIL", "time": elapsed})
     else:
         checks.append({"name": "Bridge smoke test", "status": "SKIP", "time": 0})
 
-    # 6. Full verify-gates
+    # 6. Full verify_gates
     if args.gate:
         code, out, err, elapsed = run_command(
-            [sys.executable, "scripts/verify-gates.py", "--skip", "dotnet_build,dotnet_format,dotnet_test"],
-            "verify-gates"
+            [sys.executable, "scripts/verify_gates.py", "--skip", "dotnet_build,dotnet_format,dotnet_test"],
+            "verify_gates"
         )
-        checks.append({"name": "verify-gates", "status": "PASS" if code == 0 else "FAIL", "time": elapsed})
+        checks.append({"name": "verify_gates", "status": "PASS" if code == 0 else "FAIL", "time": elapsed})
 
     print_summary(checks)
 

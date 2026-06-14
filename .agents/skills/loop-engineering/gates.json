@@ -74,7 +74,7 @@
         {
           "id": "python_lint",
           "name": "Python lint",
-          "command": "python -m ruff check predictors/feature_engineering.py predictors/xgboost_engine.py predictors/api.py predictors/player_weights.py backtest/world_cup_backtest.py scripts/verify-gates.py scripts/run-data-council.py scripts/run-bridge-smoke-test.py scripts/run-backtest-gate.py scripts/loop_engineering.py tests/",
+          "command": "python -m ruff check predictors/feature_engineering.py predictors/xgboost_engine.py predictors/api.py predictors/player_weights.py backtest/world_cup_backtest.py scripts/verify_gates.py scripts/run_data_council.py scripts/run_bridge_smoke_test.py scripts/run_backtest_gate.py scripts/loop_engineering.py tests/",
           "evidence": "lint output",
           "criteria": "No lint errors",
           "required": false
@@ -82,7 +82,7 @@
         {
           "id": "secret_scan",
           "name": "Secret scan",
-          "command": "python scripts/verify-gates.py --gate secret_scan",
+          "command": "python scripts/verify_gates.py --gate secret_scan",
           "evidence": "secret scan output",
           "criteria": "No secrets in code or logs",
           "required": true
@@ -112,7 +112,7 @@
         {
           "id": "backtest_baseline",
           "name": "World Cup backtest baseline",
-          "command": "python scripts/run-backtest-gate.py",
+          "command": "python scripts/run_backtest_gate.py",
           "evidence": "backtest/results/world_cup_backtest_summary.json",
           "criteria": "log_loss < 1.05, brier < 0.22, accuracy > 45%",
           "required": true,
@@ -121,7 +121,7 @@
         {
           "id": "bridge_smoke",
           "name": "C# <-> Python bridge smoke test",
-          "command": "python scripts/run-bridge-smoke-test.py",
+          "command": "python scripts/run_bridge_smoke_test.py",
           "evidence": "backtest/results/bridge_smoke.json",
           "criteria": "Probabilities sum to ~1, predictions coherent",
           "required": true

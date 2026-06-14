@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-run-data-council.py — Mondial-Xboost Data Council Runner
+run_data_council.py — Mondial-Xboost Data Council Runner
 =========================================================
 
 Ejecuta las verificaciones del Data Council y genera un reporte consolidado:

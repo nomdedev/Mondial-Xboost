@@ -406,10 +406,10 @@ desplegar.
 
 | Script | Propósito | Evidencia |
 |--------|-----------|-----------|
-| `scripts/verify-gates.py` | Orquestador de gates | `.agents/logs/pipeline-state.json` |
-| `scripts/run-data-council.py` | Calidad de datos | `.agents/logs/data-council-report.json` |
-| `scripts/run-backtest-gate.py` | Backtest con thresholds | `backtest/results/world_cup_backtest_summary.json` |
-| `scripts/run-bridge-smoke-test.py` | Integridad C#↔Python | `backtest/results/bridge_smoke.json` |
+| `scripts/verify_gates.py` | Orquestador de gates | `.agents/logs/pipeline-state.json` |
+| `scripts/run_data_council.py` | Calidad de datos | `.agents/logs/data-council-report.json` |
+| `scripts/run_backtest_gate.py` | Backtest con thresholds | `backtest/results/world_cup_backtest_summary.json` |
+| `scripts/run_bridge_smoke_test.py` | Integridad C#↔Python | `backtest/results/bridge_smoke.json` |
 
 ### Thresholds actuales
 

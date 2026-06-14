@@ -3,10 +3,10 @@
 Checklist antes de desplegar a producción/staging.
 
 - [ ] Build + tests verdes (`dotnet build`, `dotnet test`, `pytest`).
-- [ ] `python scripts/verify-gates.py` PASS (o SKIP justificado).
-- [ ] `python scripts/run-data-council.py` PASS.
-- [ ] `python scripts/run-backtest-gate.py` PASS.
-- [ ] `python scripts/run-bridge-smoke-test.py` PASS.
+- [ ] `python scripts/verify_gates.py` PASS (o SKIP justificado).
+- [ ] `python scripts/run_data_council.py` PASS.
+- [ ] `python scripts/run_backtest_gate.py` PASS.
+- [ ] `python scripts/run_bridge_smoke_test.py` PASS.
 - [ ] `appsettings.json` y `appsettings.Production.json` sin secrets.
 - [ ] `.env` en `.gitignore` y no versionado.
 - [ ] Python venv con `requirements.txt` instalado en target.

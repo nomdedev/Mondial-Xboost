@@ -117,29 +117,29 @@ curl http://127.0.0.1:8000/health
 ### Resumen rápido
 
 ```powershell
-python scripts/run-tests.py
+python scripts/run_tests.py
 ```
 
 ### Solo tests rápidos (sin backtest ni bridge)
 
 ```powershell
-python scripts/run-tests.py --fast
+python scripts/run_tests.py --fast
 ```
 
-### Tests + verify-gates completos
+### Tests + verify_gates completos
 
 ```powershell
-python scripts/run-tests.py --gate
+python scripts/run_tests.py --gate
 ```
 
 ### Comandos individuales
 
 ```powershell
 python -m pytest tests/ -v
-python scripts/run-data-council.py
-python scripts/run-backtest-gate.py
-python scripts/run-bridge-smoke-test.py
-python scripts/verify-gates.py
+python scripts/run_data_council.py
+python scripts/run_backtest_gate.py
+python scripts/run_bridge_smoke_test.py
+python scripts/verify_gates.py
 ```
 
 ## 8. Feature engineering

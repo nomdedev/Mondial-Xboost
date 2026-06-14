@@ -305,7 +305,7 @@ Comandos principales:
 ./mondial predecir --home Brazil --away Morocco --blend
 ./mondial test                           # pytest tests/
 ./mondial lint                           # ruff check
-./mondial gates                          # verify-gates
+./mondial gates                          # verify_gates
 ./mondial backtest                       # backtest de World Cup
 ./mondial bridge                         # smoke test del bridge C# <-> Python
 ./mondial elo                            # compara Elo contra World Football Elo
@@ -463,16 +463,16 @@ mergear o desplegar:
 
 ```bash
 # Ejecutar todos los gates (Python; .NET se salta si dotnet no está disponible)
-python scripts/verify-gates.py
+python scripts/verify_gates.py
 
 # Data Council
-python scripts/run-data-council.py
+python scripts/run_data_council.py
 
 # Backtest gate
-python scripts/run-backtest-gate.py
+python scripts/run_backtest_gate.py
 
 # Bridge smoke test
-python scripts/run-bridge-smoke-test.py
+python scripts/run_bridge_smoke_test.py
 ```
 
 Configuración de gates: `.agents/skills/loop-engineering/gates.json`  

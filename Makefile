@@ -23,10 +23,10 @@ dashboard:
 	python scripts/training_dashboard.py
 
 test:
-	python scripts/run-tests.py --gate
+	python scripts/run_tests.py --gate
 
 test-fast:
-	python scripts/run-tests.py --fast
+	python scripts/run_tests.py --fast
 
 lint:
 	python -m ruff check scripts/ predictors/ backtest/ tests/

@@ -1,6 +1,6 @@
 # ML Model Gates — Mondial-Xboost
 
-Antes de aceptar un modelo nuevo, ejecutar `python scripts/run-backtest-gate.py`.
+Antes de aceptar un modelo nuevo, ejecutar `python scripts/run_backtest_gate.py`.
 
 ## Gates
 

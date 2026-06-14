@@ -96,8 +96,8 @@ jobs:
       - name: Build .NET (Debug)
         run: dotnet build MondialXboost.sln --no-restore --configuration Debug
 
-      - name: Run verify-gates
-        run: python scripts/verify-gates.py
+      - name: Run verify_gates
+        run: python scripts/verify_gates.py
 
       - name: Upload pipeline state
         if: always()

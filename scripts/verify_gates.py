@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-verify-gates.py — Mondial-Xboost Loop Engineering Gate Runner
+verify_gates.py — Mondial-Xboost Loop Engineering Gate Runner
 ==============================================================
 
 Ejecuta los gates definidos en `.agents/skills/loop-engineering/gates.json`,
@@ -8,10 +8,10 @@ registra resultados en `.agents/logs/pipeline-state.json` y devuelve código
 de salida 0 si todos los gates requeridos pasan.
 
 Uso:
-    python scripts/verify-gates.py
-    python scripts/verify-gates.py --phase 6
-    python scripts/verify-gates.py --gate secret_scan
-    python scripts/verify-gates.py --skip dotnet
+    python scripts/verify_gates.py
+    python scripts/verify_gates.py --phase 6
+    python scripts/verify_gates.py --gate secret_scan
+    python scripts/verify_gates.py --skip dotnet
 """
 
 from __future__ import annotations
@@ -79,7 +79,7 @@ def record_gate(state: dict[str, Any], gate_id: str, phase: int, status: str, ou
         "gate": gate_id,
         "gateId": gate_id,
         "status": status,
-        "verifiedBy": "verify-gates.py",
+        "verifiedBy": "verify_gates.py",
         "timestamp": datetime.now(UTC).isoformat(),
         "evidence": evidence or "",
         "output": output[:2000] if output else "",

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-run-backtest-gate.py — Mondial-Xboost Backtest Gate
+run_backtest_gate.py — Mondial-Xboost Backtest Gate
 ====================================================
 
 Ejecuta el backtest de Mundiales y compara métricas contra los thresholds del

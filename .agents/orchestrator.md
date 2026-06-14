@@ -40,7 +40,7 @@ infraestructura para construir y desplegar predictores de resultados de fútbol.
 - `/plan [feature-id]` — Planificar feature y asignar fase 1.
 - `/audit [feature-id|archivo]` — Auditar código existente.
 - `/test [feature-id]` — Ejecutar tests y reportar.
-- `/gates [feature-id]` — Ejecutar `scripts/verify-gates.py` para la fase actual.
+- `/gates [feature-id]` — Ejecutar `scripts/verify_gates.py` para la fase actual.
 - `/review [feature-id|archivo]` — Code review.
 - `/deploy [feature-id]` — Desplegar a producción / staging.
 - `/checkpoint` — Checkpoint de sesión y guardar estado.

@@ -30,7 +30,7 @@ El proyecto incluye un wrapper `mondial` (y `mondial.cmd` en Windows) que detect
 ./mondial predecir --home Brazil --away Morocco --blend
 ./mondial test                           # pytest tests/
 ./mondial lint                           # ruff check
-./mondial gates                          # verify-gates
+./mondial gates                          # verify_gates
 ./mondial backtest                       # backtest de World Cup
 ./mondial bridge                         # smoke test del bridge C# <-> Python
 ./mondial elo                            # compara Elo contra World Football Elo

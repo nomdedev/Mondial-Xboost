@@ -10,7 +10,7 @@ Mondial-Xboost predice resultados de partidos de fútbol para el Mundial 2026. E
 2. Crear venv: `python -m venv venv && source venv/Scripts/activate` (Windows) o `venv/bin/activate` (Unix).
 3. Instalar deps: `pip install -r requirements.txt -r requirements-dev.txt`.
 4. Entrenar modelo: `python scripts/train.py`.
-5. Correr gates: `python scripts/run-tests.py && python scripts/verify-gates.py`.
+5. Correr gates: `python scripts/run_tests.py && python scripts/verify_gates.py`.
 
 ## Arquitectura en una línea
 

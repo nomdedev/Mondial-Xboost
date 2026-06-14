@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-run-bridge-smoke-test.py — Mondial-Xboost Bridge Smoke Test
+run_bridge_smoke_test.py — Mondial-Xboost Bridge Smoke Test
 ============================================================
 
 Levanta el bridge FastAPI en un puerto efímero, envía fixtures de prueba y

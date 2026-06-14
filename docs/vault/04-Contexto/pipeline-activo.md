@@ -27,10 +27,10 @@
 ## Scripts y reportes
 - `scripts/compare_elo_worldfootball.py` → `backtest/results/elo_comparison.json`
 - `scripts/autoresearch_worldcup.py` → `.agents/logs/autoresearch/`
-- `scripts/verify-gates.py` → `.agents/logs/pipeline-state.json`
-- `scripts/run-data-council.py` → `.agents/logs/data-council-report.json`
-- `scripts/run-backtest-gate.py` → `backtest/results/world_cup_backtest_summary.json`
-- `scripts/run-bridge-smoke-test.py` → `backtest/results/bridge_smoke.json`
+- `scripts/verify_gates.py` → `.agents/logs/pipeline-state.json`
+- `scripts/run_data_council.py` → `.agents/logs/data-council-report.json`
+- `scripts/run_backtest_gate.py` → `backtest/results/world_cup_backtest_summary.json`
+- `scripts/run_bridge_smoke_test.py` → `backtest/results/bridge_smoke.json`
 - `backtest/world_cup_backtest.py` → backtest temporal
 
 ## Loop Engineering v2.0

@@ -7,7 +7,7 @@ permission:
   edit: allow
   bash:
     "*": "deny"
-    "python scripts/run-bridge-smoke-test.py": "allow"
+    "python scripts/run_bridge_smoke_test.py": "allow"
     "dotnet test MondialXboost.Web.Tests": "allow"
     "cat *": "allow"
     "grep *": "allow"
@@ -23,7 +23,7 @@ estable, documentada y testeada.
 1. Mantener `docs/vault/03-Architecture/xgboost-bridge-contract.md` actualizado.
 2. Validar que `XGBoostBridgeService.cs` y `predictors/api.py` usen el mismo schema.
 3. Escribir y mantener tests de integración del bridge.
-4. Ejecutar `scripts/run-bridge-smoke-test.py` en cada cambio del API.
+4. Ejecutar `scripts/run_bridge_smoke_test.py` en cada cambio del API.
 5. Asegurar degradación graceful si el bridge cae (timeout, fallback).
 
 ## Triggers
@@ -36,7 +36,7 @@ Ver `docs/vault/03-Architecture/xgboost-bridge-contract.md`.
 
 ## Comandos clave
 ```bash
-python scripts/run-bridge-smoke-test.py
+python scripts/run_bridge_smoke_test.py
 dotnet test MondialXboost.Web.Tests --filter "FullyQualifiedName~XGBoostBridge"
 ```
 
