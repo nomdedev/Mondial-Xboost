@@ -1,0 +1,5 @@
+Metadata-Version: 2.4
+Name: mondial-xboost
+Version: 2.0.0
+Summary: Hybrid .NET + Python football prediction system
+Requires-Python: >=3.11

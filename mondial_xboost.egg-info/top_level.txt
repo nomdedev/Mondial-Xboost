@@ -1,0 +1,5 @@
+backtest
+predictors
+scrapers
+scripts
+tests
