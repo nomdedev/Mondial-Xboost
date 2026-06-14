@@ -228,10 +228,9 @@ Historialmente el proyecto consumía datos de football-data.co.uk (~125k partido
 
 ### Algoritmo
 
-**XGBoost** es el único motor de ML del proyecto. Descartamos LightGBM, CatBoost, RandomForest y GradientBoosting de sklearn tras evaluar que:
+**XGBoost** es el motor canónico del proyecto. También se incluye **Random Forest** como alternativa intercambiable (`--engine random_forest`), aunque históricamente mostró más overfitting (gap train-test ~18%). Descartamos LightGBM, CatBoost y GradientBoosting de sklearn porque:
 
 - XGBoost ofrece la mejor relación velocidad/precisión para nuestro dataset.
-- RandomForest sufre de overfitting severo (gap train-test > 15%).
 - GradientBoosting de sklearn es demasiado lento para el volumen de datos.
 - LightGBM/CatBoost aportan mejoras marginales pero añaden dependencias extra.
 
@@ -279,13 +278,47 @@ Cada batch de `N` trials de Optuna genera un reporte HTML con:
 
 ### CLI local
 
-El repo incluye wrappers para ejecutar el CLI desde el directorio del proyecto:
+El repo incluye wrappers para ejecutar el CLI desde el directorio del proyecto **sin necesidad de instalar el paquete globalmente**:
 
 - **Git Bash / WSL / Linux / macOS:** `./mondial`
 - **Windows cmd:** `mondial.cmd`
-- **Windows PowerShell:** `\.mondial.cmd`
+- **Windows PowerShell:** `.\mondial.ps1`
 
-**Importante:** tenés que estar parado en la carpeta raíz del proyecto (`d:\martin\Proyectos\Mondial-xBoost` o donde lo hayas clonado).
+Los wrappers detectan automáticamente:
+1. Un entorno virtual activo (`VIRTUAL_ENV`).
+2. Un entorno local del proyecto (`venv` o `.venv`).
+3. El intérprete `python`/`python3` del sistema.
+
+Si las dependencias no están instaladas, el wrapper te avisa con instrucciones claras.
+
+**Importante:** tenés que estar parado en la carpeta raíz del proyecto (`d:\martin\Proyectos\Mondial-xBoost` o donde lo hayas clonado), salvo que instales `mondial` globalmente (ver más abajo).
+
+#### Instalación rápida en una PC nueva
+
+Requisitos: **Python >= 3.11** (64 bits).
+
+```bash
+# 1. Clonar
+git clone https://github.com/nomdedev/Mondial-Xboost.git
+cd Mondial-Xboost
+
+# 2. Crear entorno virtual
+python -m venv venv
+
+# 3. Instalar dependencias y el paquete en modo editable
+#    (pyproject.toml incluye las dependencias core, así que requirements.txt es opcional)
+venv\Scripts\python -m pip install -e .
+
+# 4. Verificar que todo esté listo
+venv\Scripts\mondial doctor
+
+# 5. Probar
+venv\Scripts\mondial --help
+```
+
+En Git Bash / Linux / macOS reemplazá `venv\Scripts\` por `./venv/bin/`.
+
+> **Tip:** si algo falla, ejecutá `mondial doctor`. Verifica Python, el entorno virtual, las dependencias, el dataset, los modelos y los permisos de escritura.
 
 **Si no sabés por dónde empezar, ejecutá el menú interactivo:**
 
@@ -294,7 +327,7 @@ El repo incluye wrappers para ejecutar el CLI desde el directorio del proyecto:
 ./mondial
 
 # PowerShell
-\.mondial.cmd
+.\mondial.ps1
 
 # cmd
 mondial.cmd
@@ -311,11 +344,16 @@ Comandos principales:
 ```bash
 ./mondial instalar                       # instala dependencias y el paquete
 ./mondial entrenar                       # entrena el modelo canónico
+./mondial entrenar --engine random_forest   # entrena con Random Forest
 ./mondial entrenar --elo-decay 4 --elo-recent 8   # Elo con decay temporal
 ./mondial entrenar-gpu                   # entrena con GPU (XGBOOST_DEVICE=cuda)
 ./mondial entrenar-cold-start            # entrena modelo de cold-start
 ./mondial predecir --home Brazil --away Morocco
+./mondial predecir --home Brazil --away Morocco --engine random_forest
+./mondial predecir --home Brazil --away Morocco --model xgboost_football
 ./mondial predecir --home Brazil --away Morocco --blend
+./mondial predecir --home Qatar --away Switzerland --cold-start-only
+./mondial doctor                             # chequeo de portabilidad
 ./mondial test                           # pytest tests/
 ./mondial lint                           # ruff check
 ./mondial gates                          # verify_gates
@@ -343,24 +381,21 @@ Cada comando tiene su propia ayuda con ejemplos:
 
 #### Usar `mondial` como comando global
 
-Si querés escribir solo `mondial` desde cualquier carpeta, instalá el paquete en modo editable (con el entorno virtual activado):
+Si querés escribir solo `mondial` desde cualquier carpeta, instalá el paquete en modo editable **con el entorno virtual activado** y asegurate de que la carpeta `Scripts/` (Windows) o `bin/` (Linux/macOS) de ese entorno esté en el `PATH`:
 
 ```bash
 # Windows
-venv\Scripts\python -m pip install -e .
-venv\Scripts\mondial --help
+venv\Scripts\activate
+pip install -e .
+mondial --help
 
 # Git Bash / WSL / Linux / macOS
-./venv/bin/python -m pip install -e .
-./venv/bin/mondial --help
-```
-
-Si el entorno virtual está activado (`venv\Scripts\activate` o `source venv/bin/activate`), simplemente:
-
-```bash
+source venv/bin/activate
 pip install -e .
 mondial --help
 ```
+
+> Nota: `pip install -e .` instala automáticamente las dependencias **core** listadas en `pyproject.toml`. Si querés también las dependencias de desarrollo (tests, lint, audit), usá `pip install -e ".[dev]"` o `pip install -r requirements.txt -r requirements-dev.txt`.
 
 ### Google Colab
 

@@ -4,19 +4,48 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# Prefer project virtual environment
-PYTHON="${ROOT}/venv/Scripts/python.exe"
-if [ ! -f "$PYTHON" ]; then
-    PYTHON="${ROOT}/.venv/Scripts/python.exe"
+# 1. Prefer an active virtual environment
+if [ -n "${VIRTUAL_ENV:-}" ]; then
+    PYTHON="${VIRTUAL_ENV}/bin/python"
+    [ -f "$PYTHON" ] || PYTHON="${VIRTUAL_ENV}/Scripts/python.exe"
 fi
-if [ ! -f "$PYTHON" ]; then
+
+# 2. Otherwise look for a project-local venv
+if [ -z "${PYTHON:-}" ] || [ ! -f "$PYTHON" ]; then
     PYTHON="${ROOT}/venv/bin/python"
 fi
 if [ ! -f "$PYTHON" ]; then
     PYTHON="${ROOT}/.venv/bin/python"
 fi
 if [ ! -f "$PYTHON" ]; then
-    PYTHON="python3"
+    PYTHON="${ROOT}/venv/Scripts/python.exe"
+fi
+if [ ! -f "$PYTHON" ]; then
+    PYTHON="${ROOT}/.venv/Scripts/python.exe"
+fi
+
+# 3. Fall back to the system interpreter
+if [ ! -f "$PYTHON" ]; then
+    # Prefer 'python' on Windows (Git Bash may ship an MSYS python3 that creates
+    # venv/bin instead of venv/Scripts). On Unix 'python' is often a symlink too.
+    if command -v python >/dev/null 2>&1; then
+        PYTHON="python"
+    else
+        PYTHON="python3"
+    fi
+fi
+if ! command -v "$PYTHON" >/dev/null 2>&1; then
+    echo "Error: no se encontró python ni python3 en el PATH." >&2
+    exit 1
+fi
+
+# Verify we can import the CLI module (dependencies installed)
+if ! "$PYTHON" -c "import scripts.mondial_cli" >/dev/null 2>&1; then
+    echo "Error: no se pudo importar 'scripts.mondial_cli' con ${PYTHON}." >&2
+    echo "Asegurate de tener el entorno virtual activado o instalar las dependencias:" >&2
+    echo "  pip install -r requirements.txt" >&2
+    echo "  pip install -e ." >&2
+    exit 1
 fi
 
 exec "$PYTHON" "${ROOT}/scripts/mondial_cli.py" "$@"

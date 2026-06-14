@@ -56,7 +56,19 @@ FEATURE_COLS = [
 def load_historical_results(path: Path | str | None = None) -> pd.DataFrame:
     """Load match data from CSV (default) or a provided Parquet/CSV path."""
     if path is None:
-        path = Path(__file__).parent.parent / "MondialXboost.Web" / "Data" / "historical_results.csv"
+        root = Path(__file__).parent.parent
+        candidates = [
+            root / "MondialXboost.Web" / "Data" / "historical_results.csv",
+            root / "data" / "raw" / "historical_results.csv",
+            root / "data" / "historical_results.csv",
+        ]
+        for candidate in candidates:
+            if candidate.exists():
+                path = candidate
+                break
+        else:
+            # Fallback to the canonical location so the error message is clear.
+            path = candidates[0]
 
     if str(path).endswith('.parquet'):
         df = pd.read_parquet(path)

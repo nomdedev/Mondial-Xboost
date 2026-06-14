@@ -6,6 +6,7 @@ mondial_xboost.egg-info/PKG-INFO
 mondial_xboost.egg-info/SOURCES.txt
 mondial_xboost.egg-info/dependency_links.txt
 mondial_xboost.egg-info/entry_points.txt
+mondial_xboost.egg-info/requires.txt
 mondial_xboost.egg-info/top_level.txt
 predictors/__init__.py
 predictors/api.py
@@ -38,6 +39,7 @@ scripts/run_data_council.py
 scripts/run_tests.py
 scripts/train.py
 scripts/training_dashboard.py
+scripts/update_obsidian.py
 scripts/verify_gates.py
 tests/__init__.py
 tests/test_api.py

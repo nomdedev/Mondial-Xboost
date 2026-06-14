@@ -94,12 +94,26 @@ def _find_venv_python() -> Path:
 
 def cmd_install(_args: argparse.Namespace) -> int:
     """Install project dependencies."""
+    python = Path(PYTHON)
+
+    # If no virtual environment is active and no local venv exists, create one.
+    if os.getenv("VIRTUAL_ENV") is None:
+        local_venv = ROOT / "venv"
+        if not local_venv.exists() and not (ROOT / ".venv").exists():
+            print(f"{C['cyan']}Creando entorno virtual en {local_venv}...{C['reset']}")
+            code = subprocess.call([str(python), "-m", "venv", str(local_venv)], cwd=ROOT)
+            if code != 0:
+                return code
+            python = local_venv / "Scripts" / "python.exe"
+            if not python.exists():
+                python = local_venv / "bin" / "python"
+
     requirements = ROOT / "requirements.txt"
     if requirements.exists():
-        code = _run([PYTHON, "-m", "pip", "install", "-r", str(requirements)])
+        code = _run([str(python), "-m", "pip", "install", "-r", str(requirements)])
         if code != 0:
             return code
-    return _run([PYTHON, "-m", "pip", "install", "-e", "."])
+    return _run([str(python), "-m", "pip", "install", "-e", "."])
 
 
 def cmd_train(args: argparse.Namespace) -> int:
@@ -134,6 +148,10 @@ def cmd_train_gpu(args: argparse.Namespace) -> int:
 def cmd_predict(args: argparse.Namespace) -> int:
     """Run a prediction."""
     command = [PYTHON, "scripts/predict.py", "--home", args.home, "--away", args.away, "--engine", args.engine]
+    if args.model:
+        command.extend(["--model", args.model])
+    if args.date:
+        command.extend(["--date", args.date])
     if args.blend:
         command.append("--blend")
     if args.cold_start_only:
@@ -159,11 +177,23 @@ def cmd_train_cold_start(args: argparse.Namespace) -> int:
 
 def cmd_test(_args: argparse.Namespace) -> int:
     """Run Python tests."""
+    try:
+        __import__("pytest")
+    except ImportError:
+        print(f"{C['red']}[ERROR] pytest no está instalado.{C['reset']}")
+        print(f"{C['yellow']}Instalalo con: pip install -e \".[dev]\"{C['reset']}")
+        return 1
     return _run([PYTHON, "-m", "pytest", "tests/"])
 
 
 def cmd_lint(_args: argparse.Namespace) -> int:
     """Run Python lint."""
+    try:
+        __import__("ruff")
+    except ImportError:
+        print(f"{C['red']}[ERROR] ruff no está instalado.{C['reset']}")
+        print(f"{C['yellow']}Instalalo con: pip install -e \".[dev]\"{C['reset']}")
+        return 1
     return _run([PYTHON, "-m", "ruff", "check", "predictors", "scripts", "backtest", "tests"])
 
 
@@ -274,6 +304,120 @@ def cmd_info(_args: argparse.Namespace) -> int:
     return code
 
 
+def cmd_doctor(_args: argparse.Namespace) -> int:
+    """Run portability/health checks and report problems."""
+    print(f"\n{C['bold']}{C['cyan']}Mondial-Xboost — Doctor de portabilidad{C['reset']}\n")
+    issues = 0
+    warnings = 0
+
+    # Python version
+    py_version = sys.version_info
+    print(f"  Python       : {sys.executable}")
+    print(f"  Versión      : {sys.version.split()[0]}")
+    if py_version < (3, 11):
+        print(f"  {C['red']}[ERROR] Se requiere Python >= 3.11 (tenés {py_version.major}.{py_version.minor}).{C['reset']}")
+        issues += 1
+    else:
+        print(f"  {C['green']}[OK] Python >= 3.11{C['reset']}")
+
+    # Virtual environment
+    active_venv = os.getenv("VIRTUAL_ENV")
+    local_venv = ROOT / "venv" / ("Scripts" if sys.platform == "win32" else "bin") / ("python.exe" if sys.platform == "win32" else "python")
+    if active_venv:
+        print(f"  {C['green']}[OK] Entorno virtual activo: {active_venv}{C['reset']}")
+    elif local_venv.exists():
+        print(f"  {C['green']}[OK] Entorno virtual local encontrado: {local_venv.parent}{C['reset']}")
+    else:
+        print(f"  {C['yellow']}[WARN] No hay entorno virtual activo ni local. Ejecutá 'mondial instalar'.{C['reset']}")
+        warnings += 1
+
+    # Core dependencies
+    core_deps = {
+        "xgboost": "xgboost",
+        "pandas": "pandas",
+        "scikit-learn": "sklearn",
+        "numpy": "numpy",
+        "fastapi": "fastapi",
+        "uvicorn": "uvicorn",
+        "requests": "requests",
+        "optuna": "optuna",
+    }
+    print(f"\n{C['bold']}Dependencias core:{C['reset']}")
+    for pkg, mod in core_deps.items():
+        try:
+            module = __import__(mod)
+            version = getattr(module, "__version__", "desconocida")
+            print(f"  {C['green']}[OK]{C['reset']} {pkg:15s} {version}")
+        except ImportError as exc:
+            print(f"  {C['red']}[ERROR]{C['reset']} {pkg:15s} no importable ({exc})")
+            issues += 1
+
+    # Optional dependencies
+    optional_deps = {
+        "pytest": "pytest",
+        "ruff": "ruff",
+        "httpx": "httpx",
+    }
+    print(f"\n{C['bold']}Dependencias opcionales (dev):{C['reset']}")
+    for pkg, mod in optional_deps.items():
+        try:
+            module = __import__(mod)
+            version = getattr(module, "__version__", "desconocida")
+            print(f"  {C['green']}[OK]{C['reset']} {pkg:15s} {version}")
+        except ImportError:
+            print(f"  {C['yellow']}[WARN]{C['reset']} {pkg:15s} no instalado")
+            warnings += 1
+
+    # Dataset
+    print(f"\n{C['bold']}Datos:{C['reset']}")
+    dataset_candidates = [
+        ROOT / "MondialXboost.Web" / "Data" / "historical_results.csv",
+        ROOT / "data" / "raw" / "historical_results.csv",
+        ROOT / "data" / "historical_results.csv",
+    ]
+    dataset_path = next((p for p in dataset_candidates if p.exists()), None)
+    if dataset_path:
+        print(f"  {C['green']}[OK]{C['reset']} Dataset encontrado: {dataset_path.relative_to(ROOT)}")
+    else:
+        print(f"  {C['red']}[ERROR]{C['reset']} No se encontró historical_results.csv en ninguna ubicación canónica.")
+        issues += 1
+
+    # Models
+    print(f"\n{C['bold']}Modelos entrenados:{C['reset']}")
+    models_dir = ROOT / "data" / "models"
+    for name in ["xgboost_football", "random_forest_football", "cold_start"]:
+        if name == "cold_start":
+            exists = (models_dir / f"{name}.pkl").exists()
+        else:
+            exists = (models_dir / f"{name}_meta.json").exists()
+        status = C['green'] + "[OK]" if exists else C['yellow'] + "[FALTA]"
+        print(f"  {status}{C['reset']} {name}")
+
+    # Write permission
+    print(f"\n{C['bold']}Permisos:{C['reset']}")
+    try:
+        models_dir.mkdir(parents=True, exist_ok=True)
+        test_file = models_dir / ".doctor_write_test"
+        test_file.write_text("ok", encoding="utf-8")
+        test_file.unlink()
+        print(f"  {C['green']}[OK]{C['reset']} data/models es escribible")
+    except OSError as exc:
+        print(f"  {C['red']}[ERROR]{C['reset']} No se puede escribir en data/models: {exc}")
+        issues += 1
+
+    # .NET
+    print(f"\n{C['bold']}.NET (opcional para la app web):{C['reset']}")
+    dotnet = shutil.which("dotnet")
+    if dotnet:
+        print(f"  {C['green']}[OK]{C['reset']} dotnet encontrado: {dotnet}")
+    else:
+        print(f"  {C['yellow']}[WARN]{C['reset']} dotnet no está en PATH (solo necesario para la app Blazor).")
+        warnings += 1
+
+    print(f"\n{C['bold']}Resumen:{C['reset']} {C['red']}{issues} error(es){C['reset']}, {C['yellow']}{warnings} advertencia(s){C['reset']}")
+    return 1 if issues else 0
+
+
 def cmd_guia(_args: argparse.Namespace) -> int:
     """Show an extended usage guide with examples."""
     lines = [
@@ -299,6 +443,7 @@ def cmd_guia(_args: argparse.Namespace) -> int:
         "  mondial predecir --home Argentina --away Brazil",
         "  mondial predecir --home England --away Croatia --blend",
         "  mondial predecir --home Qatar --away Switzerland --cold-start-only",
+        "  mondial predecir --home Brazil --away Morocco --model xgboost_football",
         "",
         _color("Optimización y calidad", "bold"),
         "  mondial loop --trials 50                      Tuning de hiperparámetros con Optuna",
@@ -320,6 +465,7 @@ def cmd_guia(_args: argparse.Namespace) -> int:
         "  mondial test                                  Ejecuta tests de Python",
         "  mondial lint                                  Ejecuta ruff",
         "  mondial info                                  Muestra información del entorno",
+        "  mondial doctor                                Chequeo de portabilidad",
         "",
         _color("Ayuda por comando", "bold"),
         "  mondial entrenar --help",
@@ -360,6 +506,7 @@ MENU_ITEMS: list[tuple[str, str, list[str]]] = [
     ("Ver manifest", "manifest", []),
     ("Limpiar artefactos", "limpiar", []),
     ("Info del entorno", "info", []),
+    ("Doctor de portabilidad", "doctor", []),
     ("Ver guía de uso", "guia", []),
 ]
 
@@ -521,12 +668,15 @@ def build_parser() -> argparse.ArgumentParser:
             "Ejemplos:\n"
             "  mondial predecir --home Brazil --away Morocco\n"
             "  mondial predecir --home Argentina --away Brazil --blend\n"
-            "  mondial predecir --home Qatar --away Switzerland --cold-start-only"
+            "  mondial predecir --home Qatar --away Switzerland --cold-start-only\n"
+            "  mondial predecir --home Brazil --away Morocco --engine random_forest --model random_forest_football"
         ),
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     predict_parser.add_argument("--home", required=True, help="Nombre del equipo local")
     predict_parser.add_argument("--away", required=True, help="Nombre del equipo visitante")
+    predict_parser.add_argument("--date", default=None, help="Fecha del partido (YYYY-MM-DD, default: hoy)")
+    predict_parser.add_argument("--model", default="xgboost_football", help="Nombre del modelo a cargar")
     predict_parser.add_argument("--engine", default="xgboost", choices=["xgboost", "random_forest"], help="Motor ML")
     predict_parser.add_argument("--blend", action="store_true", help="Usar blended predictor (combinación de modelos)")
     predict_parser.add_argument("--cold-start-only", action="store_true", help="Usar solo el modelo de cold-start")
@@ -614,6 +764,15 @@ def build_parser() -> argparse.ArgumentParser:
     # info
     info_parser = subparsers.add_parser("info", help="Muestra información del entorno", description="Muestra información del entorno Python, virtualenv y versiones de librerías.")
     info_parser.set_defaults(func=cmd_info)
+
+    # doctor
+    doctor_parser = subparsers.add_parser(
+        "doctor",
+        aliases=["diagnose", "check"],
+        help="Verifica portabilidad y salud del entorno",
+        description="Ejecuta chequeos de Python, dependencias, dataset, modelos y permisos. Útil al instalar en una PC nueva.",
+    )
+    doctor_parser.set_defaults(func=cmd_doctor)
 
     # guia
     guia_parser = subparsers.add_parser(

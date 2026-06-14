@@ -151,6 +151,24 @@ class ColdStartPredictor:
         x = self._prepare_x(df)
         return self.model.predict_proba(x)
 
+    def predict(self, df: pd.DataFrame) -> list[dict[str, Any]]:
+        """Return predictions compatible with the canonical predictor API."""
+        probs = self.predict_proba(df)
+        records = []
+        for idx, row in enumerate(df.itertuples(index=False)):
+            records.append({
+                "home_team": row.home_team,
+                "away_team": row.away_team,
+                "date": row.date.isoformat() if hasattr(row.date, "isoformat") else row.date,
+                "prob_away_win": float(probs[idx, 0]),
+                "prob_draw": float(probs[idx, 1]),
+                "prob_home_win": float(probs[idx, 2]),
+                "expected_home_goals": 1.3,
+                "expected_away_goals": 1.3,
+                "top_pick": ["Away", "Draw", "Home"][int(np.argmax(probs[idx]))],
+            })
+        return records
+
     def is_cold_start(self, df: pd.DataFrame) -> pd.Series:
         """Return a boolean series marking cold-start fixtures."""
         return (df["home_recent_matches"] < self.cold_threshold) | (

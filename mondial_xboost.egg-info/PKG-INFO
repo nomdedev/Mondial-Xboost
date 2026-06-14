@@ -3,3 +3,23 @@ Name: mondial-xboost
 Version: 2.0.0
 Summary: Hybrid .NET + Python football prediction system
 Requires-Python: >=3.11
+Requires-Dist: xgboost>=2.0.0
+Requires-Dist: pandas>=2.0.0
+Requires-Dist: scikit-learn>=1.4.0
+Requires-Dist: numpy>=1.24.0
+Requires-Dist: requests>=2.31.0
+Requires-Dist: beautifulsoup4>=4.12.0
+Requires-Dist: lxml>=4.9.0
+Requires-Dist: selenium>=4.15.0
+Requires-Dist: webdriver-manager>=4.0.0
+Requires-Dist: pyarrow>=15.0.0
+Requires-Dist: fastapi>=0.110.0
+Requires-Dist: uvicorn[standard]>=0.27.0
+Requires-Dist: python-dotenv>=1.0.0
+Requires-Dist: country_converter>=1.3.0
+Requires-Dist: optuna>=3.6.0
+Provides-Extra: dev
+Requires-Dist: ruff>=0.6.0; extra == "dev"
+Requires-Dist: pytest>=8.0.0; extra == "dev"
+Requires-Dist: httpx>=0.27.0; extra == "dev"
+Requires-Dist: pip-audit>=2.7.0; extra == "dev"

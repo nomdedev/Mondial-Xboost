@@ -1,6 +1,6 @@
 {
   "model_name": "xgboost_football",
-  "trained_at": "2026-06-14T17:47:14.246918+00:00",
+  "trained_at": "2026-06-14T23:12:00.887227+00:00",
   "feature_cols": [
     "elo_diff",
     "elo_diff_recent",
@@ -168,17 +168,12 @@
     "meta": "D:\\martin\\Proyectos\\Mondial-xBoost\\data\\models\\xgboost_football_meta.json"
   },
   "artifact_hashes": {
-    "outcome": "a5d0e01dce451fa3",
-    "home_goals": "599b96853641bc81",
-    "away_goals": "ae7da28f487c2d3e",
+    "outcome": "b6d6d3f12ee5242b",
+    "home_goals": "e04f5e530b9ac5af",
+    "away_goals": "2054c9271ad0fecb",
     "meta": "b0c946a33a0f2c01"
   },
-  "metrics": {
-    "source": "training",
-    "log_loss": 0.8205,
-    "accuracy": 0.617,
-    "top_feature": "elo_diff_recent"
-  },
+  "metrics": {},
   "extra": {
     "random_state": 2026
   }

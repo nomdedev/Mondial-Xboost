@@ -191,11 +191,21 @@ def build_features_for_prediction(historical: pd.DataFrame, fixtures: pd.DataFra
     return fixtures
 
 
-def load_model(name: str = "xgboost_football", blend: bool = False, cold_start_only: bool = False, engine: str = "xgboost"):
+def load_model(
+    name: str = "xgboost_football",
+    blend: bool = False,
+    cold_start_only: bool = False,
+    engine: str = "xgboost",
+) -> XGBoostFootballPredictor | RandomForestFootballPredictor | ColdStartPredictor | BlendedFootballPredictor:
+    """Load a persisted predictor by engine/mode."""
     if cold_start_only:
+        # For cold-start mode the supplied name refers to the cold-start artifact.
         path = MODELS_DIR / f"{name}.pkl"
         if not path.exists():
-            raise FileNotFoundError(f"No se encontró el cold-start model '{name}'. Entrenalo primero.")
+            raise FileNotFoundError(
+                f"No se encontró el cold-start model '{name}'. Entrenalo primero con: "
+                f"mondial entrenar-cold-start --name {name}"
+            )
         return ColdStartPredictor.load(name)
     if blend:
         canonical_name = "xgboost_football"
@@ -204,11 +214,16 @@ def load_model(name: str = "xgboost_football", blend: bool = False, cold_start_o
     if engine == "random_forest":
         path = RF_MODELS_DIR / f"{name}_meta.json"
         if not path.exists():
-            raise FileNotFoundError(f"No se encontró el modelo RF '{name}'. Entrenalo primero con: python scripts/train.py --engine random_forest")
+            raise FileNotFoundError(
+                f"No se encontró el modelo RF '{name}'. Entrenalo primero con: "
+                f"python scripts/train.py --engine random_forest --name {name}"
+            )
         return RandomForestFootballPredictor.load(name)
     path = MODELS_DIR / f"{name}_meta.json"
     if not path.exists():
-        raise FileNotFoundError(f"No se encontró el modelo '{name}'. Entrenalo primero con: python scripts/train.py")
+        raise FileNotFoundError(
+            f"No se encontró el modelo '{name}'. Entrenalo primero con: python scripts/train.py --name {name}"
+        )
     return XGBoostFootballPredictor.load(name)
 
 
@@ -239,13 +254,25 @@ def main() -> int:
     parser.add_argument("--fixtures", type=str, help="JSON file with fixtures list")
     parser.add_argument("--last-n", type=int, help="Predict last N matches from historical data")
     parser.add_argument("--model", type=str, default="xgboost_football", help="Model name to load")
+    parser.add_argument(
+        "--engine",
+        type=str,
+        default="xgboost",
+        choices=["xgboost", "random_forest"],
+        help="Motor ML a usar (default: xgboost)",
+    )
     parser.add_argument("--blend", action="store_true", help="Usar blended predictor (canónico + cold-start)")
     parser.add_argument("--cold-start-only", action="store_true", help="Usar solo el cold-start model")
     args = parser.parse_args()
 
+    # For cold-start-only the default model name refers to the cold-start artifact.
+    model_name = args.model
+    if args.cold_start_only and model_name == parser.get_default("model"):
+        model_name = "cold_start"
+
     try:
-        print(f"{C['dim']}Cargando modelo '{args.model}'...{C['reset']}")
-        predictor = load_model(args.model, blend=args.blend, cold_start_only=args.cold_start_only, engine=args.engine)
+        print(f"{C['dim']}Cargando modelo '{model_name}' (engine={args.engine})...{C['reset']}")
+        predictor = load_model(model_name, blend=args.blend, cold_start_only=args.cold_start_only, engine=args.engine)
 
         print(f"{C['dim']}Cargando datos históricos...{C['reset']}")
         historical = load_historical_results()
@@ -270,7 +297,7 @@ def main() -> int:
         features = build_features_for_prediction(historical, fixtures)
         predictions = predictor.predict(features)
 
-        print(f"\n{C['bold']}{C['cyan']}Predicciones — {args.engine}/{args.model}{C['reset']}")
+        print(f"\n{C['bold']}{C['cyan']}Predicciones — {args.engine}/{model_name}{C['reset']}")
         print_predictions(predictions)
         return 0
 
