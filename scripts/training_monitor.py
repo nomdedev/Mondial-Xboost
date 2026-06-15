@@ -48,6 +48,7 @@ class TrainingMonitor:
             "elapsed_seconds": 0,
             "eta_seconds": 0,
             "recent_events": [],
+            "runs": [],
             "last_update": datetime.now(UTC).isoformat(),
         }
 
@@ -105,6 +106,17 @@ class TrainingMonitor:
     ) -> None:
         """Report a completed trial."""
         self._data["completed_trials"] = trial_completed
+
+        run: dict[str, Any] = {
+            "trial": trial_completed,
+            "test_accuracy": test_accuracy,
+            "val_accuracy": val_accuracy,
+            "log_loss": log_loss,
+            "brier": brier,
+            "overfit_gap": overfit_gap,
+            "params": params or {},
+        }
+        self._data.setdefault("runs", []).append(run)
 
         if test_accuracy is not None and test_accuracy > self._data.get("best_test_accuracy", 0.0):
             self._data["best_test_accuracy"] = round(test_accuracy, 4)

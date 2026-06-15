@@ -1,6 +1,6 @@
 {
   "model_name": "xgboost_football",
-  "trained_at": "2026-06-14T23:12:00.887227+00:00",
+  "trained_at": "2026-06-15T13:24:05.786993+00:00",
   "feature_cols": [
     "elo_diff",
     "elo_diff_recent",
@@ -174,10 +174,9 @@
     "meta": "b0c946a33a0f2c01"
   },
   "metrics": {
-    "source": "canonical_training_recalc",
+    "source": "training",
     "log_loss": 0.8102,
     "accuracy": 0.6227,
-    "n_train": 15866,
     "top_feature": "elo_diff"
   },
   "extra": {

@@ -238,7 +238,7 @@ async function updateDashboard() {
         updateEventLog(status.recent_events || []);
     }
 
-    const runs = results?.all_runs || [];
+    const runs = status?.runs || results?.all_runs || [];
     updateTopTrials(runs);
     updateCharts(runs);
 }

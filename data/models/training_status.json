@@ -44,5 +44,76 @@
       "message": "Experimento xgboost_football_exp_05_auto_loop completado. Mejor test accuracy: 60.52%"
     }
   ],
-  "last_update": "2026-06-15T03:06:39.563496+00:00"
+  "last_update": "2026-06-15T03:06:39.563496+00:00",
+  "runs": [
+    {
+      "batch": 7,
+      "trial": 1,
+      "timestamp": "2026-06-15T00:05:30.517088",
+      "params": {
+        "n_estimators": 853,
+        "max_depth": 3,
+        "learning_rate": 0.010646929009757135,
+        "subsample": 0.7784849513453034,
+        "colsample_bytree": 0.7699180964011114,
+        "reg_alpha": 6.445978413761206,
+        "reg_lambda": 0.011118575687337205,
+        "min_child_weight": 4,
+        "gamma": 0.1354043753462607
+      },
+      "val_accuracy": 60.9108,
+      "walk_forward_acc": 0.0,
+      "test_accuracy": 60.4845,
+      "log_loss": 0.8756,
+      "brier": 0.1714,
+      "train_accuracy": 60.9172,
+      "overfit_gap": 0.4327
+    },
+    {
+      "batch": 7,
+      "trial": 2,
+      "timestamp": "2026-06-15T00:05:34.146167",
+      "params": {
+        "n_estimators": 583,
+        "max_depth": 10,
+        "learning_rate": 0.03766063074648278,
+        "subsample": 0.6601626254604336,
+        "colsample_bytree": 0.5310315176430336,
+        "reg_alpha": 0.02824800162441267,
+        "reg_lambda": 0.0007268988260742498,
+        "min_child_weight": 7,
+        "gamma": 0.234533235739099
+      },
+      "val_accuracy": 56.3567,
+      "walk_forward_acc": 0.0,
+      "test_accuracy": 57.784,
+      "log_loss": 0.9638,
+      "brier": 0.1857,
+      "train_accuracy": 99.8106,
+      "overfit_gap": 42.0267
+    },
+    {
+      "batch": 7,
+      "trial": 3,
+      "timestamp": "2026-06-15T00:05:35.229183",
+      "params": {
+        "n_estimators": 188,
+        "max_depth": 9,
+        "learning_rate": 0.20595510912614295,
+        "subsample": 0.8110046813628602,
+        "colsample_bytree": 0.5542583598417168,
+        "reg_alpha": 0.17756655695087514,
+        "reg_lambda": 0.39548922317245677,
+        "min_child_weight": 3,
+        "gamma": 0.12452122881266281
+      },
+      "val_accuracy": 57.3055,
+      "walk_forward_acc": 0.0,
+      "test_accuracy": 58.34,
+      "log_loss": 1.033,
+      "brier": 0.1934,
+      "train_accuracy": 100.0,
+      "overfit_gap": 41.66
+    }
+  ]
 }
