@@ -38,10 +38,10 @@
             </div>
             
             <nav>
-                <div class="nav-item active" onclick="showTab('dashboard')">
+                <div class="nav-item" onclick="showTab('dashboard')">
                     <span class="mr-2">📊</span> Dashboard
                 </div>
-                <div class="nav-item" onclick="showTab('training')">
+                <div class="nav-item active" onclick="showTab('training')">
                     <span class="mr-2">🧠</span> Training
                 </div>
                 <div class="nav-item" onclick="showTab('predictions')">
@@ -70,7 +70,7 @@
         <!-- Main Content -->
         <div class="flex-1 overflow-auto p-6">
             <!-- Dashboard Tab -->
-            <div id="dashboard" class="tab-content active">
+            <div id="dashboard" class="tab-content">
                 <h2 class="text-2xl font-bold mb-6">Dashboard</h2>
                 
                 <div class="grid grid-cols-4 gap-4 mb-6">
@@ -105,44 +105,110 @@
             </div>
             
             <!-- Training Tab -->
-            <div id="training" class="tab-content">
-                <h2 class="text-2xl font-bold mb-6">Model Training</h2>
+            <div id="training" class="tab-content active">
+                <h2 class="text-2xl font-bold mb-6">Training Monitor</h2>
                 
-                <div class="card mb-6">
-                    <h3 class="font-semibold mb-4">Training Configuration</h3>
-                    <div class="grid grid-cols-3 gap-4">
-                        <div>
-                            <label class="block text-sm text-slate-400 mb-2">Model Name</label>
-                            <input type="text" id="train-model-name" value="outcome_v2" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-2">
-                        </div>
-                        <div>
-                            <label class="block text-sm text-slate-400 mb-2">Min Date</label>
-                            <input type="date" id="train-min-date" value="2018-01-01" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-2">
-                        </div>
-                        <div>
-                            <label class="block text-sm text-slate-400 mb-2">Test Size</label>
-                            <input type="number" id="train-test-size" value="0.2" step="0.05" min="0.1" max="0.5" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-2">
-                        </div>
+                <!-- Status Header -->
+                <div class="grid grid-cols-4 gap-4 mb-6">
+                    <div class="card metric">
+                        <p class="text-slate-400 text-sm">Status</p>
+                        <p class="text-2xl font-bold" id="tm-status">-</p>
                     </div>
-                    
-                    <div class="mt-4">
-                        <label class="block text-sm text-slate-400 mb-2">Hyperparameters (JSON)</label>
-                        <textarea id="train-hyperparams" rows="4" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-2 font-mono text-sm">{
-  "n_estimators": 200,
-  "max_depth": 6,
-  "learning_rate": 0.1,
-  "subsample": 0.8,
-  "colsample_bytree": 0.8
-}</textarea>
+                    <div class="card metric">
+                        <p class="text-slate-400 text-sm">Phase</p>
+                        <p class="text-2xl font-bold" id="tm-phase">-</p>
                     </div>
-                    
-                    <button onclick="startTraining()" class="btn-primary mt-4">Start Training</button>
+                    <div class="card metric">
+                        <p class="text-slate-400 text-sm">Trials</p>
+                        <p class="text-2xl font-bold" id="tm-trials">-</p>
+                    </div>
+                    <div class="card metric">
+                        <p class="text-slate-400 text-sm">Elapsed / ETA</p>
+                        <p class="text-2xl font-bold" id="tm-time">-</p>
+                    </div>
                 </div>
                 
+                <div class="grid grid-cols-4 gap-4 mb-6">
+                    <div class="card metric">
+                        <p class="text-slate-400 text-sm">Best Test Accuracy</p>
+                        <p class="text-2xl font-bold text-green-400" id="tm-best-acc">-</p>
+                    </div>
+                    <div class="card metric">
+                        <p class="text-slate-400 text-sm">Best Log Loss</p>
+                        <p class="text-2xl font-bold text-yellow-400" id="tm-best-loss">-</p>
+                    </div>
+                    <div class="card metric">
+                        <p class="text-slate-400 text-sm">Best Overfit Gap</p>
+                        <p class="text-2xl font-bold text-blue-400" id="tm-best-gap">-</p>
+                    </div>
+                    <div class="card metric">
+                        <p class="text-slate-400 text-sm">Canonical Accuracy</p>
+                        <p class="text-2xl font-bold text-purple-400" id="tm-canonical-acc">-</p>
+                    </div>
+                </div>
+                
+                <!-- Progress -->
+                <div class="card mb-6">
+                    <div class="flex justify-between mb-2">
+                        <span class="font-semibold">Progress</span>
+                        <span id="tm-progress-text">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="tm-progress-bar" style="width: 0%"></div>
+                    </div>
+                </div>
+                
+                <!-- Charts -->
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <div class="card">
+                        <h3 class="font-semibold mb-4">Test Accuracy Evolution</h3>
+                        <canvas id="tm-acc-chart"></canvas>
+                    </div>
+                    <div class="card">
+                        <h3 class="font-semibold mb-4">Log Loss Evolution</h3>
+                        <canvas id="tm-loss-chart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <div class="card">
+                        <h3 class="font-semibold mb-4">Overfit Gap by Trial</h3>
+                        <canvas id="tm-gap-chart"></canvas>
+                    </div>
+                    <div class="card">
+                        <h3 class="font-semibold mb-4">Accuracy Distribution</h3>
+                        <canvas id="tm-dist-chart"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Top Trials -->
+                <div class="card mb-6">
+                    <h3 class="font-semibold mb-4">Top Trials</h3>
+                    <div class="overflow-auto">
+                        <table class="w-full text-sm text-left">
+                            <thead class="text-slate-400 border-b border-slate-600">
+                                <tr>
+                                    <th class="py-2">Batch</th>
+                                    <th class="py-2">Trial</th>
+                                    <th class="py-2">Test Acc</th>
+                                    <th class="py-2">Val Acc</th>
+                                    <th class="py-2">Log Loss</th>
+                                    <th class="py-2">Gap</th>
+                                    <th class="py-2">Params</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tm-top-trials">
+                                <tr><td colspan="7" class="py-4 text-slate-400">No training data yet</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Event Log -->
                 <div class="card">
-                    <h3 class="font-semibold mb-4">Training Jobs</h3>
-                    <div id="training-jobs" class="space-y-4">
-                        <p class="text-slate-400">No active training jobs</p>
+                    <h3 class="font-semibold mb-4">Event Log</h3>
+                    <div id="tm-event-log" class="bg-slate-900 rounded-lg p-4 h-48 overflow-auto font-mono text-sm space-y-1">
+                        <p class="text-slate-500">Waiting for training data...</p>
                     </div>
                 </div>
             </div>
@@ -604,5 +670,6 @@
             }
         }, 5000);
     </script>
+    <script src="/static/training.js"></script>
 </body>
 </html>

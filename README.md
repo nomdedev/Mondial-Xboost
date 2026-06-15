@@ -362,9 +362,12 @@ Comandos principales:
 ./mondial elo                            # compara Elo contra World Football Elo
 ./mondial auditar                        # audita leakage temporal
 ./mondial loop --trials 50               # tuning con Optuna
+./mondial auto-loop                      # loop engineering automatizado (tune + análisis + reentreno + docs)
+./mondial auto-loop --trials 100 --name exp-04-auto-loop --backtest
 ./mondial data-council                   # revisión del data council
-./mondial dashboard                      # dashboard de entrenamiento
+./mondial dashboard                      # dashboard ASCII de entrenamiento
 ./mondial servidor                       # levanta el bridge FastAPI
+./mondial servidor-entrenamiento         # dashboard web de entrenamiento en http://localhost:8765
 ./mondial health                         # consulta /health del servidor
 ./mondial manifest                       # muestra model_manifest.json
 ./mondial limpiar                        # borra caché y artefactos de test

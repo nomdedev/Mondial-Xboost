@@ -27,6 +27,7 @@ from sklearn.metrics import accuracy_score, brier_score_loss, log_loss
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from predictors.feature_engineering import FEATURE_COLS, build_training_dataset
+from scripts.training_monitor import monitor
 
 optuna.logging.set_verbosity(optuna.logging.WARNING)
 
@@ -173,6 +174,8 @@ def run_batch(batch_num: int, n_trials: int = 50, walk_forward: bool = False) ->
     data = load_json_results()
     batch_runs: list[dict] = []
 
+    monitor.start(total_trials=n_trials, batch=batch_num, phase="tuning")
+
     df_full = None
     if walk_forward:
         df_full = build_training_dataset(min_date="2015-01-01")
@@ -224,6 +227,15 @@ def run_batch(batch_num: int, n_trials: int = 50, walk_forward: bool = False) ->
 
             batch_runs.append(run)
             append_partial(run)
+            monitor.update(
+                trial_completed=len(batch_runs),
+                test_accuracy=metrics.get("test_accuracy"),
+                val_accuracy=run.get("val_accuracy"),
+                log_loss=metrics.get("log_loss"),
+                brier=metrics.get("brier"),
+                overfit_gap=metrics.get("overfit_gap"),
+                params=params,
+            )
 
         except Exception as exc:
             print(f"  Trial {idx} falló: {exc}")
@@ -256,6 +268,7 @@ def run_batch(batch_num: int, n_trials: int = 50, walk_forward: bool = False) ->
     print(f"Log loss: {best_run['log_loss']:.4f} | Brier: {best_run['brier']:.4f} | Gap: {best_run['overfit_gap']:.2f}%")
     print(f"GLOBAL BEST: {data['best']['test_accuracy']:.2f}% (batch {data['best']['batch']})")
 
+    monitor.complete(f"Batch {batch_num} completado. Mejor test accuracy: {best_run['test_accuracy']:.2f}%")
     return batch_runs
 
 

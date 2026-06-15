@@ -263,6 +263,7 @@ def main() -> int:
     )
     parser.add_argument("--blend", action="store_true", help="Usar blended predictor (canónico + cold-start)")
     parser.add_argument("--cold-start-only", action="store_true", help="Usar solo el cold-start model")
+    parser.add_argument("--output", type=str, default=None, help="Guardar predicciones como JSON en este archivo")
     args = parser.parse_args()
 
     # For cold-start-only the default model name refers to the cold-start artifact.
@@ -297,8 +298,32 @@ def main() -> int:
         features = build_features_for_prediction(historical, fixtures)
         predictions = predictor.predict(features)
 
+        # Preserve extra fixture metadata (group, neutral) in predictions.
+        meta_cols = ["date", "home_team", "away_team", "group", "neutral"]
+        available_meta = [c for c in meta_cols if c in fixtures.columns]
+        if available_meta:
+            fixtures["date"] = pd.to_datetime(fixtures["date"]).dt.strftime("%Y-%m-%d")
+            meta = fixtures[available_meta].to_dict(orient="records")
+            for p, m in zip(predictions, meta, strict=True):
+                for key, value in m.items():
+                    if key not in p:
+                        p[key] = value
+
         print(f"\n{C['bold']}{C['cyan']}Predicciones — {args.engine}/{model_name}{C['reset']}")
         print_predictions(predictions)
+
+        if args.output:
+            output_path = Path(args.output)
+            output_path.parent.mkdir(parents=True, exist_ok=True)
+            serializable = []
+            for p in predictions:
+                p_copy = dict(p)
+                p_copy["date"] = p_copy["date"][:10] if isinstance(p_copy["date"], str) else str(p_copy["date"])[:10]
+                serializable.append(p_copy)
+            with output_path.open("w", encoding="utf-8") as f:
+                json.dump(serializable, f, indent=2, ensure_ascii=False)
+            print(f"\n{C['dim']}Guardado JSON: {output_path}{C['reset']}")
+
         return 0
 
     except FileNotFoundError as exc:

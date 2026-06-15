@@ -1,23 +1,23 @@
 {
-  "batch": 1,
-  "trial": 2,
-  "timestamp": "2026-06-14T10:57:39.388457",
+  "batch": 6,
+  "trial": 1,
+  "timestamp": "2026-06-15T00:03:21.447474",
   "params": {
-    "n_estimators": 889,
-    "max_depth": 8,
-    "learning_rate": 0.023630940805565985,
-    "subsample": 0.6447649604278726,
-    "colsample_bytree": 0.8591660762471713,
-    "reg_alpha": 1.719629275688939,
-    "reg_lambda": 0.0012873610299913188,
-    "min_child_weight": 6,
-    "gamma": 0.818294241537209
+    "n_estimators": 158,
+    "max_depth": 6,
+    "learning_rate": 0.015489415646707446,
+    "subsample": 0.5793315159514871,
+    "colsample_bytree": 0.655970347602935,
+    "reg_alpha": 0.0002646867841409783,
+    "reg_lambda": 0.0018576108363745885,
+    "min_child_weight": 8,
+    "gamma": 0.8310324879251157
   },
-  "val_accuracy": 58.7287,
+  "val_accuracy": 60.3416,
   "walk_forward_acc": 0.0,
-  "test_accuracy": 58.7051,
-  "log_loss": 0.9108,
-  "brier": 0.1784,
-  "train_accuracy": 85.0108,
-  "overfit_gap": 26.3057
+  "test_accuracy": 60.6831,
+  "log_loss": 0.8832,
+  "brier": 0.1724,
+  "train_accuracy": 62.3782,
+  "overfit_gap": 1.6952
 }

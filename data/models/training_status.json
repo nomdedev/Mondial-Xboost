@@ -1,0 +1,48 @@
+{
+  "status": "completed",
+  "phase": "completed",
+  "batch": 7,
+  "total_trials": 3,
+  "completed_trials": 3,
+  "best_test_accuracy": 60.4845,
+  "best_log_loss": 0.8756,
+  "best_overfit_gap": 0.0,
+  "best_brier": 0.1714,
+  "elapsed_seconds": 77,
+  "eta_seconds": 0,
+  "recent_events": [
+    {
+      "time": "2026-06-15T03:05:22.044058+00:00",
+      "message": "Batch 7 iniciado: 3 trials"
+    },
+    {
+      "time": "2026-06-15T03:05:30.522522+00:00",
+      "message": "Nuevo mejor trial 1: test accuracy 60.48%, log loss 0.8756"
+    },
+    {
+      "time": "2026-06-15T03:05:35.241421+00:00",
+      "message": "Batch 7 completado. Mejor test accuracy: 60.48%"
+    },
+    {
+      "time": "2026-06-15T03:05:35.250166+00:00",
+      "message": "Fase: analysis"
+    },
+    {
+      "time": "2026-06-15T03:05:35.266766+00:00",
+      "message": "Fase: strategy"
+    },
+    {
+      "time": "2026-06-15T03:05:35.268925+00:00",
+      "message": "Fase: retraining"
+    },
+    {
+      "time": "2026-06-15T03:06:39.559404+00:00",
+      "message": "Fase: documentation"
+    },
+    {
+      "time": "2026-06-15T03:06:39.563481+00:00",
+      "message": "Experimento xgboost_football_exp_05_auto_loop completado. Mejor test accuracy: 60.52%"
+    }
+  ],
+  "last_update": "2026-06-15T03:06:39.563496+00:00"
+}

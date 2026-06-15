@@ -173,7 +173,13 @@
     "away_goals": "2054c9271ad0fecb",
     "meta": "b0c946a33a0f2c01"
   },
-  "metrics": {},
+  "metrics": {
+    "source": "canonical_training_recalc",
+    "log_loss": 0.8102,
+    "accuracy": 0.6227,
+    "n_train": 15866,
+    "top_feature": "elo_diff"
+  },
   "extra": {
     "random_state": 2026
   }

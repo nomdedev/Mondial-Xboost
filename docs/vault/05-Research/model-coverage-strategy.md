@@ -118,19 +118,29 @@ Todo experimento debe reportar en `docs/vault/05-Research/exp-NN-descripcion.md`
 - Diferencia vs baseline.
 - Decisión: adoptar / descartar / iterar.
 
-## Resultados de experimentos
+## Auto Loop Engineering
 
-| # | Experimento | Accuracy honesta | Log loss | Decisión |
-|---|-------------|------------------|----------|----------|
-| 01 | Elo/H2H global | 59.19% | 0.906 | Prometedor; ver [`exp-01-elo-global.md`](./exp-01-elo-global.md). |
-| **02** | **Elo decay + Elo reciente** | **61.97%** | **0.820** | **Adoptado como canónico**; ver [`exp-02-elo-decay.md`](./exp-02-elo-decay.md). |
-| 03 | Cold-start model | 54.48% (solo) / 61.85% (blend) | 1.014 / 0.822 | No adoptado; ver [`exp-03-cold-start.md`](./exp-03-cold-start.md). |
+Para acelerar la iteración de hiperparámetros existe el comando `mondial auto-loop`, que orquesta:
 
-## Próximos experimentos prioritarios
+1. Tuning con Optuna sobre XGBoost.
+2. Análisis de resultados con score compuesto (penaliza overfit y log-loss).
+3. Generación de una estrategia estabilizada.
+4. Reentrenamiento del modelo con esa estrategia.
+5. Documentación automática en `docs/vault/05-Research/exp-NN-auto-loop.md`.
+6. Backtest opcional (`--backtest`).
 
-1. **Exp-03: Modelo de cold-start explícito** — entrenar un submodelo para partidos donde falta historial reciente, usando Elo global, ranking FIFA proxy y confederación.
-2. **Exp-04: Features de contexto del torneo** — importancia del partido, descanso, distancia geográfica, fase del torneo.
-3. **Exp-05: Multi-task learning** — predecir simultáneamente 1X2, BTTS y over/under.
-4. **Exp-06: Blend Poisson-XGBoost** — combinar probabilidades de goles con un modelo Poisson bayesiano.
-5. **Exp-07: Data augmentation para cold-start** — generar ejemplos sintéticos de equipos sin historial.
-6. **Exp-08: Entrenar con todo el historial** — usar datos desde 1872 (riesgo alto por cambios estructurales).
+```bash
+# Ciclo completo por defecto: 100 trials
+mondial auto-loop
+
+# Experimento personalizado
+mondial auto-loop --trials 100 --name exp-04-auto-loop --backtest
+
+# Solo tuning, sin reentrenar
+mondial auto-loop --trials 50 --tune-only
+```
+
+Notas:
+- El modelo resultante se guarda con el nombre del experimento (ej. `xgboost_football_exp_04_auto_loop`).
+- Nunca sobrescribe el canónico `xgboost_football`.
+- La decisión final de adoptar un experimento sigue siendo manual.

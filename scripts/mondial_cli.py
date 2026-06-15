@@ -232,6 +232,22 @@ def cmd_loop(args: argparse.Namespace) -> int:
     return _run(command)
 
 
+def cmd_auto_loop(args: argparse.Namespace) -> int:
+    """Run automated loop engineering: tune, analyze, strategize, retrain, document."""
+    command = [PYTHON, "scripts/auto_loop_engineering.py"]
+    if args.trials:
+        command.extend(["--trials", str(args.trials)])
+    if args.name:
+        command.extend(["--name", args.name])
+    if args.tune_only:
+        command.append("--tune-only")
+    if args.backtest:
+        command.append("--backtest")
+    if args.no_walk_forward:
+        command.append("--no-walk-forward")
+    return _run(command)
+
+
 def cmd_data_council(_args: argparse.Namespace) -> int:
     """Run the data council review."""
     return _run([PYTHON, "scripts/run_data_council.py"])
@@ -245,6 +261,16 @@ def cmd_dashboard(_args: argparse.Namespace) -> int:
 def cmd_serve(_args: argparse.Namespace) -> int:
     """Start the FastAPI bridge server."""
     return _run([PYTHON, "-m", "predictors.api"])
+
+
+def cmd_training_server(args: argparse.Namespace) -> int:
+    """Start the training dashboard server."""
+    command = [PYTHON, "scripts/training_server.py"]
+    if args.port:
+        command.extend(["--port", str(args.port)])
+    if args.host:
+        command.extend(["--host", args.host])
+    return _run(command)
 
 
 def cmd_health(_args: argparse.Namespace) -> int:
@@ -448,6 +474,9 @@ def cmd_guia(_args: argparse.Namespace) -> int:
         _color("Optimización y calidad", "bold"),
         "  mondial loop --trials 50                      Tuning de hiperparámetros con Optuna",
         "  mondial loop --trials 100 --auto              10 batches automáticos",
+        "  mondial auto-loop                             Ciclo completo: tune + análisis + reentreno + docs",
+        "  mondial auto-loop --trials 100 --name exp-04  Experimento personalizado",
+        "  mondial auto-loop --trials 50 --backtest      Incluye World Cup backtest",
         "  mondial gates                                 Corre todos los gates de calidad",
         "  mondial backtest                              Backtest sobre World Cup",
         "  mondial auditar                               Revisa leakage temporal",
@@ -460,8 +489,9 @@ def cmd_guia(_args: argparse.Namespace) -> int:
         "",
         _color("Servidor y utilidades", "bold"),
         "  mondial servidor                              Levanta el bridge FastAPI",
+        "  mondial servidor-entrenamiento                Levanta dashboard web de entrenamiento (puerto 8765)",
         "  mondial health                                Consulta /health del servidor",
-        "  mondial dashboard                             Abre el dashboard de entrenamiento",
+        "  mondial dashboard                             Abre el dashboard ASCII de entrenamiento",
         "  mondial test                                  Ejecuta tests de Python",
         "  mondial lint                                  Ejecuta ruff",
         "  mondial info                                  Muestra información del entorno",
@@ -499,9 +529,11 @@ MENU_ITEMS: list[tuple[str, str, list[str]]] = [
     ("Comparar Elo", "elo", []),
     ("Auditar leakage temporal", "auditar", []),
     ("Loop engineering (Optuna)", "loop", []),
+    ("Auto Loop Engineering", "auto-loop", []),
     ("Data council", "data-council", []),
     ("Dashboard de entrenamiento", "dashboard", []),
     ("Levantar servidor", "servidor", []),
+    ("Dashboard de entrenamiento", "servidor-entrenamiento", []),
     ("Health check", "health", []),
     ("Ver manifest", "manifest", []),
     ("Limpiar artefactos", "limpiar", []),
@@ -737,6 +769,32 @@ def build_parser() -> argparse.ArgumentParser:
     loop_parser.add_argument("--auto", action="store_true", help="Corre 10 batches automáticamente")
     loop_parser.set_defaults(func=cmd_loop)
 
+    # auto-loop
+    auto_loop_parser = subparsers.add_parser(
+        "auto-loop",
+        aliases=["autoloop", "al"],
+        help="Loop engineering automatizado: tune, análisis, estrategia, reentreno y docs",
+        description=(
+            "Ejecuta un ciclo completo: tuning con Optuna, análisis de resultados, "
+            "generación de una estrategia estabilizada, reentrenamiento de un modelo final "
+            "y documentación del experimento."
+        ),
+        epilog=(
+            "Ejemplos:\n"
+            "  mondial auto-loop\n"
+            "  mondial auto-loop --trials 100 --name exp-04-auto-loop\n"
+            "  mondial auto-loop --trials 50 --backtest\n"
+            "  mondial auto-loop --trials 20 --tune-only"
+        ),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    auto_loop_parser.add_argument("--trials", type=int, default=100, help="Trials de Optuna (default: 100)")
+    auto_loop_parser.add_argument("--name", type=str, default=None, help="Nombre del experimento y modelo")
+    auto_loop_parser.add_argument("--tune-only", action="store_true", help="Solo tuning; no reentrena ni documenta")
+    auto_loop_parser.add_argument("--backtest", action="store_true", help="Correr World Cup backtest gate al final")
+    auto_loop_parser.add_argument("--no-walk-forward", action="store_true", help="Deshabilitar walk-forward validation")
+    auto_loop_parser.set_defaults(func=cmd_auto_loop)
+
     # data-council
     council_parser = subparsers.add_parser("data-council", aliases=["council"], help="Ejecuta el data council", description="Revisión del data council sobre calidad de datos.")
     council_parser.set_defaults(func=cmd_data_council)
@@ -748,6 +806,19 @@ def build_parser() -> argparse.ArgumentParser:
     # servidor
     serve_parser = subparsers.add_parser("servidor", aliases=["serve"], help="Levanta el bridge FastAPI", description="Levanta el servidor FastAPI que hace de bridge entre .NET y Python.")
     serve_parser.set_defaults(func=cmd_serve)
+
+    # servidor-entrenamiento
+    training_server_parser = subparsers.add_parser(
+        "servidor-entrenamiento",
+        aliases=["training-server", "train-server", "ts"],
+        help="Levanta el dashboard de monitoreo de entrenamiento",
+        description="Levanta un servidor web en http://localhost:8765 para monitorear el entrenamiento en tiempo real.",
+        epilog="Ejemplos:\n  mondial servidor-entrenamiento\n  mondial servidor-entrenamiento --port 9000",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    training_server_parser.add_argument("--port", type=int, default=None, help="Puerto (default: 8765)")
+    training_server_parser.add_argument("--host", type=str, default=None, help="Host (default: 127.0.0.1)")
+    training_server_parser.set_defaults(func=cmd_training_server)
 
     # health
     health_parser = subparsers.add_parser("health", help="Consulta /health del servidor", description="Consulta el endpoint de health del servidor FastAPI.")
