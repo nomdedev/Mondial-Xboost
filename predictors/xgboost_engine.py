@@ -84,43 +84,51 @@ def default_n_jobs(device: str) -> int:
 
 
 def _fillna(x: pd.DataFrame) -> pd.DataFrame:
-    """Fill missing values with sensible defaults."""
+    """Fill missing values with sensible defaults; create missing columns."""
     x = x.copy()
-    # Elo diff default 0 (even teams)
-    x["elo_diff"] = x["elo_diff"].fillna(0.0)
-    # Form / goals defaults to neutral / average
-    for col in [
-        "home_points_avg_5", "home_points_avg_10",
-        "away_points_avg_5", "away_points_avg_10",
-        "home_win_rate_10", "home_draw_rate_10", "home_loss_rate_10",
-        "away_win_rate_10", "away_draw_rate_10", "away_loss_rate_10",
-        "h2h_last_result",
-    ]:
-        x[col] = x[col].fillna(0.5 if "rate" in col or "points" in col else 0.0)
-    for col in [
-        "home_goals_scored_avg_10", "home_goals_conceded_avg_10",
-        "away_goals_scored_avg_10", "away_goals_conceded_avg_10",
-        "h2h_goals_avg",
-    ]:
-        x[col] = x[col].fillna(1.3)  # global average-ish
-    x["home_matches_played"] = x["home_matches_played"].fillna(0).astype(int)
-    x["away_matches_played"] = x["away_matches_played"].fillna(0).astype(int)
-    x["h2h_wins_diff"] = x["h2h_wins_diff"].fillna(0.0)
-    x["h2h_years_since"] = x["h2h_years_since"].fillna(20.0)
-    x["neutral"] = x["neutral"].fillna(False).astype(bool)
-    # New features
-    for col in ["home_momentum_3", "away_momentum_3"]:
-        if col in x.columns:
-            x[col] = x[col].fillna(0.0)
-    for col in ["home_sos_5", "away_sos_5"]:
-        if col in x.columns:
-            x[col] = x[col].fillna(1500.0)
-    for col in ["home_points_weighted_10", "away_points_weighted_10"]:
-        if col in x.columns:
-            x[col] = x[col].fillna(0.5)
-    for col in ["tournament_importance"]:
-        if col in x.columns:
-            x[col] = x[col].fillna(1.0)
+
+    defaults = {
+        "elo_diff": 0.0,
+        "elo_diff_recent": 0.0,
+        "home_points_avg_5": 0.5,
+        "home_points_avg_10": 0.5,
+        "away_points_avg_5": 0.5,
+        "away_points_avg_10": 0.5,
+        "home_win_rate_10": 0.0,
+        "home_draw_rate_10": 0.0,
+        "home_loss_rate_10": 0.0,
+        "away_win_rate_10": 0.0,
+        "away_draw_rate_10": 0.0,
+        "away_loss_rate_10": 0.0,
+        "h2h_last_result": 0.0,
+        "home_goals_scored_avg_10": 1.3,
+        "home_goals_conceded_avg_10": 1.3,
+        "away_goals_scored_avg_10": 1.3,
+        "away_goals_conceded_avg_10": 1.3,
+        "h2h_goals_avg": 1.3,
+        "home_matches_played": 0,
+        "away_matches_played": 0,
+        "h2h_wins_diff": 0.0,
+        "h2h_years_since": 20.0,
+        "neutral": False,
+        "home_momentum_3": 0.0,
+        "away_momentum_3": 0.0,
+        "home_sos_5": 1500.0,
+        "away_sos_5": 1500.0,
+        "home_points_weighted_10": 0.5,
+        "away_points_weighted_10": 0.5,
+        "tournament_importance": 1.0,
+    }
+
+    for col, default in defaults.items():
+        if col not in x.columns:
+            x[col] = default
+        if col in ("home_matches_played", "away_matches_played"):
+            x[col] = x[col].fillna(default).astype(int)
+        elif col == "neutral":
+            x[col] = x[col].fillna(default).astype(bool)
+        else:
+            x[col] = x[col].fillna(default)
     return x
 
 
@@ -178,8 +186,8 @@ class XGBoostFootballPredictor:
         self.feature_cols = FEATURE_COLS
 
     def _prepare_x(self, df: pd.DataFrame) -> pd.DataFrame:
-        x = df[self.feature_cols].copy()
-        return _fillna(x)
+        x = _fillna(df)
+        return x[self.feature_cols]
 
     def fit(
         self,

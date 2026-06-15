@@ -206,6 +206,22 @@ def build_features_for_fixtures(fixtures: list[dict]) -> pd.DataFrame:
     features["h2h_wins_diff"] = features["h2h_wins_diff"].fillna(0.0)
     features["h2h_years_since"] = features["h2h_years_since"].fillna(20.0)
 
+    # The predictor's FEATURE_COLS may include newer features not yet
+    # computed by the historical dataset pipeline. Add sensible defaults
+    # so the model receives a complete feature vector.
+    feature_defaults = {
+        "home_momentum_3": 0.0,
+        "away_momentum_3": 0.0,
+        "home_sos_5": 1500.0,
+        "away_sos_5": 1500.0,
+        "home_points_weighted_10": 0.5,
+        "away_points_weighted_10": 0.5,
+        "tournament_importance": 1.0,
+    }
+    for col, default in feature_defaults.items():
+        if col not in features.columns:
+            features[col] = default
+
     return features[FEATURE_COLS + ["home_team", "away_team", "date"]]
 
 

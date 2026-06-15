@@ -1,1029 +1,576 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es-AR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mondial-Xboost - Dashboard</title>
+    <title>Mondial-Xboost — Laboratorio ML</title>
+    <meta name="description" content="Dashboard de entrenamiento y predicciones del motor Mondial-Xboost.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background: #0f172a; color: #e2e8f0; }
-        .card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 20px; }
-        .metric { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border: 1px solid #334155; }
-        .btn-primary { background: #3b82f6; color: white; padding: 10px 20px; border-radius: 8px; font-weight: 600; }
-        .btn-primary:hover { background: #2563eb; }
-        .btn-secondary { background: #334155; color: white; padding: 10px 20px; border-radius: 8px; }
-        .progress-bar { background: #334155; height: 8px; border-radius: 4px; overflow: hidden; }
-        .progress-fill { background: #3b82f6; height: 100%; transition: width 0.3s; }
-        .prediction-home { background: #10b981; }
-        .prediction-draw { background: #f59e0b; }
-        .prediction-away { background: #ef4444; }
-        .feature-bar { background: #334155; height: 24px; border-radius: 4px; position: relative; }
-        .feature-fill { background: #3b82f6; height: 100%; border-radius: 4px; }
-        .nav-item { padding: 12px 16px; cursor: pointer; border-radius: 8px; }
-        .nav-item:hover { background: #1e293b; }
-        .nav-item.active { background: #3b82f6; color: white; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
+        :root {
+            --bg: #0b1120;
+            --surface: #111827;
+            --panel: #1f2937;
+            --border: #374151;
+            --ink: #f3f4f6;
+            --muted: #9ca3af;
+            --primary: #126a5a;
+            --primary-light: #14b8a6;
+            --secondary: #315a9f;
+            --tertiary: #c98926;
+            --home: #126a5a;
+            --draw: #c98926;
+            --away: #315a9f;
+            --error: #ef4444;
+            --warning: #f59e0b;
+            --success: #10b981;
+            --radius: 10px;
+        }
+
+        * { box-sizing: border-box; }
+
+        html { color-scheme: dark; }
+
+        body {
+            font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--ink);
+            margin: 0;
+            min-height: 100vh;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            font-size: 1.25rem;
+            line-height: 1;
+        }
+
+        /* Sidebar */
+        .mx-sidebar {
+            width: 16rem;
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            inset: 0 auto 0 0;
+            z-index: 50;
+            transform: translateX(-100%);
+            transition: transform 0.2s ease;
+        }
+
+        @media (min-width: 768px) {
+            .mx-sidebar { position: sticky; transform: translateX(0); height: 100vh; }
+        }
+
+        .mx-sidebar.open { transform: translateX(0); }
+
+        .mx-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 40;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+        }
+
+        .mx-overlay.open { opacity: 1; pointer-events: auto; }
+
+        .mx-nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            width: 100%;
+            text-align: left;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            color: var(--muted);
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            transition: background 0.15s, color 0.15s;
+            font-size: 0.9375rem;
+        }
+
+        .mx-nav-item:hover,
+        .mx-nav-item:focus-visible {
+            background: rgba(255,255,255,0.06);
+            color: var(--ink);
+            outline: none;
+        }
+
+        .mx-nav-item.active {
+            background: rgba(18, 106, 90, 0.18);
+            color: var(--primary-light);
+            font-weight: 600;
+        }
+
+        .mx-nav-item:focus-visible { box-shadow: 0 0 0 2px var(--primary); }
+
+        /* Cards */
+        .mx-card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.25rem;
+        }
+
+        .mx-metric {
+            background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0) 100%);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.25rem;
+        }
+
+        .mx-metric__label {
+            color: var(--muted);
+            font-size: 0.8125rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin-bottom: 0.5rem;
+        }
+
+        .mx-metric__value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            line-height: 1.2;
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Buttons */
+        .mx-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.625rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9375rem;
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: filter 0.15s, transform 0.05s;
+        }
+
+        .mx-btn:hover { filter: brightness(1.1); }
+        .mx-btn:active { transform: translateY(1px); }
+        .mx-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+        .mx-btn--primary { background: var(--primary); color: white; }
+        .mx-btn--secondary { background: var(--panel); color: var(--ink); border-color: var(--border); }
+        .mx-btn--danger { background: rgba(239, 68, 68, 0.15); color: #fca5a5; border-color: rgba(239, 68, 68, 0.35); }
+
+        /* Forms */
+        .mx-input {
+            width: 100%;
+            background: #0b1220;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.625rem 0.875rem;
+            color: var(--ink);
+            font-size: 0.9375rem;
+        }
+
+        .mx-input:focus { outline: none; border-color: var(--primary-light); box-shadow: 0 0 0 2px rgba(18, 106, 90, 0.25); }
+
+        .mx-label {
+            display: block;
+            color: var(--muted);
+            font-size: 0.8125rem;
+            margin-bottom: 0.375rem;
+        }
+
+        /* Tables */
+        .mx-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+        .mx-table th,
+        .mx-table td { padding: 0.75rem 0.625rem; border-bottom: 1px solid var(--border); }
+        .mx-table th { color: var(--muted); text-align: left; font-weight: 500; }
+        .mx-table td { color: var(--ink); }
+        .mx-table tr:hover td { background: rgba(255,255,255,0.02); }
+        .mx-table .num { text-align: right; font-variant-numeric: tabular-nums; }
+
+        /* States */
+        .mx-state {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem;
+            border-radius: var(--radius);
+            background: rgba(255,255,255,0.03);
+            border: 1px dashed var(--border);
+            color: var(--muted);
+        }
+
+        .mx-state--error { color: #fca5a5; border-color: rgba(239, 68, 68, 0.35); background: rgba(239, 68, 68, 0.08); }
+        .mx-state--empty { color: var(--muted); }
+
+        .mx-skeleton {
+            background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.04) 75%);
+            background-size: 200% 100%;
+            animation: mx-skeleton 1.2s infinite;
+            border-radius: 6px;
+        }
+
+        @keyframes mx-skeleton {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .mx-loading .mx-skeleton { display: block; }
+
+        /* Status dot */
+        .mx-status-dot { width: 8px; height: 8px; border-radius: 999px; }
+        .mx-status-dot--ok { background: var(--success); box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.25); }
+        .mx-status-dot--error { background: var(--error); box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.25); }
+
+        /* Toast */
+        #mx-toast-container {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .mx-toast {
+            display: flex;
+            align-items: center;
+            gap: 0.625rem;
+            padding: 0.875rem 1rem;
+            min-width: 16rem;
+            max-width: 24rem;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--primary);
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+            transform: translateX(120%);
+            opacity: 0;
+            transition: transform 0.25s ease, opacity 0.25s ease;
+        }
+
+        .mx-toast--visible { transform: translateX(0); opacity: 1; }
+        .mx-toast--success { border-left-color: var(--success); }
+        .mx-toast--warning { border-left-color: var(--warning); }
+        .mx-toast--error { border-left-color: var(--error); }
+        .mx-toast__message { font-size: 0.875rem; line-height: 1.4; }
+
+        /* Progress */
+        .mx-progress { background: var(--surface); height: 8px; border-radius: 999px; overflow: hidden; }
+        .mx-progress__bar { height: 100%; background: var(--primary); transition: width 0.3s ease; }
+
+        /* Tab panels */
+        .mx-tab-panel { display: none; }
+        .mx-tab-panel.active { display: block; animation: mx-fade 0.2s ease; }
+
+        @keyframes mx-fade {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Pick colors */
+        .mx-pick--home { color: #34d399; }
+        .mx-pick--draw { color: #fbbf24; }
+        .mx-pick--away { color: #60a5fa; }
+
+        /* Feature bars */
+        .mx-feature-bar { background: var(--surface); height: 8px; border-radius: 999px; overflow: hidden; }
+        .mx-feature-bar__fill { height: 100%; background: var(--primary-light); }
+
+        /* Badges */
+        .mx-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.125rem 0.5rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .mx-badge--info { background: rgba(49, 90, 159, 0.2); color: #93c5fd; }
+        .mx-badge--success { background: rgba(18, 106, 90, 0.2); color: #6ee7b7; }
+        .mx-badge--warning { background: rgba(201, 137, 38, 0.2); color: #fcd34d; }
+        .mx-badge--danger { background: rgba(239, 68, 68, 0.15); color: #fca5a5; }
+
+        /* Skip link */
+        .mx-skip {
+            position: absolute;
+            top: -100%;
+            left: 1rem;
+            z-index: 200;
+            background: var(--primary);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0 0 8px 8px;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .mx-skip:focus { top: 0; }
     </style>
 </head>
 <body>
-    <div class="flex h-screen">
+    <a href="#mx-main" class="mx-skip">Saltar al contenido</a>
+
+    <div class="flex min-h-screen">
+        <!-- Mobile drawer overlay -->
+        <div id="mx-overlay" class="mx-overlay md:hidden" aria-hidden="true"></div>
+
         <!-- Sidebar -->
-        <div class="w-64 bg-slate-900 border-r border-slate-700 p-4">
-            <div class="mb-8">
-                <h1 class="text-xl font-bold text-blue-400">Mondial-Xboost</h1>
-                <p class="text-xs text-slate-400 mt-1">ML Prediction Platform</p>
-            </div>
-            
-            <nav>
-                <div class="nav-item" onclick="showTab('dashboard')">
-                    <span class="mr-2">📊</span> Dashboard
-                </div>
-                <div class="nav-item" onclick="showTab('training')">
-                    <span class="mr-2">🧠</span> Training
-                </div>
-                <div class="nav-item active" onclick="showTab('predictions')">
-                    <span class="mr-2">⚽</span> Predictions
-                </div>
-                <div class="nav-item" onclick="showTab('models')">
-                    <span class="mr-2">🤖</span> Models
-                </div>
-                <div class="nav-item" onclick="showTab('features')">
-                    <span class="mr-2">📈</span> Features
-                </div>
-                <div class="nav-item" onclick="showTab('agents')">
-                    <span class="mr-2">🎯</span> Agent System
-                </div>
-                <div class="nav-item" onclick="showTab('strategy')">
-                    <span class="mr-2">🧬</span> Strategy Engine
-                </div>
-            </nav>
-            
-            <div class="mt-8 p-4 bg-slate-800 rounded-lg">
-                <p class="text-xs text-slate-400">API Status</p>
-                <div class="flex items-center mt-2">
-                    <div class="w-2 h-2 rounded-full bg-green-500 mr-2" id="status-dot"></div>
-                    <span class="text-sm" id="status-text">Connected</span>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Main Content -->
-        <div class="flex-1 overflow-auto p-6">
-            <!-- Dashboard Tab -->
-            <div id="dashboard" class="tab-content">
-                <h2 class="text-2xl font-bold mb-6">Dashboard</h2>
-                
-                <div class="grid grid-cols-4 gap-4 mb-6">
-                    <div class="card metric">
-                        <p class="text-slate-400 text-sm">Total Matches</p>
-                        <p class="text-2xl font-bold text-blue-400" id="total-matches">-</p>
-                    </div>
-                    <div class="card metric">
-                        <p class="text-slate-400 text-sm">Teams</p>
-                        <p class="text-2xl font-bold text-green-400" id="total-teams">-</p>
-                    </div>
-                    <div class="card metric">
-                        <p class="text-slate-400 text-sm">Best Accuracy</p>
-                        <p class="text-2xl font-bold text-yellow-400" id="best-accuracy">-</p>
-                    </div>
-                    <div class="card metric">
-                        <p class="text-slate-400 text-sm">Models Trained</p>
-                        <p class="text-2xl font-bold text-purple-400" id="models-count">-</p>
-                    </div>
-                </div>
-                
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="card">
-                        <h3 class="font-semibold mb-4">Model Performance History</h3>
-                        <canvas id="performance-chart"></canvas>
-                    </div>
-                    <div class="card">
-                        <h3 class="font-semibold mb-4">Outcome Distribution</h3>
-                        <canvas id="outcome-chart"></canvas>
+        <aside id="mx-sidebar" class="mx-sidebar" aria-label="Navegación principal">
+            <div class="p-4 border-b border-[var(--border)]">
+                <div class="flex items-center gap-3 mb-1">
+                    <div class="w-9 h-9 rounded-lg flex items-center justify-center text-white font-bold" style="background: var(--primary);">M</div>
+                    <div>
+                        <h1 class="text-lg font-bold text-[var(--ink)]">Mondial-Xboost</h1>
+                        <p class="text-xs text-[var(--muted)]">Laboratorio ML</p>
                     </div>
                 </div>
             </div>
-            
-            <!-- Training Tab -->
-            <div id="training" class="tab-content">
-                <h2 class="text-2xl font-bold mb-6">Training Monitor</h2>
 
-                <!-- Adaptive Training -->
-                <div class="card mb-6">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="font-semibold">Adaptive Training</h3>
-                        <span id="tm-gpu-status" class="text-xs px-2 py-1 rounded bg-slate-700 text-slate-300">GPU: checking...</span>
-                    </div>
-                    <div class="grid grid-cols-4 gap-4 mb-4">
-                        <div>
-                            <label class="block text-xs text-slate-400 mb-1">Max auto batches</label>
-                            <input id="tm-adapt-batches" type="number" value="3" min="1" max="20" class="w-full bg-slate-800 border border-slate-600 rounded px-3 py-2 text-sm">
-                        </div>
-                        <div>
-                            <label class="block text-xs text-slate-400 mb-1">Trials / batch</label>
-                            <input id="tm-adapt-trials" type="number" value="30" min="5" max="500" class="w-full bg-slate-800 border border-slate-600 rounded px-3 py-2 text-sm">
-                        </div>
-                        <div>
-                            <label class="block text-xs text-slate-400 mb-1">CV folds</label>
-                            <input id="tm-adapt-folds" type="number" value="3" min="2" max="10" class="w-full bg-slate-800 border border-slate-600 rounded px-3 py-2 text-sm">
-                        </div>
-                        <div>
-                            <label class="block text-xs text-slate-400 mb-1">Embargo (days)</label>
-                            <input id="tm-adapt-embargo" type="number" value="60" min="0" max="365" class="w-full bg-slate-800 border border-slate-600 rounded px-3 py-2 text-sm">
-                        </div>
-                    </div>
-                    <div class="flex gap-3">
-                        <button id="tm-adapt-start" class="btn-primary">Start adaptive training</button>
-                        <button id="tm-adapt-stop" class="btn-secondary" disabled>Stop</button>
-                    </div>
-                    <div id="tm-adapt-status" class="mt-4 text-sm text-slate-300">Idle</div>
-                </div>
+            <nav id="mx-nav" class="flex-1 p-3 space-y-1" aria-label="Secciones"></nav>
 
-                <!-- Status Header -->
-                <div class="grid grid-cols-4 gap-4 mb-6">
-                    <div class="card metric">
-                        <p class="text-slate-400 text-sm">Status</p>
-                        <p class="text-2xl font-bold" id="tm-status">-</p>
-                    </div>
-                    <div class="card metric">
-                        <p class="text-slate-400 text-sm">Phase</p>
-                        <p class="text-2xl font-bold" id="tm-phase">-</p>
-                    </div>
-                    <div class="card metric">
-                        <p class="text-slate-400 text-sm">Trials</p>
-                        <p class="text-2xl font-bold" id="tm-trials">-</p>
-                    </div>
-                    <div class="card metric">
-                        <p class="text-slate-400 text-sm">Elapsed / ETA</p>
-                        <p class="text-2xl font-bold" id="tm-time">-</p>
-                    </div>
-                </div>
-                
-                <div class="grid grid-cols-4 gap-4 mb-6">
-                    <div class="card metric">
-                        <p class="text-slate-400 text-sm">Best Test Accuracy</p>
-                        <p class="text-2xl font-bold text-green-400" id="tm-best-acc">-</p>
-                    </div>
-                    <div class="card metric">
-                        <p class="text-slate-400 text-sm">Best Log Loss</p>
-                        <p class="text-2xl font-bold text-yellow-400" id="tm-best-loss">-</p>
-                    </div>
-                    <div class="card metric">
-                        <p class="text-slate-400 text-sm">Best Overfit Gap</p>
-                        <p class="text-2xl font-bold text-blue-400" id="tm-best-gap">-</p>
-                    </div>
-                    <div class="card metric">
-                        <p class="text-slate-400 text-sm">Canonical Accuracy</p>
-                        <p class="text-2xl font-bold text-purple-400" id="tm-canonical-acc">-</p>
-                    </div>
-                </div>
-                
-                <!-- Progress -->
-                <div class="card mb-6">
-                    <div class="flex justify-between mb-2">
-                        <span class="font-semibold">Progress</span>
-                        <span id="tm-progress-text">0%</span>
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="tm-progress-bar" style="width: 0%"></div>
-                    </div>
-                </div>
-                
-                <!-- Charts -->
-                <div class="grid grid-cols-2 gap-4 mb-6">
-                    <div class="card">
-                        <h3 class="font-semibold mb-4">Test Accuracy Evolution</h3>
-                        <canvas id="tm-acc-chart"></canvas>
-                    </div>
-                    <div class="card">
-                        <h3 class="font-semibold mb-4">Log Loss Evolution</h3>
-                        <canvas id="tm-loss-chart"></canvas>
-                    </div>
-                </div>
-                
-                <div class="grid grid-cols-2 gap-4 mb-6">
-                    <div class="card">
-                        <h3 class="font-semibold mb-4">Overfit Gap by Trial</h3>
-                        <canvas id="tm-gap-chart"></canvas>
-                    </div>
-                    <div class="card">
-                        <h3 class="font-semibold mb-4">Accuracy Distribution</h3>
-                        <canvas id="tm-dist-chart"></canvas>
-                    </div>
-                </div>
-                
-                <!-- Top Trials -->
-                <div class="card mb-6">
-                    <h3 class="font-semibold mb-4">Top Trials</h3>
-                    <div class="overflow-auto">
-                        <table class="w-full text-sm text-left">
-                            <thead class="text-slate-400 border-b border-slate-600">
-                                <tr>
-                                    <th class="py-2">Batch</th>
-                                    <th class="py-2">Trial</th>
-                                    <th class="py-2">Test Acc</th>
-                                    <th class="py-2">Val Acc</th>
-                                    <th class="py-2">Log Loss</th>
-                                    <th class="py-2">Gap</th>
-                                    <th class="py-2">Params</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tm-top-trials">
-                                <tr><td colspan="7" class="py-4 text-slate-400">No training data yet</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                
-                <!-- Event Log -->
-                <div class="card">
-                    <h3 class="font-semibold mb-4">Event Log</h3>
-                    <div id="tm-event-log" class="bg-slate-900 rounded-lg p-4 h-48 overflow-auto font-mono text-sm space-y-1">
-                        <p class="text-slate-500">Waiting for training data...</p>
+            <div class="p-4 border-t border-[var(--border)]">
+                <div class="flex items-center gap-3">
+                    <div id="mx-status-dot" class="mx-status-dot mx-status-dot--ok" aria-hidden="true"></div>
+                    <div>
+                        <p class="text-xs text-[var(--muted)]">API</p>
+                        <p id="mx-status-text" class="text-sm font-medium">Conectado</p>
                     </div>
                 </div>
             </div>
-            
-            <!-- Predictions Tab -->
-            <div id="predictions" class="tab-content active">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-bold">World Cup 2026 Predictions</h2>
-                    <button id="wc-regenerate-btn" class="btn-primary">Regenerate predictions</button>
-                </div>
+        </aside>
 
-                <p id="wc-status" class="text-sm text-slate-400 mb-4">Loading...</p>
+        <!-- Main content -->
+        <main id="mx-main" class="flex-1 min-w-0">
+            <!-- Topbar -->
+            <header class="sticky top-0 z-30 flex items-center justify-between px-4 py-3 border-b border-[var(--border)] bg-[var(--bg)]/90 backdrop-blur">
+                <button id="mx-drawer-toggle" class="md:hidden p-2 rounded-lg bg-[var(--panel)] border border-[var(--border)]" aria-label="Abrir menú" aria-expanded="false">
+                    <span class="material-symbols-outlined">menu</span>
+                </button>
+                <h2 id="mx-page-title" class="text-lg font-semibold">Panel</h2>
+                <div class="text-xs text-[var(--muted)] hidden sm:block">v2.0 · ML Bridge</div>
+            </header>
 
-                <div class="card mb-6">
-                    <h3 class="font-semibold mb-4">Predict a match</h3>
-                    <div class="grid grid-cols-3 gap-4">
-                        <div>
-                            <label class="block text-sm text-slate-400 mb-2">Home Team</label>
-                            <input type="text" id="wc-pred-home" placeholder="e.g. Argentina" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-2">
-                        </div>
-                        <div>
-                            <label class="block text-sm text-slate-400 mb-2">Away Team</label>
-                            <input type="text" id="wc-pred-away" placeholder="e.g. Brazil" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-2">
-                        </div>
-                        <div>
-                            <label class="block text-sm text-slate-400 mb-2">Date (optional)</label>
-                            <input type="date" id="wc-pred-date" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-2">
-                        </div>
+            <div class="p-4 md:p-6 space-y-6">
+                <!-- Dashboard Panel -->
+                <section id="mx-panel-dashboard" class="mx-tab-panel" role="tabpanel" aria-labelledby="mx-tab-dashboard">
+                    <div class="mb-6">
+                        <h2 class="text-2xl font-bold mb-1">Panel</h2>
+                        <p class="text-[var(--muted)]">Estado del dataset y del modelo canónico.</p>
                     </div>
-                    <button id="wc-predict-btn" class="btn-secondary mt-4">Predict</button>
-                    <div id="wc-single-result" class="mt-4"></div>
-                </div>
 
-                <div id="wc-groups">
-                    <p class="text-slate-400">Loading fixtures and predictions...</p>
-                </div>
-            </div>
-            
-            <!-- Models Tab -->
-            <div id="models" class="tab-content">
-                <h2 class="text-2xl font-bold mb-6">Trained Models</h2>
-                <div id="models-list" class="grid grid-cols-3 gap-4">
-                    <p class="text-slate-400">Loading models...</p>
-                </div>
-            </div>
-            
-            <!-- Features Tab -->
-            <div id="features" class="tab-content">
-                <h2 class="text-2xl font-bold mb-6">Feature Importance</h2>
-                <div class="card">
-                    <div id="feature-bars" class="space-y-3">
-                        <p class="text-slate-400">Train a model to see feature importance</p>
+                    <div id="dashboard-metrics" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                        <div class="mx-metric">
+                            <div class="mx-metric__label">Partidos históricos</div>
+                            <div class="mx-metric__value mx-skeleton" style="height:2rem;width:60%;">&nbsp;</div>
+                        </div>
+                        <div class="mx-metric">
+                            <div class="mx-metric__label">Equipos</div>
+                            <div class="mx-metric__value mx-skeleton" style="height:2rem;width:50%;">&nbsp;</div>
+                        </div>
+                        <div class="mx-metric">
+                            <div class="mx-metric__label">Accuracy canónica</div>
+                            <div class="mx-metric__value mx-skeleton" style="height:2rem;width:70%;">&nbsp;</div>
+                        </div>
+                        <div class="mx-metric">
+                            <div class="mx-metric__label">Modelos entrenados</div>
+                            <div class="mx-metric__value mx-skeleton" style="height:2rem;width:40%;">&nbsp;</div>
+                        </div>
                     </div>
-                </div>
-            </div>
-            
-            <!-- Agents Tab -->
-            <div id="agents" class="tab-content">
-                <h2 class="text-2xl font-bold mb-6">Agent System</h2>
-                
-                <div class="card mb-6">
-                    <h3 class="font-semibold mb-4">Auto-Improvement Loop</h3>
-                    <p class="text-slate-400 mb-4">The agent system will automatically train models with different hyperparameters, evaluate them, and keep the best one.</p>
-                    
-                    <div class="grid grid-cols-2 gap-4 mb-4">
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="mx-card">
+                            <h3 class="font-semibold mb-4">Distribución de resultados</h3>
+                            <div id="dashboard-outcome-chart-wrap" style="max-height: 260px;">
+                                <canvas id="dashboard-outcome-chart" aria-label="Gráfico de distribución de resultados históricos"></canvas>
+                            </div>
+                        </div>
+                        <div class="mx-card">
+                            <h3 class="font-semibold mb-4">Rango temporal</h3>
+                            <div id="dashboard-date-range" class="text-[var(--muted)]">Cargando…</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Training Panel -->
+                <section id="mx-panel-training" class="mx-tab-panel" role="tabpanel" aria-labelledby="mx-tab-training">
+                    <div class="mb-6">
+                        <h2 class="text-2xl font-bold mb-1">Entrenamiento</h2>
+                        <p class="text-[var(--muted)]">Monitoreo del loop de optimización y entrenamiento adaptivo.</p>
+                    </div>
+
+                    <div id="training-offline" class="mx-state mx-state--empty mb-6 hidden">
+                        <span class="material-symbols-outlined" aria-hidden="true">info</span>
                         <div>
-                            <label class="block text-sm text-slate-400 mb-2">Max Iterations</label>
-                            <input type="number" id="agent-iterations" value="10" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-2">
-                        </div>
-                        <div>
-                            <label class="block text-sm text-slate-400 mb-2">Target Metric</label>
-                            <select id="agent-metric" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-2">
-                                <option value="log_loss">Log Loss (minimize)</option>
-                                <option value="accuracy">Accuracy (maximize)</option>
-                                <option value="brier">Brier Score (minimize)</option>
-                            </select>
+                            <p class="font-medium text-[var(--ink)] mb-1">Monitor local no disponible</p>
+                            <p>El monitoreo de entrenamiento requiere ejecutar <code>python scripts/training_server.py</code> en localhost. Las predicciones y el panel sí funcionan en Vercel.</p>
                         </div>
                     </div>
-                    
-                    <button onclick="startAgentLoop()" class="btn-primary">Start Agent Loop</button>
-                </div>
-                
-                <div class="card">
-                    <h3 class="font-semibold mb-4">Agent Log</h3>
-                    <div id="agent-log" class="bg-slate-900 rounded-lg p-4 h-64 overflow-auto font-mono text-sm">
-                        <p class="text-slate-500">Agent system ready...</p>
-                    </div>
-                </div>
-            <!-- Strategy Engine Tab -->
-            <div id="strategy" class="tab-content">
-                <h2 class="text-2xl font-bold mb-6">🧬 Strategy Engine — Bayesian Optimization Loop</h2>
-                
-                <!-- Current State -->
-                <div class="grid grid-cols-4 gap-4 mb-6">
-                    <div class="card metric">
-                        <p class="text-slate-400 text-sm">Strategy Mode</p>
-                        <p class="text-xl font-bold text-red-400" id="se-mode">EXPLORATION</p>
-                    </div>
-                    <div class="card metric">
-                        <p class="text-slate-400 text-sm">Risk Level</p>
-                        <p class="text-xl font-bold text-yellow-400" id="se-risk">HIGH</p>
-                    </div>
-                    <div class="card metric">
-                        <p class="text-slate-400 text-sm">Total Trials</p>
-                        <p class="text-xl font-bold text-blue-400" id="se-trials">469</p>
-                    </div>
-                    <div class="card metric">
-                        <p class="text-slate-400 text-sm">Best Accuracy</p>
-                        <p class="text-xl font-bold text-green-400" id="se-best-acc">60.80%</p>
-                    </div>
-                </div>
-                
-                <!-- Reasoning -->
-                <div class="card mb-6">
-                    <h3 class="font-semibold mb-2">🧠 Reasoning</h3>
-                    <div id="se-reasoning" class="text-sm text-slate-300 space-y-2">
-                        <p>1. Current search space SATURATED — 469 trials across 13 batches show convergence at ~60.80%.</p>
-                        <p>2. Strong negative correlation: <span class="text-red-400">learning_rate vs accuracy (-0.65)</span>, <span class="text-red-400">max_depth vs accuracy (-0.50)</span>.</p>
-                        <p>3. Moderate positive: <span class="text-green-400">subsample vs accuracy (+0.38)</span>.</p>
-                        <p>4. Best model uses: shallow trees (depth 3-4), low LR (0.01-0.05), high subsample (~0.97).</p>
-                        <p>5. <span class="text-yellow-400">Stagnation detected:</span> Batches 5-11 all produce same ceiling (~60.8%) with 100 trials each.</p>
-                        <p>6. Decision: <span class="text-red-400 font-bold">RADICAL EXPLORATION</span> — expand parameter space beyond tested bounds.</p>
-                    </div>
-                </div>
-                
-                <!-- Correlation Matrix -->
-                <div class="card mb-6">
-                    <h3 class="font-semibold mb-4">📊 Parameter Correlation with Accuracy</h3>
-                    <div class="grid grid-cols-3 gap-3">
-                        <div class="bg-slate-800 p-3 rounded">
-                            <span class="text-sm text-slate-400">learning_rate</span>
-                            <div class="text-lg font-bold text-red-400">-0.65</div>
-                            <div class="w-full bg-slate-700 h-1.5 rounded"><div class="bg-red-500 h-1.5 rounded" style="width: 82%"></div></div>
-                        </div>
-                        <div class="bg-slate-800 p-3 rounded">
-                            <span class="text-sm text-slate-400">max_depth</span>
-                            <div class="text-lg font-bold text-red-400">-0.50</div>
-                            <div class="w-full bg-slate-700 h-1.5 rounded"><div class="bg-red-500 h-1.5 rounded" style="width: 63%"></div></div>
-                        </div>
-                        <div class="bg-slate-800 p-3 rounded">
-                            <span class="text-sm text-slate-400">subsample</span>
-                            <div class="text-lg font-bold text-green-400">+0.38</div>
-                            <div class="w-full bg-slate-700 h-1.5 rounded"><div class="bg-green-500 h-1.5 rounded" style="width: 47%"></div></div>
-                        </div>
-                        <div class="bg-slate-800 p-3 rounded">
-                            <span class="text-sm text-slate-400">gamma</span>
-                            <div class="text-lg font-bold text-green-400">+0.20</div>
-                            <div class="w-full bg-slate-700 h-1.5 rounded"><div class="bg-green-500 h-1.5 rounded" style="width: 25%"></div></div>
-                        </div>
-                        <div class="bg-slate-800 p-3 rounded">
-                            <span class="text-sm text-slate-400">n_estimators</span>
-                            <div class="text-lg font-bold text-red-300">-0.20</div>
-                            <div class="w-full bg-slate-700 h-1.5 rounded"><div class="bg-red-400 h-1.5 rounded" style="width: 25%"></div></div>
-                        </div>
-                        <div class="bg-slate-800 p-3 rounded">
-                            <span class="text-sm text-slate-400">colsample_bytree</span>
-                            <div class="text-lg font-bold text-slate-400">-0.07</div>
-                            <div class="w-full bg-slate-700 h-1.5 rounded"><div class="bg-slate-500 h-1.5 rounded" style="width: 9%"></div></div>
-                        </div>
-                    </div>
-                    <p class="text-xs text-slate-500 mt-3">Negative correlation = lower values improve accuracy. Positive = higher values improve accuracy.</p>
-                </div>
-                
-                <!-- New Configs -->
-                <div class="card mb-6">
-                    <h3 class="font-semibold mb-4">🚀 New Configurations (Exploration Mode)</h3>
-                    <div id="se-configs" class="space-y-4">
-                        <!-- Config 1: Extrema Regularization -->
-                        <div class="bg-slate-800 p-4 rounded-lg border-l-4 border-red-500">
-                            <div class="flex justify-between items-start mb-2">
-                                <h4 class="font-bold text-red-300">C1: Extreme Regularization</h4>
-                                <span class="px-2 py-0.5 bg-red-900 text-red-300 text-xs rounded font-bold">RISK: HIGH</span>
+
+                    <div id="training-content">
+                        <div class="mx-card mb-6">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+                                <h3 class="font-semibold">Entrenamiento adaptivo</h3>
+                                <span id="tm-gpu-status" class="mx-badge mx-badge--info">GPU: verificando…</span>
                             </div>
-                            <div class="grid grid-cols-4 gap-2 text-xs mb-2">
-                                <div>n_estimators=300</div>
-                                <div>max_depth=2</div>
-                                <div>learning_rate=0.003</div>
-                                <div>subsample=0.5</div>
-                                <div>colsample_bytree=0.4</div>
-                                <div>reg_alpha=50.0</div>
-                                <div>reg_lambda=50.0</div>
-                                <div>min_child_weight=20</div>
-                                <div>gamma=5.0</div>
-                                <div>max_delta_step=10.0</div>
-                                <div>num_parallel_tree=5</div>
-                                <div>tree_method=hist</div>
-                            </div>
-                            <p class="text-xs text-slate-400">Hypothesis: Massive regularization + shallow trees + parallel trees prevents any overfitting while ensemble effect boosts generalization. Expected: 59-62%.</p>
-                        </div>
-                        
-                        <!-- Config 2: Deep + Slow -->
-                        <div class="bg-slate-800 p-4 rounded-lg border-l-4 border-yellow-500">
-                            <div class="flex justify-between items-start mb-2">
-                                <h4 class="font-bold text-yellow-300">C2: Deep + Slow Learning</h4>
-                                <span class="px-2 py-0.5 bg-yellow-900 text-yellow-300 text-xs rounded font-bold">RISK: HIGH</span>
-                            </div>
-                            <div class="grid grid-cols-4 gap-2 text-xs mb-2">
-                                <div>n_estimators=2000</div>
-                                <div>max_depth=12</div>
-                                <div>learning_rate=0.002</div>
-                                <div>subsample=0.95</div>
-                                <div>colsample_bytree=0.6</div>
-                                <div>reg_alpha=0.5</div>
-                                <div>reg_lambda=1.0</div>
-                                <div>min_child_weight=1</div>
-                                <div>gamma=0.0</div>
-                                <div>max_delta_step=8.0</div>
-                                <div>num_parallel_tree=3</div>
-                                <div>tree_method=approx</div>
-                            </div>
-                            <p class="text-xs text-slate-400">Hypothesis: Double Descent regime. Very deep trees + very slow LR + many trees explores interpolation regime. Expected: 58-63%.</p>
-                        </div>
-                        
-                        <!-- Config 3: Lossguide -->
-                        <div class="bg-slate-800 p-4 rounded-lg border-l-4 border-purple-500">
-                            <div class="flex justify-between items-start mb-2">
-                                <h4 class="font-bold text-purple-300">C3: Lossguide + High Subsample</h4>
-                                <span class="px-2 py-0.5 bg-purple-900 text-purple-300 text-xs rounded font-bold">RISK: VERY HIGH</span>
-                            </div>
-                            <div class="grid grid-cols-4 gap-2 text-xs mb-2">
-                                <div>n_estimators=500</div>
-                                <div>max_depth=0</div>
-                                <div>learning_rate=0.01</div>
-                                <div>subsample=1.0</div>
-                                <div>colsample_bytree=0.55</div>
-                                <div>reg_alpha=10.0</div>
-                                <div>reg_lambda=10.0</div>
-                                <div>min_child_weight=3</div>
-                                <div>gamma=2.0</div>
-                                <div>max_delta_step=5.0</div>
-                                <div>num_parallel_tree=4</div>
-                                <div>tree_method=hist</div>
-                                <div>grow_policy=lossguide</div>
-                                <div>max_leaves=64</div>
-                            </div>
-                            <p class="text-xs text-slate-400">Hypothesis: Lossguide growing (leaf-wise) finds better splits than depthwise. High regularization prevents leaf-wise overfitting. Expected: 59-62%.</p>
-                        </div>
-                        
-                        <!-- Config 4: Bagging Ensemble -->
-                        <div class="bg-slate-800 p-4 rounded-lg border-l-4 border-blue-500">
-                            <div class="flex justify-between items-start mb-2">
-                                <h4 class="font-bold text-blue-300">C4: Random Forest Mode + High LR</h4>
-                                <span class="px-2 py-0.5 bg-blue-900 text-blue-300 text-xs rounded font-bold">RISK: MEDIUM</span>
-                            </div>
-                            <div class="grid grid-cols-4 gap-2 text-xs mb-2">
-                                <div>n_estimators=800</div>
-                                <div>max_depth=6</div>
-                                <div>learning_rate=0.3</div>
-                                <div>subsample=0.85</div>
-                                <div>colsample_bytree=0.7</div>
-                                <div>reg_alpha=0.01</div>
-                                <div>reg_lambda=0.1</div>
-                                <div>min_child_weight=2</div>
-                                <div>gamma=0.5</div>
-                                <div>max_delta_step=1.0</div>
-                                <div>num_parallel_tree=8</div>
-                                <div>tree_method=auto</div>
-                                <div>colsample_bylevel=0.5</div>
-                                <div>colsample_bynode=0.5</div>
-                            </div>
-                            <p class="text-xs text-slate-400">Hypothesis: num_parallel_tree > 1 creates RF-like ensemble within XGBoost. High LR is unusual but with bagging effect it may diversify trees. Expected: 59-61%.</p>
-                        </div>
-                        
-                        <!-- Config 5: Ultra Sparse -->
-                        <div class="bg-slate-800 p-4 rounded-lg border-l-4 border-emerald-500">
-                            <div class="flex justify-between items-start mb-2">
-                                <h4 class="font-bold text-emerald-300">C5: Ultra Sparse + High Gamma</h4>
-                                <span class="px-2 py-0.5 bg-emerald-900 text-emerald-300 text-xs rounded font-bold">RISK: HIGH</span>
-                            </div>
-                            <div class="grid grid-cols-4 gap-2 text-xs mb-2">
-                                <div>n_estimators=150</div>
-                                <div>max_depth=3</div>
-                                <div>learning_rate=0.05</div>
-                                <div>subsample=0.98</div>
-                                <div>colsample_bytree=0.3</div>
-                                <div>reg_alpha=20.0</div>
-                                <div>reg_lambda=5.0</div>
-                                <div>min_child_weight=15</div>
-                                <div>gamma=3.0</div>
-                                <div>max_delta_step=7.0</div>
-                                <div>num_parallel_tree=1</div>
-                                <div>tree_method=hist</div>
-                                <div>max_bin=128</div>
-                            </div>
-                            <p class="text-xs text-slate-400">Hypothesis: Extremely sparse trees (colsample=0.3, gamma=3) + high L1/L2 + high min_child. Forces model to find only the most robust splits. Expected: 58-61%.</p>
-                        </div>
-                        
-                        <!-- Config 6: Full Hist + Large Bins -->
-                        <div class="bg-slate-800 p-4 rounded-lg border-l-4 border-pink-500">
-                            <div class="flex justify-between items-start mb-2">
-                                <h4 class="font-bold text-pink-300">C6: Histogram + High Colsample</h4>
-                                <span class="px-2 py-0.5 bg-pink-900 text-pink-300 text-xs rounded font-bold">RISK: MEDIUM</span>
-                            </div>
-                            <div class="grid grid-cols-4 gap-2 text-xs mb-2">
-                                <div>n_estimators=600</div>
-                                <div>max_depth=5</div>
-                                <div>learning_rate=0.008</div>
-                                <div>subsample=0.9</div>
-                                <div>colsample_bytree=0.9</div>
-                                <div>reg_alpha=0.001</div>
-                                <div>reg_lambda=5.0</div>
-                                <div>min_child_weight=6</div>
-                                <div>gamma=0.8</div>
-                                <div>max_delta_step=2.0</div>
-                                <div>num_parallel_tree=2</div>
-                                <div>tree_method=hist</div>
-                                <div>max_bin=512</div>
-                            </div>
-                            <p class="text-xs text-slate-400">Hypothesis: hist method + 512 bins captures fine-grained patterns. High colsample + moderate depth diversifies trees. Low LR prevents overfit. Expected: 60-62%.</p>
-                        </div>
-                        
-                        <!-- Config 7: New Features + Label Smoothing -->
-                        <div class="bg-slate-800 p-4 rounded-lg border-l-4 border-cyan-500">
-                            <div class="flex justify-between items-start mb-2">
-                                <h4 class="font-bold text-cyan-300">C7: New Features + Label Smoothing</h4>
-                                <span class="px-2 py-0.5 bg-cyan-900 text-cyan-300 text-xs rounded font-bold">RISK: HIGH</span>
-                            </div>
-                            <div class="grid grid-cols-4 gap-2 text-xs mb-2">
-                                <div>n_estimators=400</div>
-                                <div>max_depth=4</div>
-                                <div>learning_rate=0.02</div>
-                                <div>subsample=0.85</div>
-                                <div>colsample_bytree=0.6</div>
-                                <div>reg_alpha=0.5</div>
-                                <div>reg_lambda=1.0</div>
-                                <div>min_child_weight=7</div>
-                                <div>gamma=0.6</div>
-                                <div>max_delta_step=3.0</div>
-                                <div>num_parallel_tree=3</div>
-                                <div>tree_method=hist</div>
-                                <div>max_bin=256</div>
-                                <div>NEW: Use --aggressive --label-smoothing flags</div>
-                            </div>
-                            <p class="text-xs text-slate-400">Hypothesis: New features (momentum, SOS, entropy-weighted) + label smoothing (soft targets from Elo prior) breaks through the ceiling by providing signal the old features couldn't capture. Expected: 60-64%.</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Checkpoint Decision -->
-                <div class="card mb-6">
-                    <h3 class="font-semibold mb-2">🏁 Checkpoint Decision</h3>
-                    <div class="bg-slate-800 p-4 rounded-lg">
-                        <p class="text-yellow-400 font-bold">⚠️ TEST — 7 configs in parallel</p>
-                        <p class="text-sm text-slate-300 mt-1">Current best (60.80%) is preserved as checkpoint. If any new config beats 61.0%, it becomes the new checkpoint. Configs performing below 57% will be discarded.</p>
-                    </div>
-                </div>
-                
-                <!-- Execute button -->
-                <div class="flex gap-3">
-                    <button onclick="executeStrategyConfig(1)" class="btn-primary">Run Config 1: Extreme Regularization</button>
-                    <button onclick="executeStrategyAll()" class="btn-secondary">Run All 7 Configs</button>
-                </div>
-                <div id="se-execution-log" class="mt-4 card">
-                    <p class="text-slate-400 text-sm">Ready to execute. Click a config above to start.</p>
-                </div>
-            </div>
-            
-            </div>
-        </div>
-    </div>
-    
-    <script>
-        const API_URL = '';
-        let performanceChart = null;
-        let outcomeChart = null;
-        
-        function showTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            event.target.closest('.nav-item').classList.add('active');
-            
-            if (tabId === 'dashboard') loadDashboard();
-            if (tabId === 'models') loadModels();
-            if (tabId === 'features') loadFeatures();
-        }
-        
-        async function loadDashboard() {
-            try {
-                const stats = await fetch(`${API_URL}/dataset/stats`).then(r => r.json());
-                document.getElementById('total-matches').textContent = stats.total_matches?.toLocaleString() || '-';
-                document.getElementById('total-teams').textContent = stats.teams || '-';
-                
-                const metrics = await fetch(`${API_URL}/metrics`).then(r => r.json());
-                const best = metrics.metrics?.[0];
-                document.getElementById('best-accuracy').textContent = best ? (best.accuracy * 100).toFixed(1) + '%' : '-';
-                document.getElementById('models-count').textContent = metrics.metrics?.length || 0;
-                
-                // Performance chart
-                const ctx = document.getElementById('performance-chart').getContext('2d');
-                if (performanceChart) performanceChart.destroy();
-                
-                const labels = metrics.metrics?.map(m => m.trained_at?.substring(0, 10)) || [];
-                const accData = metrics.metrics?.map(m => m.accuracy * 100) || [];
-                const lossData = metrics.metrics?.map(m => m.log_loss) || [];
-                
-                performanceChart = new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: labels.reverse(),
-                        datasets: [{
-                            label: 'Accuracy %',
-                            data: accData.reverse(),
-                            borderColor: '#3b82f6',
-                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                            fill: true
-                        }, {
-                            label: 'Log Loss',
-                            data: lossData.reverse(),
-                            borderColor: '#ef4444',
-                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                            fill: true,
-                            yAxisID: 'y1'
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        scales: {
-                            y: { beginAtZero: true, max: 100 },
-                            y1: { position: 'right', beginAtZero: true }
-                        }
-                    }
-                });
-                
-                // Outcome chart
-                const ctx2 = document.getElementById('outcome-chart').getContext('2d');
-                if (outcomeChart) outcomeChart.destroy();
-                
-                const outcomes = stats.outcome_distribution || {};
-                outcomeChart = new Chart(ctx2, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Home Win', 'Draw', 'Away Win'],
-                        datasets: [{
-                            data: [outcomes.H || 0, outcomes.D || 0, outcomes.A || 0],
-                            backgroundColor: ['#10b981', '#f59e0b', '#ef4444']
-                        }]
-                    }
-                });
-            } catch (e) {
-                console.error('Dashboard error:', e);
-            }
-        }
-        
-        async function startTraining() {
-            const config = {
-                model_name: document.getElementById('train-model-name').value,
-                min_date: document.getElementById('train-min-date').value,
-                test_size: parseFloat(document.getElementById('train-test-size').value),
-                hyperparams: JSON.parse(document.getElementById('train-hyperparams').value)
-            };
-            
-            try {
-                const response = await fetch(`${API_URL}/train`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(config)
-                });
-                const data = await response.json();
-                
-                const jobsDiv = document.getElementById('training-jobs');
-                const jobEl = document.createElement('div');
-                jobEl.className = 'card';
-                jobEl.id = `job-${data.job_id}`;
-                jobEl.innerHTML = `
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <p class="font-semibold">${config.model_name}</p>
-                            <p class="text-sm text-slate-400">${data.job_id}</p>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-sm font-semibold status">Queued</p>
-                            <div class="progress-bar w-32 mt-1">
-                                <div class="progress-fill" style="width: 0%"></div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                jobsDiv.appendChild(jobEl);
-                
-                // Poll for status
-                pollTrainingStatus(data.job_id);
-            } catch (e) {
-                alert('Error starting training: ' + e.message);
-            }
-        }
-        
-        async function pollTrainingStatus(jobId) {
-            const interval = setInterval(async () => {
-                try {
-                    const response = await fetch(`${API_URL}/train/${jobId}`);
-                    const job = await response.json();
-                    
-                    const jobEl = document.getElementById(`job-${jobId}`);
-                    if (!jobEl) return;
-                    
-                    jobEl.querySelector('.status').textContent = job.status;
-                    jobEl.querySelector('.progress-fill').style.width = `${job.progress * 100}%`;
-                    
-                    if (job.status === 'completed') {
-                        clearInterval(interval);
-                        jobEl.querySelector('.status').textContent = 'Completed ✓';
-                        jobEl.querySelector('.status').className = 'text-sm font-semibold status text-green-400';
-                        if (job.metrics) {
-                            jobEl.innerHTML += `
-                                <div class="mt-4 grid grid-cols-3 gap-2 text-sm">
-                                    <div>Accuracy: ${(job.metrics.accuracy * 100).toFixed(1)}%</div>
-                                    <div>Log Loss: ${job.metrics.log_loss.toFixed(4)}</div>
-                                    <div>Brier: ${job.metrics.brier_score.toFixed(4)}</div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+                                <div>
+                                    <label class="mx-label" for="tm-adapt-batches">Máx. batches</label>
+                                    <input id="tm-adapt-batches" type="number" value="3" min="1" max="20" class="mx-input">
                                 </div>
-                            `;
-                        }
-                    } else if (job.status === 'failed') {
-                        clearInterval(interval);
-                        jobEl.querySelector('.status').textContent = 'Failed ✗';
-                        jobEl.querySelector('.status').className = 'text-sm font-semibold status text-red-400';
-                    }
-                } catch (e) {
-                    console.error('Polling error:', e);
-                }
-            }, 2000);
-        }
-        
-        async function makePrediction() {
-            const home = document.getElementById('pred-home').value;
-            const away = document.getElementById('pred-away').value;
-            const date = document.getElementById('pred-date').value;
-            
-            if (!home || !away) {
-                alert('Please enter both teams');
-                return;
-            }
-            
-            try {
-                const response = await fetch(`${API_URL}/predict`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ home_team: home, away_team: away, date: date || undefined })
-                });
-                
-                if (!response.ok) {
-                    const error = await response.json();
-                    alert('Error: ' + error.detail);
-                    return;
-                }
-                
-                const data = await response.json();
-                
-                document.getElementById('prediction-result').classList.remove('hidden');
-                document.getElementById('pred-home-team').textContent = home;
-                document.getElementById('pred-away-team').textContent = away;
-                document.getElementById('pred-home-prob').textContent = (data.probabilities.home_win * 100).toFixed(1) + '%';
-                document.getElementById('pred-draw-prob').textContent = (data.probabilities.draw * 100).toFixed(1) + '%';
-                document.getElementById('pred-away-prob').textContent = (data.probabilities.away_win * 100).toFixed(1) + '%';
-                document.getElementById('pred-winner').textContent = data.prediction;
-                document.getElementById('pred-confidence').textContent = (data.confidence * 100).toFixed(1) + '%';
-            } catch (e) {
-                alert('Error making prediction: ' + e.message);
-            }
-        }
-        
-        async function loadModels() {
-            try {
-                const response = await fetch(`${API_URL}/models`);
-                const data = await response.json();
-                
-                const container = document.getElementById('models-list');
-                if (!data.models || data.models.length === 0) {
-                    container.innerHTML = '<p class="text-slate-400">No models trained yet</p>';
-                    return;
-                }
-                
-                container.innerHTML = data.models.map(m => `
-                    <div class="card">
-                        <p class="font-semibold">${m.name}</p>
-                        <p class="text-sm text-slate-400">Size: ${m.size_mb} MB</p>
-                        <p class="text-sm text-slate-400">Created: ${m.created.substring(0, 10)}</p>
-                    </div>
-                `).join('');
-            } catch (e) {
-                console.error('Models error:', e);
-            }
-        }
-        
-        async function loadFeatures() {
-            try {
-                const response = await fetch(`${API_URL}/features/importance`);
-                const data = await response.json();
-                
-                const container = document.getElementById('feature-bars');
-                if (!data.features || data.features.length === 0) {
-                    container.innerHTML = '<p class="text-slate-400">Train a model to see feature importance</p>';
-                    return;
-                }
-                
-                const maxImp = Math.max(...data.features.map(f => f.importance));
-                
-                container.innerHTML = data.features.map(f => {
-                    const pct = (f.importance / maxImp * 100).toFixed(1);
-                    return `
-                        <div class="flex items-center">
-                            <span class="w-48 text-sm">${f.feature}</span>
-                            <div class="flex-1 feature-bar">
-                                <div class="feature-fill" style="width: ${pct}%"></div>
+                                <div>
+                                    <label class="mx-label" for="tm-adapt-trials">Trials / batch</label>
+                                    <input id="tm-adapt-trials" type="number" value="30" min="5" max="500" class="mx-input">
+                                </div>
+                                <div>
+                                    <label class="mx-label" for="tm-adapt-folds">CV folds</label>
+                                    <input id="tm-adapt-folds" type="number" value="3" min="2" max="10" class="mx-input">
+                                </div>
+                                <div>
+                                    <label class="mx-label" for="tm-adapt-embargo">Embargo (días)</label>
+                                    <input id="tm-adapt-embargo" type="number" value="60" min="0" max="365" class="mx-input">
+                                </div>
                             </div>
-                            <span class="w-16 text-right text-sm">${f.importance.toFixed(4)}</span>
+                            <div class="flex gap-3">
+                                <button id="tm-adapt-start" class="mx-btn mx-btn--primary">Iniciar entrenamiento</button>
+                                <button id="tm-adapt-stop" class="mx-btn mx-btn--danger" disabled>Detener</button>
+                            </div>
+                            <div id="tm-adapt-status" class="mt-4 text-sm text-[var(--muted)]">Inactivo</div>
                         </div>
-                    `;
-                }).join('');
-            } catch (e) {
-                console.error('Features error:', e);
-            }
-        }
-        
-        async function startAgentLoop() {
-            const iterations = parseInt(document.getElementById('agent-iterations').value);
-            const metric = document.getElementById('agent-metric').value;
-            const log = document.getElementById('agent-log');
-            
-            log.innerHTML = '<p class="text-blue-400">Starting agent loop...</p>';
-            
-            const hyperparamSpace = {
-                n_estimators: [100, 200, 300, 500],
-                max_depth: [4, 6, 8, 10],
-                learning_rate: [0.05, 0.1, 0.15, 0.2],
-                subsample: [0.7, 0.8, 0.9],
-                colsample_bytree: [0.7, 0.8, 0.9]
-            };
-            
-            let bestMetric = metric === 'accuracy' ? 0 : Infinity;
-            let bestConfig = null;
-            
-            for (let i = 0; i < iterations; i++) {
-                const config = {
-                    model_name: `agent_iter_${i}`,
-                    min_date: '2018-01-01',
-                    test_size: 0.2,
-                    hyperparams: {
-                        n_estimators: hyperparamSpace.n_estimators[Math.floor(Math.random() * hyperparamSpace.n_estimators.length)],
-                        max_depth: hyperparamSpace.max_depth[Math.floor(Math.random() * hyperparamSpace.max_depth.length)],
-                        learning_rate: hyperparamSpace.learning_rate[Math.floor(Math.random() * hyperparamSpace.learning_rate.length)],
-                        subsample: hyperparamSpace.subsample[Math.floor(Math.random() * hyperparamSpace.subsample.length)],
-                        colsample_bytree: hyperparamSpace.colsample_bytree[Math.floor(Math.random() * hyperparamSpace.colsample_bytree.length)],
-                        random_state: 42
-                    }
-                };
-                
-                log.innerHTML += `<p class="text-slate-400">[${i + 1}/${iterations}] Training with n_estimators=${config.hyperparams.n_estimators}, max_depth=${config.hyperparams.max_depth}, lr=${config.hyperparams.learning_rate}...</p>`;
-                
-                try {
-                    const response = await fetch(`${API_URL}/train`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(config)
-                    });
-                    const data = await response.json();
-                    
-                    // Poll for completion
-                    let completed = false;
-                    while (!completed) {
-                        await new Promise(r => setTimeout(r, 3000));
-                        const status = await fetch(`${API_URL}/train/${data.job_id}`).then(r => r.json());
-                        
-                        if (status.status === 'completed') {
-                            completed = true;
-                            const m = status.metrics;
-                            const currentMetric = metric === 'accuracy' ? m.accuracy : metric === 'log_loss' ? m.log_loss : m.brier_score;
-                            
-                            const isBetter = metric === 'accuracy' ? currentMetric > bestMetric : currentMetric < bestMetric;
-                            
-                            if (isBetter) {
-                                bestMetric = currentMetric;
-                                bestConfig = config;
-                                log.innerHTML += `<p class="text-green-400">✓ New best! ${metric}: ${currentMetric.toFixed(4)}</p>`;
-                            } else {
-                                log.innerHTML += `<p class="text-slate-500">  ${metric}: ${currentMetric.toFixed(4)} (no improvement)</p>`;
-                            }
-                        } else if (status.status === 'failed') {
-                            completed = true;
-                            log.innerHTML += `<p class="text-red-400">✗ Training failed</p>`;
-                        }
-                    }
-                } catch (e) {
-                    log.innerHTML += `<p class="text-red-400">Error: ${e.message}</p>`;
-                }
-            }
-            
-            log.innerHTML += `<p class="text-blue-400 font-bold">Agent loop complete! Best ${metric}: ${bestMetric.toFixed(4)}</p>`;
-            if (bestConfig) {
-                log.innerHTML += `<p class="text-green-400">Best config: ${JSON.stringify(bestConfig.hyperparams, null, 2)}</p>`;
-            }
-        }
-        
-        // Strategy Engine execution functions
-        const STRATEGY_CONFIGS = [
-            {
-                id: 1, name: 'Extreme Regularization',
-                hyperparams: { n_estimators: 300, max_depth: 2, learning_rate: 0.003, subsample: 0.5, colsample_bytree: 0.4, reg_alpha: 50.0, reg_lambda: 50.0, min_child_weight: 20, gamma: 5.0, max_delta_step: 10.0, num_parallel_tree: 5, tree_method: 'hist' }
-            },
-            {
-                id: 2, name: 'Deep + Slow Learning',
-                hyperparams: { n_estimators: 2000, max_depth: 12, learning_rate: 0.002, subsample: 0.95, colsample_bytree: 0.6, reg_alpha: 0.5, reg_lambda: 1.0, min_child_weight: 1, gamma: 0.0, max_delta_step: 8.0, num_parallel_tree: 3, tree_method: 'approx' }
-            },
-            {
-                id: 3, name: 'Lossguide + High Subsample',
-                hyperparams: { n_estimators: 500, max_depth: 0, learning_rate: 0.01, subsample: 1.0, colsample_bytree: 0.55, reg_alpha: 10.0, reg_lambda: 10.0, min_child_weight: 3, gamma: 2.0, max_delta_step: 5.0, num_parallel_tree: 4, tree_method: 'hist', grow_policy: 'lossguide', max_leaves: 64 }
-            },
-            {
-                id: 4, name: 'RF Mode + High LR',
-                hyperparams: { n_estimators: 800, max_depth: 6, learning_rate: 0.3, subsample: 0.85, colsample_bytree: 0.7, reg_alpha: 0.01, reg_lambda: 0.1, min_child_weight: 2, gamma: 0.5, max_delta_step: 1.0, num_parallel_tree: 8, tree_method: 'auto', colsample_bylevel: 0.5, colsample_bynode: 0.5 }
-            },
-            {
-                id: 5, name: 'Ultra Sparse + High Gamma',
-                hyperparams: { n_estimators: 150, max_depth: 3, learning_rate: 0.05, subsample: 0.98, colsample_bytree: 0.3, reg_alpha: 20.0, reg_lambda: 5.0, min_child_weight: 15, gamma: 3.0, max_delta_step: 7.0, num_parallel_tree: 1, tree_method: 'hist', max_bin: 128 }
-            },
-            {
-                id: 6, name: 'Hist + Large Bins',
-                hyperparams: { n_estimators: 600, max_depth: 5, learning_rate: 0.008, subsample: 0.9, colsample_bytree: 0.9, reg_alpha: 0.001, reg_lambda: 5.0, min_child_weight: 6, gamma: 0.8, max_delta_step: 2.0, num_parallel_tree: 2, tree_method: 'hist', max_bin: 512 }
-            },
-            {
-                id: 7, name: 'New Features + Label Smoothing',
-                hyperparams: { n_estimators: 400, max_depth: 4, learning_rate: 0.02, subsample: 0.85, colsample_bytree: 0.6, reg_alpha: 0.5, reg_lambda: 1.0, min_child_weight: 7, gamma: 0.6, max_delta_step: 3.0, num_parallel_tree: 3, tree_method: 'hist', max_bin: 256 },
-                flags: '--aggressive --label-smoothing'
-            }
-        ];
-        
-        async function executeStrategyConfig(configId) {
-            const config = STRATEGY_CONFIGS.find(c => c.id === configId);
-            if (!config) return;
-            
-            const log = document.getElementById('se-execution-log');
-            log.innerHTML += `<p class="text-blue-400 text-sm">[${new Date().toLocaleTimeString()}] Starting config ${config.id}: ${config.name}...</p>`;
-            
-            try {
-                const response = await fetch('http://localhost:8765/train', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        model_name: `strategy_c${config.id}_${config.name.toLowerCase().replace(/\s+/g, '_')}`,
-                        hyperparams: config.hyperparams,
-                        flags: config.flags || ''
-                    })
-                });
-                const data = await response.json();
-                log.innerHTML += `<p class="text-green-400 text-sm">[${new Date().toLocaleTimeString()}] ✓ Config ${config.id} submitted (job: ${data.job_id || 'ok'})</p>`;
-            } catch (e) {
-                log.innerHTML += `<p class="text-red-400 text-sm">[${new Date().toLocaleTimeString()}] ✗ Error: ${e.message}. Run manually:</p>`;
-                log.innerHTML += `<pre class="text-xs bg-slate-900 p-2 mt-1 rounded text-slate-300">python scripts/loop_engineering.py --batch 14 --trials 50 --aggressive</pre>`;
-            }
-        }
-        
-        async function executeStrategyAll() {
-            for (const config of STRATEGY_CONFIGS) {
-                await executeStrategyConfig(config.id);
-                await new Promise(r => setTimeout(r, 1000));
-            }
-        }
-        
-        // Load dashboard on startup
-        loadDashboard();
-        
-        // Check API status periodically
-        setInterval(async () => {
-            try {
-                const response = await fetch(`${API_URL}/health`);
-                const dot = document.getElementById('status-dot');
-                const text = document.getElementById('status-text');
-                
-                if (response.ok) {
-                    dot.className = 'w-2 h-2 rounded-full bg-green-500 mr-2';
-                    text.textContent = 'Connected';
-                } else {
-                    dot.className = 'w-2 h-2 rounded-full bg-red-500 mr-2';
-                    text.textContent = 'Disconnected';
-                }
-            } catch (e) {
-                document.getElementById('status-dot').className = 'w-2 h-2 rounded-full bg-red-500 mr-2';
-                document.getElementById('status-text').textContent = 'Disconnected';
-            }
-        }, 5000);
-    </script>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                            <div class="mx-metric"><div class="mx-metric__label">Estado</div><div id="tm-status" class="mx-metric__value">-</div></div>
+                            <div class="mx-metric"><div class="mx-metric__label">Fase</div><div id="tm-phase" class="mx-metric__value">-</div></div>
+                            <div class="mx-metric"><div class="mx-metric__label">Trials</div><div id="tm-trials" class="mx-metric__value">-</div></div>
+                            <div class="mx-metric"><div class="mx-metric__label">Tiempo</div><div id="tm-time" class="mx-metric__value">-</div></div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                            <div class="mx-metric"><div class="mx-metric__label">Mejor test accuracy</div><div id="tm-best-acc" class="mx-metric__value">-</div></div>
+                            <div class="mx-metric"><div class="mx-metric__label">Mejor log loss</div><div id="tm-best-loss" class="mx-metric__value">-</div></div>
+                            <div class="mx-metric"><div class="mx-metric__label">Mejor overfit gap</div><div id="tm-best-gap" class="mx-metric__value">-</div></div>
+                            <div class="mx-metric"><div class="mx-metric__label">Accuracy canónica</div><div id="tm-canonical-acc" class="mx-metric__value">-</div></div>
+                        </div>
+
+                        <div class="mx-card mb-6">
+                            <div class="flex justify-between mb-2">
+                                <span class="font-semibold">Progreso</span>
+                                <span id="tm-progress-text">0%</span>
+                            </div>
+                            <div class="mx-progress">
+                                <div id="tm-progress-bar" class="mx-progress__bar" style="width: 0%"></div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                            <div class="mx-card"><h3 class="font-semibold mb-4">Evolución de accuracy</h3><canvas id="tm-acc-chart" aria-label="Evolución de accuracy"></canvas></div>
+                            <div class="mx-card"><h3 class="font-semibold mb-4">Evolución de log loss</h3><canvas id="tm-loss-chart" aria-label="Evolución de log loss"></canvas></div>
+                            <div class="mx-card"><h3 class="font-semibold mb-4">Overfit gap por trial</h3><canvas id="tm-gap-chart" aria-label="Overfit gap por trial"></canvas></div>
+                            <div class="mx-card"><h3 class="font-semibold mb-4">Distribución de accuracy</h3><canvas id="tm-dist-chart" aria-label="Distribución de accuracy"></canvas></div>
+                        </div>
+
+                        <div class="mx-card mb-6">
+                            <h3 class="font-semibold mb-4">Mejores trials</h3>
+                            <div class="overflow-x-auto">
+                                <table class="mx-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Batch</th><th>Trial</th><th class="num">Test Acc</th><th class="num">Val Acc</th><th class="num">Log Loss</th><th class="num">Gap</th><th>Params</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tm-top-trials">
+                                        <tr><td colspan="7" class="py-4 text-[var(--muted)]">Sin datos de entrenamiento</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="mx-card">
+                            <h3 class="font-semibold mb-4">Event log</h3>
+                            <div id="tm-event-log" class="bg-[var(--bg)] rounded-lg p-4 h-48 overflow-auto font-mono text-sm space-y-1">
+                                <p class="text-[var(--muted)]">Esperando datos de entrenamiento…</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Predictions Panel -->
+                <section id="mx-panel-predictions" class="mx-tab-panel" role="tabpanel" aria-labelledby="mx-tab-predictions">
+                    <div class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div>
+                            <h2 class="text-2xl font-bold mb-1">Predicciones</h2>
+                            <p class="text-[var(--muted)]">Mundial 2026 y predicciones individuales.</p>
+                        </div>
+                        <button id="wc-regenerate-btn" class="mx-btn mx-btn--primary">
+                            <span class="material-symbols-outlined" aria-hidden="true">refresh</span>
+                            Regenerar predicciones
+                        </button>
+                    </div>
+
+                    <p id="wc-status" class="text-sm text-[var(--muted)] mb-4">Cargando…</p>
+
+                    <div class="mx-card mb-6">
+                        <h3 class="font-semibold mb-4">Predecir un partido</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div>
+                                <label class="mx-label" for="wc-pred-home">Equipo local</label>
+                                <input type="text" id="wc-pred-home" placeholder="p. ej. Argentina" class="mx-input">
+                            </div>
+                            <div>
+                                <label class="mx-label" for="wc-pred-away">Equipo visitante</label>
+                                <input type="text" id="wc-pred-away" placeholder="p. ej. Brasil" class="mx-input">
+                            </div>
+                            <div>
+                                <label class="mx-label" for="wc-pred-date">Fecha</label>
+                                <input type="date" id="wc-pred-date" class="mx-input">
+                            </div>
+                        </div>
+                        <button id="wc-predict-btn" class="mx-btn mx-btn--secondary mt-4">Predecir</button>
+                        <div id="wc-single-result" class="mt-4"></div>
+                    </div>
+
+                    <div id="wc-groups" class="space-y-6">
+                        <div class="mx-state mx-state--empty"><span class="material-symbols-outlined" aria-hidden="true">info</span><p>Cargando fixtures y predicciones…</p></div>
+                    </div>
+                </section>
+
+                <!-- Models Panel -->
+                <section id="mx-panel-models" class="mx-tab-panel" role="tabpanel" aria-labelledby="mx-tab-models">
+                    <div class="mb-6">
+                        <h2 class="text-2xl font-bold mb-1">Modelos</h2>
+                        <p class="text-[var(--muted)]">Artefactos entrenados y metadatos.</p>
+                    </div>
+                    <div id="models-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div class="mx-state mx-state--empty"><span class="material-symbols-outlined" aria-hidden="true">info</span><p>Cargando modelos…</p></div>
+                    </div>
+                </section>
+
+                <!-- Features Panel -->
+                <section id="mx-panel-features" class="mx-tab-panel" role="tabpanel" aria-labelledby="mx-tab-features">
+                    <div class="mb-6">
+                        <h2 class="text-2xl font-bold mb-1">Importancia de features</h2>
+                        <p class="text-[var(--muted)]">Contribución de cada feature al modelo canónico.</p>
+                    </div>
+                    <div class="mx-card">
+                        <div id="feature-bars" class="space-y-4">
+                            <div class="mx-state mx-state--empty"><span class="material-symbols-outlined" aria-hidden="true">info</span><p>Cargando importancia de features…</p></div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script src="/static/app.js"></script>
     <script src="/static/training.js"></script>
     <script src="/static/wc2026.js"></script>
 </body>
