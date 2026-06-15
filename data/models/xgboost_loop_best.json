@@ -1,23 +1,23 @@
 {
-  "batch": 6,
-  "trial": 1,
-  "timestamp": "2026-06-15T00:03:21.447474",
+  "batch": 10,
+  "trial": 35,
+  "timestamp": "2026-06-15T13:06:26.461584",
   "params": {
-    "n_estimators": 158,
-    "max_depth": 6,
-    "learning_rate": 0.015489415646707446,
-    "subsample": 0.5793315159514871,
-    "colsample_bytree": 0.655970347602935,
-    "reg_alpha": 0.0002646867841409783,
-    "reg_lambda": 0.0018576108363745885,
-    "min_child_weight": 8,
-    "gamma": 0.8310324879251157
+    "n_estimators": 416,
+    "max_depth": 4,
+    "learning_rate": 0.05262817118687823,
+    "subsample": 0.9694888620160322,
+    "colsample_bytree": 0.6701253482949276,
+    "reg_alpha": 0.0003530286907731756,
+    "reg_lambda": 0.012146847056835736,
+    "min_child_weight": 9,
+    "gamma": 0.906638108868945
   },
-  "val_accuracy": 60.3416,
-  "walk_forward_acc": 0.0,
-  "test_accuracy": 60.6831,
-  "log_loss": 0.8832,
-  "brier": 0.1724,
-  "train_accuracy": 62.3782,
-  "overfit_gap": 1.6952
+  "val_accuracy": 61.575,
+  "walk_forward_acc": 58.9804,
+  "test_accuracy": 60.8022,
+  "log_loss": 0.8791,
+  "brier": 0.1723,
+  "train_accuracy": 64.651,
+  "overfit_gap": 3.8488
 }

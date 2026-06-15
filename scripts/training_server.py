@@ -12,6 +12,10 @@ Endpoints:
     GET /results       → loop_engineering.json
     GET /runs          → lista de all_runs
     GET /canonical     → métricas del modelo canónico
+    GET /wc_fixtures   → World Cup 2026 group fixtures
+    GET /wc_predictions→ World Cup 2026 group predictions
+    POST /wc_predict   → predict one match
+    POST /wc_regenerate→ regenerate group-stage predictions
 """
 
 from __future__ import annotations
@@ -19,13 +23,22 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+import threading
+import time
 from pathlib import Path
 
 import uvicorn
-from fastapi import FastAPI
+from fastapi import Body, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
+
+from scripts.wc2026_engine import (
+    load_fixtures,
+    load_predictions,
+    predict_single,
+    regenerate_predictions,
+)
 
 ROOT = Path(__file__).parent.parent
 DASHBOARD_DIR = ROOT / "dashboard"
@@ -140,8 +153,52 @@ async def health() -> JSONResponse:
     return JSONResponse(content={"status": "ok"})
 
 
+@app.get("/wc_fixtures")
+async def wc_fixtures() -> JSONResponse:
+    return JSONResponse(content=load_fixtures())
+
+
+@app.get("/wc_predictions")
+async def wc_predictions() -> JSONResponse:
+    return JSONResponse(content=load_predictions())
+
+
+@app.post("/wc_predict")
+def wc_predict(body: dict = Body(...)) -> JSONResponse:
+    try:
+        prediction = predict_single(
+            home_team=body.get("home_team", ""),
+            away_team=body.get("away_team", ""),
+            date=body.get("date", ""),
+            model_name=body.get("model", "xgboost_football"),
+        )
+        return JSONResponse(content=prediction)
+    except Exception as exc:
+        return JSONResponse(content={"error": str(exc)}, status_code=400)
+
+
+@app.post("/wc_regenerate")
+def wc_regenerate(body: dict = Body(default={})) -> JSONResponse:
+    try:
+        predictions = regenerate_predictions(body.get("model", "xgboost_football"))
+        return JSONResponse(content={"predictions": predictions, "count": len(predictions)})
+    except Exception as exc:
+        return JSONResponse(content={"error": str(exc)}, status_code=400)
+
+
 # Mount static files (JS, CSS) from dashboard directory.
 app.mount("/static", StaticFiles(directory=str(DASHBOARD_DIR)), name="static")
+
+
+def _warm_up_cache() -> None:
+    """Pre-compute historical features so first prediction is fast."""
+    try:
+        start = time.time()
+        from scripts.wc2026_engine import warm_up
+        warm_up()
+        print(f"WC2026 cache ready in {time.time() - start:.1f}s")
+    except Exception as exc:
+        print(f"WC2026 warm-up failed: {exc}")
 
 
 def main() -> int:
@@ -152,6 +209,7 @@ def main() -> int:
 
     print(f"Training dashboard: http://{args.host}:{args.port}")
     print("Presioná Ctrl+C para detener.")
+    threading.Thread(target=_warm_up_cache, daemon=True).start()
     uvicorn.run(app, host=args.host, port=args.port, log_level="warning")
     return 0
 

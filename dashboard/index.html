@@ -41,10 +41,10 @@
                 <div class="nav-item" onclick="showTab('dashboard')">
                     <span class="mr-2">📊</span> Dashboard
                 </div>
-                <div class="nav-item active" onclick="showTab('training')">
+                <div class="nav-item" onclick="showTab('training')">
                     <span class="mr-2">🧠</span> Training
                 </div>
-                <div class="nav-item" onclick="showTab('predictions')">
+                <div class="nav-item active" onclick="showTab('predictions')">
                     <span class="mr-2">⚽</span> Predictions
                 </div>
                 <div class="nav-item" onclick="showTab('models')">
@@ -105,7 +105,7 @@
             </div>
             
             <!-- Training Tab -->
-            <div id="training" class="tab-content active">
+            <div id="training" class="tab-content">
                 <h2 class="text-2xl font-bold mb-6">Training Monitor</h2>
                 
                 <!-- Status Header -->
@@ -214,50 +214,36 @@
             </div>
             
             <!-- Predictions Tab -->
-            <div id="predictions" class="tab-content">
-                <h2 class="text-2xl font-bold mb-6">Match Predictions</h2>
-                
+            <div id="predictions" class="tab-content active">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold">World Cup 2026 Predictions</h2>
+                    <button id="wc-regenerate-btn" class="btn-primary">Regenerate predictions</button>
+                </div>
+
+                <p id="wc-status" class="text-sm text-slate-400 mb-4">Loading...</p><p id="wc-debug" class="text-xs text-red-400 mb-4"></p>
+
                 <div class="card mb-6">
+                    <h3 class="font-semibold mb-4">Predict a match</h3>
                     <div class="grid grid-cols-3 gap-4">
                         <div>
                             <label class="block text-sm text-slate-400 mb-2">Home Team</label>
-                            <input type="text" id="pred-home" placeholder="e.g. Argentina" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-2">
+                            <input type="text" id="wc-pred-home" placeholder="e.g. Argentina" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-2">
                         </div>
                         <div>
                             <label class="block text-sm text-slate-400 mb-2">Away Team</label>
-                            <input type="text" id="pred-away" placeholder="e.g. Brazil" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-2">
+                            <input type="text" id="wc-pred-away" placeholder="e.g. Brazil" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-2">
                         </div>
                         <div>
                             <label class="block text-sm text-slate-400 mb-2">Date (optional)</label>
-                            <input type="date" id="pred-date" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-2">
+                            <input type="date" id="wc-pred-date" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-2">
                         </div>
                     </div>
-                    <button onclick="makePrediction()" class="btn-primary mt-4">Predict</button>
+                    <button id="wc-predict-btn" class="btn-secondary mt-4">Predict</button>
+                    <div id="wc-single-result" class="mt-4"></div>
                 </div>
-                
-                <div id="prediction-result" class="hidden">
-                    <div class="card">
-                        <h3 class="font-semibold mb-4">Prediction Result</h3>
-                        <div class="flex items-center justify-between mb-6">
-                            <div class="text-center">
-                                <p class="text-lg font-semibold" id="pred-home-team">-</p>
-                                <p class="text-3xl font-bold text-green-400" id="pred-home-prob">-</p>
-                            </div>
-                            <div class="text-center">
-                                <p class="text-lg font-semibold">Draw</p>
-                                <p class="text-3xl font-bold text-yellow-400" id="pred-draw-prob">-</p>
-                            </div>
-                            <div class="text-center">
-                                <p class="text-lg font-semibold" id="pred-away-team">-</p>
-                                <p class="text-3xl font-bold text-red-400" id="pred-away-prob">-</p>
-                            </div>
-                        </div>
-                        
-                        <div class="bg-slate-800 rounded-lg p-4">
-                            <p class="text-sm text-slate-400 mb-2">Prediction: <span id="pred-winner" class="font-bold text-white">-</span></p>
-                            <p class="text-sm text-slate-400">Confidence: <span id="pred-confidence" class="font-bold text-white">-</span></p>
-                        </div>
-                    </div>
+
+                <div id="wc-groups">
+                    <p class="text-slate-400">Loading fixtures and predictions...</p>
                 </div>
             </div>
             
@@ -670,6 +656,13 @@
             }
         }, 5000);
     </script>
-    <script src="/static/training.js"></script>
+    <!-- <script src="/static/training.js"></script> -->
+    <script src="/static/wc2026.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var debug = document.getElementById('wc-debug');
+        if (debug) debug.textContent = 'DOM ready. initWC2026 defined: ' + (typeof initWC2026 !== 'undefined');
+    });
+</script>
 </body>
 </html>
