@@ -1,5 +1,4 @@
 # Exclude heavy/non-essential dirs from Vercel build
-data/
 models/
 scripts/
 tests/
@@ -12,8 +11,6 @@ venv/
 __pycache__/
 .ruff_cache/
 *.parquet
-*.csv
-*.pkl
 Makefile
 requirements-lock.txt
 requirements-dev.txt
@@ -21,3 +18,18 @@ requirements_uvicorn.txt
 .cursorrules
 CLAUDE.md
 AGENTS.md
+
+# Keep only the canonical model artifacts required by predictors/api.py.
+data/*/
+!data/models/
+data/models/*
+!data/models/xgboost_football_outcome.pkl
+!data/models/xgboost_football_home_goals.pkl
+!data/models/xgboost_football_away_goals.pkl
+!data/models/xgboost_football_meta.json
+!data/models/model_manifest.json
+
+# CSVs are excluded by default, but the canonical historical dataset is needed
+# by the prediction endpoint.
+*.csv
+!MondialXboost.Web/Data/historical_results.csv

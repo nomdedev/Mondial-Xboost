@@ -8,6 +8,7 @@ Mirrors the XGBoostFootballPredictor API so it can be swapped in via the
 from __future__ import annotations
 
 import json
+import os
 import pickle
 from pathlib import Path
 from typing import Any
@@ -21,8 +22,15 @@ from predictors.feature_engineering import FEATURE_COLS
 from predictors.model_manifest import build_manifest, hash_dataset, save_manifest
 from predictors.xgboost_engine import _fillna
 
-MODELS_DIR = Path(__file__).parent.parent / "data" / "models"
-MODELS_DIR.mkdir(parents=True, exist_ok=True)
+MODELS_DIR = Path(
+    os.getenv("MODELS_DIR", str(Path(__file__).parent.parent / "data" / "models"))
+)
+try:
+    MODELS_DIR.mkdir(parents=True, exist_ok=True)
+except OSError:
+    # Read-only filesystems (e.g. Vercel) may already contain the model files
+    # in the deployment bundle; creation is only required when saving models.
+    pass
 
 
 def _clean_params(model) -> dict[str, Any]:

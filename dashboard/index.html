@@ -110,7 +110,38 @@
             <!-- Training Tab -->
             <div id="training" class="tab-content">
                 <h2 class="text-2xl font-bold mb-6">Training Monitor</h2>
-                
+
+                <!-- Adaptive Training -->
+                <div class="card mb-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-semibold">Adaptive Training</h3>
+                        <span id="tm-gpu-status" class="text-xs px-2 py-1 rounded bg-slate-700 text-slate-300">GPU: checking...</span>
+                    </div>
+                    <div class="grid grid-cols-4 gap-4 mb-4">
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">Max auto batches</label>
+                            <input id="tm-adapt-batches" type="number" value="3" min="1" max="20" class="w-full bg-slate-800 border border-slate-600 rounded px-3 py-2 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">Trials / batch</label>
+                            <input id="tm-adapt-trials" type="number" value="30" min="5" max="500" class="w-full bg-slate-800 border border-slate-600 rounded px-3 py-2 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">CV folds</label>
+                            <input id="tm-adapt-folds" type="number" value="3" min="2" max="10" class="w-full bg-slate-800 border border-slate-600 rounded px-3 py-2 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">Embargo (days)</label>
+                            <input id="tm-adapt-embargo" type="number" value="60" min="0" max="365" class="w-full bg-slate-800 border border-slate-600 rounded px-3 py-2 text-sm">
+                        </div>
+                    </div>
+                    <div class="flex gap-3">
+                        <button id="tm-adapt-start" class="btn-primary">Start adaptive training</button>
+                        <button id="tm-adapt-stop" class="btn-secondary" disabled>Stop</button>
+                    </div>
+                    <div id="tm-adapt-status" class="mt-4 text-sm text-slate-300">Idle</div>
+                </div>
+
                 <!-- Status Header -->
                 <div class="grid grid-cols-4 gap-4 mb-6">
                     <div class="card metric">
@@ -223,7 +254,7 @@
                     <button id="wc-regenerate-btn" class="btn-primary">Regenerate predictions</button>
                 </div>
 
-                <p id="wc-status" class="text-sm text-slate-400 mb-4">Loading...</p><p id="wc-debug" class="text-xs text-red-400 mb-4"></p>
+                <p id="wc-status" class="text-sm text-slate-400 mb-4">Loading...</p>
 
                 <div class="card mb-6">
                     <h3 class="font-semibold mb-4">Predict a match</h3>
@@ -993,13 +1024,7 @@
             }
         }, 5000);
     </script>
-    <!-- <script src="/static/training.js"></script> -->
+    <script src="/static/training.js"></script>
     <script src="/static/wc2026.js"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var debug = document.getElementById('wc-debug');
-        if (debug) debug.textContent = 'DOM ready. initWC2026 defined: ' + (typeof initWC2026 !== 'undefined');
-    });
-</script>
 </body>
 </html>

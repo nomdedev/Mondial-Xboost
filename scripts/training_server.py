@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import subprocess
 import sys
 import threading
 import time
@@ -33,6 +34,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
+from scripts.agents.check_gpu_usage import audit as audit_gpu
+from scripts.training_orchestrator import REPORT_PATH as ORCHESTRATOR_REPORT_PATH
 from scripts.wc2026_engine import (
     load_fixtures,
     load_predictions,
@@ -48,6 +51,9 @@ RESULTS_PATH = MODELS_DIR / "loop_engineering.json"
 MANIFEST_PATH = MODELS_DIR / "model_manifest.json"
 
 app = FastAPI(title="Mondial-Xboost Training Monitor")
+
+# Proceso de entrenamiento adaptivo en segundo plano.
+_adaptive_process: subprocess.Popen | None = None
 
 app.add_middleware(
     CORSMiddleware,
@@ -151,6 +157,53 @@ async def canonical() -> JSONResponse:
 @app.get("/health")
 async def health() -> JSONResponse:
     return JSONResponse(content={"status": "ok"})
+
+
+@app.post("/train/adaptive")
+def train_adaptive(body: dict = Body(default={})) -> JSONResponse:
+    """Inicia el entrenamiento adaptivo en un proceso separado."""
+    global _adaptive_process
+    if _adaptive_process is not None and _adaptive_process.poll() is None:
+        return JSONResponse(content={"status": "running", "message": "El entrenamiento adaptivo ya está corriendo."})
+
+    cmd = [sys.executable, str(ROOT / "scripts" / "training_orchestrator.py")]
+    if body.get("max_auto_batches") is not None:
+        cmd.extend(["--max-auto-batches", str(body["max_auto_batches"])])
+    if body.get("trials_per_batch") is not None:
+        cmd.extend(["--trials-per-batch", str(body["trials_per_batch"])])
+    if body.get("max_trials") is not None:
+        cmd.extend(["--max-trials", str(body["max_trials"])])
+    if body.get("name"):
+        cmd.extend(["--name", str(body["name"])])
+    if body.get("no_cv"):
+        cmd.append("--no-cv")
+    if body.get("cv_folds") is not None:
+        cmd.extend(["--cv-folds", str(body["cv_folds"])])
+    if body.get("cv_embargo") is not None:
+        cmd.extend(["--cv-embargo", str(body["cv_embargo"])])
+    if body.get("no_gpu"):
+        cmd.append("--no-gpu")
+    if body.get("promote"):
+        cmd.append("--promote")
+
+    _adaptive_process = subprocess.Popen(cmd, cwd=ROOT)
+    return JSONResponse(content={"status": "started", "pid": _adaptive_process.pid})
+
+
+@app.get("/train/status")
+def train_status() -> JSONResponse:
+    """Devuelve el estado del entrenamiento adaptivo y su último reporte."""
+    running = _adaptive_process is not None and _adaptive_process.poll() is None
+    report = {}
+    if ORCHESTRATOR_REPORT_PATH.exists():
+        report = json.loads(ORCHESTRATOR_REPORT_PATH.read_text(encoding="utf-8"))
+    return JSONResponse(content={"running": running, "report": report})
+
+
+@app.get("/gpu")
+def gpu_status() -> JSONResponse:
+    """Estado de GPU/CUDA disponible para XGBoost."""
+    return JSONResponse(content=audit_gpu())
 
 
 @app.get("/wc_fixtures")

@@ -2,7 +2,7 @@
   "status": "running",
   "phase": "tuning",
   "batch": 12,
-  "total_trials": 50,
+  "total_trials": 200,
   "completed_trials": 0,
   "best_test_accuracy": 0.0,
   "best_log_loss": 99.0,
@@ -12,10 +12,10 @@
   "eta_seconds": 0,
   "recent_events": [
     {
-      "time": "2026-06-15T16:52:26.023807+00:00",
-      "message": "Batch 12 iniciado: 50 trials"
+      "time": "2026-06-15T19:04:44.022081+00:00",
+      "message": "Batch 12 iniciado: 200 trials"
     }
   ],
   "runs": [],
-  "last_update": "2026-06-15T16:52:26.023812+00:00"
+  "last_update": "2026-06-15T19:04:44.022097+00:00"
 }

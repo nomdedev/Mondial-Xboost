@@ -243,9 +243,79 @@ async function updateDashboard() {
     updateCharts(runs);
 }
 
+// Adaptive training controls.
+async function updateGpuStatus() {
+    const data = await fetchJson('/gpu');
+    const el = document.getElementById('tm-gpu-status');
+    if (!el || !data) return;
+    const color = data.status === 'PASS' ? 'bg-green-600' : data.status === 'BLOCK' ? 'bg-red-600' : 'bg-yellow-600';
+    el.className = `text-xs px-2 py-1 rounded text-white ${color}`;
+    el.textContent = `GPU: ${data.device || 'unknown'} (${data.status})`;
+}
+
+async function updateAdaptiveStatus() {
+    const data = await fetchJson('/train/status');
+    const statusEl = document.getElementById('tm-adapt-status');
+    const startBtn = document.getElementById('tm-adapt-start');
+    const stopBtn = document.getElementById('tm-adapt-stop');
+    if (!data || !statusEl) return;
+
+    const report = data.report || {};
+    const status = report.status || (data.running ? 'RUNNING' : 'IDLE');
+    const message = report.message || (data.running ? 'Adaptive training is running...' : 'Ready to start');
+    statusEl.innerHTML = `<span class="font-semibold">${status}</span> — ${message}`;
+
+    if (data.running) {
+        startBtn.disabled = true;
+        stopBtn.disabled = false;
+    } else {
+        startBtn.disabled = false;
+        stopBtn.disabled = true;
+    }
+}
+
+async function startAdaptiveTraining() {
+    const body = {
+        max_auto_batches: parseInt(document.getElementById('tm-adapt-batches').value, 10) || 3,
+        trials_per_batch: parseInt(document.getElementById('tm-adapt-trials').value, 10) || 30,
+        cv_folds: parseInt(document.getElementById('tm-adapt-folds').value, 10) || 3,
+        cv_embargo: parseInt(document.getElementById('tm-adapt-embargo').value, 10) || 60,
+    };
+    try {
+        const resp = await fetch(`${TRAINING_URL}/train/adaptive`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body),
+        });
+        const data = await resp.json();
+        updateAdaptiveStatus();
+        alert(data.message || data.status);
+    } catch (e) {
+        alert('Error starting adaptive training: ' + e.message);
+    }
+}
+
+async function stopAdaptiveTraining() {
+    if (!confirm('Stopping only disables the UI button; the server process must be killed manually. Continue?')) return;
+    document.getElementById('tm-adapt-start').disabled = false;
+    document.getElementById('tm-adapt-stop').disabled = true;
+}
+
 // Initialize when training tab is shown or on load if active.
 document.addEventListener('DOMContentLoaded', () => {
     initCharts();
     updateDashboard();
     setInterval(updateDashboard, POLL_INTERVAL_MS);
+
+    updateGpuStatus();
+    updateAdaptiveStatus();
+    setInterval(() => {
+        updateGpuStatus();
+        updateAdaptiveStatus();
+    }, POLL_INTERVAL_MS);
+
+    const startBtn = document.getElementById('tm-adapt-start');
+    const stopBtn = document.getElementById('tm-adapt-stop');
+    if (startBtn) startBtn.addEventListener('click', startAdaptiveTraining);
+    if (stopBtn) stopBtn.addEventListener('click', stopAdaptiveTraining);
 });

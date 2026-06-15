@@ -1,8 +1,9 @@
 # Minimal deps for Vercel deployment — serving predictions only.
 # Heavy training/scraping deps (selenium, optuna, etc.) are excluded.
+# xgboost-cpu avoids the ~300 MB nvidia-nccl-cu12 wheel bundled by the full xgboost package.
 fastapi>=0.110.0
 uvicorn[standard]>=0.27.0
-xgboost>=2.0.0
+xgboost-cpu>=2.0.0
 scikit-learn>=1.4.0
 pandas>=2.0.0
 numpy>=1.24.0

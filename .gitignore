@@ -109,3 +109,6 @@ data/processed/train_historical_*_sample.json
 ## Local plan files
 .kimi/plans/
 .agents/logs/*.log
+
+.vercel
+.python-version

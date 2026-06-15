@@ -1,7 +1,7 @@
 // World Cup 2026 predictions dashboard.
 
-const API_URL = ''; // same origin
-const POLL_INTERVAL_MS = 5000;
+const WC_API_URL = window.API_URL || ''; // same origin
+const WC_POLL_INTERVAL_MS = 5000;
 
 let fixtures = [];
 let predictions = [];
@@ -35,7 +35,7 @@ function groupBy(items, key) {
 
 async function fetchJson(path, options = {}) {
     try {
-        const response = await fetch(`${API_URL}${path}`, options);
+        const response = await fetch(`${WC_API_URL}${path}`, options);
         if (!response.ok) return { error: `HTTP ${response.status}` };
         return await response.json();
     } catch (e) {
@@ -217,7 +217,7 @@ function initWC2026() {
         console.log('[WC2026] init');
         updateStatus('Initializing...');
         loadData();
-        setInterval(loadData, POLL_INTERVAL_MS);
+        setInterval(loadData, WC_POLL_INTERVAL_MS);
 
         const btn = document.getElementById('wc-regenerate-btn');
         if (btn) btn.addEventListener('click', regenerate);

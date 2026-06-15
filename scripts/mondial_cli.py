@@ -256,6 +256,38 @@ def cmd_auto_loop(args: argparse.Namespace) -> int:
         command.append("--backtest")
     if args.no_walk_forward:
         command.append("--no-walk-forward")
+    if getattr(args, "no_cv", False):
+        command.append("--no-cv")
+    if getattr(args, "cv_folds", None):
+        command.extend(["--cv-folds", str(args.cv_folds)])
+    if getattr(args, "cv_embargo", None):
+        command.extend(["--cv-embargo", str(args.cv_embargo)])
+    if getattr(args, "no_gpu", False):
+        command.append("--no-gpu")
+    return _run(command)
+
+
+def cmd_train_adaptive(args: argparse.Namespace) -> int:
+    """Run adaptive training orchestrator: CV + Optuna + agents + final model."""
+    command = [PYTHON, "scripts/training_orchestrator.py"]
+    if args.max_auto_batches is not None:
+        command.extend(["--max-auto-batches", str(args.max_auto_batches)])
+    if args.trials_per_batch is not None:
+        command.extend(["--trials-per-batch", str(args.trials_per_batch)])
+    if args.max_trials is not None:
+        command.extend(["--max-trials", str(args.max_trials)])
+    if args.name:
+        command.extend(["--name", args.name])
+    if args.no_cv:
+        command.append("--no-cv")
+    if args.cv_folds is not None:
+        command.extend(["--cv-folds", str(args.cv_folds)])
+    if args.cv_embargo is not None:
+        command.extend(["--cv-embargo", str(args.cv_embargo)])
+    if args.no_gpu:
+        command.append("--no-gpu")
+    if args.promote:
+        command.append("--promote")
     return _run(command)
 
 
@@ -702,6 +734,7 @@ MENU_ITEMS: list[tuple[str, str, list[str]]] = [
     ("Auditar leakage temporal", "auditar", []),
     ("Loop engineering (Optuna)", "loop", []),
     ("Auto Loop Engineering", "auto-loop", []),
+    ("Entrenamiento adaptivo (agentes + GPU)", "entrenar-adaptivo", []),
     ("Entrenar con dashboard web", "entrenar-ui", []),
     ("Data council", "data-council", []),
     ("Dashboard de entrenamiento", "dashboard", []),
@@ -978,7 +1011,41 @@ def build_parser() -> argparse.ArgumentParser:
     auto_loop_parser.add_argument("--tune-only", action="store_true", help="Solo tuning; no reentrena ni documenta")
     auto_loop_parser.add_argument("--backtest", action="store_true", help="Correr World Cup backtest gate al final")
     auto_loop_parser.add_argument("--no-walk-forward", action="store_true", help="Deshabilitar walk-forward validation")
+    auto_loop_parser.add_argument("--no-cv", action="store_true", help="Desactiva CV temporal")
+    auto_loop_parser.add_argument("--cv-folds", type=int, default=None, help="Folds para purged CV")
+    auto_loop_parser.add_argument("--cv-embargo", type=int, default=None, help="Días de embargo entre train y test")
+    auto_loop_parser.add_argument("--no-gpu", action="store_true", help="Forzar entrenamiento en CPU")
     auto_loop_parser.set_defaults(func=cmd_auto_loop)
+
+    # entrenar-adaptivo
+    adaptive_parser = subparsers.add_parser(
+        "entrenar-adaptivo",
+        aliases=["adaptive-train", "at"],
+        help="Entrenamiento adaptivo con agentes, CV y GPU",
+        description=(
+            "Orquesta un pipeline autónomo: Data Council, Optuna con CV temporal, "
+            "auditoría de convergencia, entrenamiento final y gates de calidad. "
+            "Se adapta a la RTX A4000 16 GB y puede promover el modelo a canónico."
+        ),
+        epilog=(
+            "Ejemplos:\n"
+            "  mondial entrenar-adaptivo\n"
+            "  mondial entrenar-adaptivo --max-auto-batches 5 --trials-per-batch 50\n"
+            "  mondial entrenar-adaptivo --no-gpu --max-auto-batches 2 --trials-per-batch 10\n"
+            "  mondial entrenar-adaptivo --promote"
+        ),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    adaptive_parser.add_argument("--max-auto-batches", type=int, default=None, help="Máximo de batches automáticos")
+    adaptive_parser.add_argument("--trials-per-batch", type=int, default=None, help="Trials por batch")
+    adaptive_parser.add_argument("--max-trials", type=int, default=None, help="Máximo absoluto de trials")
+    adaptive_parser.add_argument("--name", type=str, default=None, help="Nombre del experimento final")
+    adaptive_parser.add_argument("--no-cv", action="store_true", help="Desactiva CV temporal")
+    adaptive_parser.add_argument("--cv-folds", type=int, default=None, help="Folds para purged CV")
+    adaptive_parser.add_argument("--cv-embargo", type=int, default=None, help="Días de embargo entre train y test")
+    adaptive_parser.add_argument("--no-gpu", action="store_true", help="Forzar entrenamiento en CPU")
+    adaptive_parser.add_argument("--promote", action="store_true", help="Promover modelo final a canónico")
+    adaptive_parser.set_defaults(func=cmd_train_adaptive)
 
     # entrenar-ui
     train_ui_parser = subparsers.add_parser(

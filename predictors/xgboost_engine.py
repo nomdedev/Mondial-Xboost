@@ -10,6 +10,7 @@ from __future__ import annotations
 import json
 import os
 import pickle
+import warnings
 from pathlib import Path
 from typing import Any
 
@@ -21,13 +22,65 @@ from sklearn.calibration import CalibratedClassifierCV
 from predictors.feature_engineering import FEATURE_COLS
 from predictors.model_manifest import build_manifest, hash_dataset, save_manifest
 
-MODELS_DIR = Path(__file__).parent.parent / "data" / "models"
-MODELS_DIR.mkdir(parents=True, exist_ok=True)
+MODELS_DIR = Path(
+    os.getenv("MODELS_DIR", str(Path(__file__).parent.parent / "data" / "models"))
+)
+try:
+    MODELS_DIR.mkdir(parents=True, exist_ok=True)
+except OSError:
+    # Read-only filesystems (e.g. Vercel) may already contain the model files
+    # in the deployment bundle; creation is only required when saving models.
+    pass
 
 
 def _xgboost_device() -> str:
     """Return the XGBoost device from the environment (cuda or cpu)."""
     return "cuda" if os.getenv("XGBOOST_DEVICE", "cpu").lower() == "cuda" else "cpu"
+
+
+def _xgboost_can_run_cuda() -> bool:
+    """Intenta entrenar un booster en CUDA y confirma que no haya fallback a CPU."""
+    try:
+        info = xgb.build_info()
+        if not info.get("USE_CUDA", False):
+            return False
+        X = np.random.RandomState(42).rand(100, 4)
+        y = np.random.RandomState(43).randint(0, 3, size=100)
+        dtrain = xgb.DMatrix(X, label=y)
+        params = {
+            "device": "cuda",
+            "tree_method": "hist",
+            "objective": "multi:softprob",
+            "num_class": 3,
+            "max_depth": 3,
+        }
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            xgb.train(params, dtrain, num_boost_round=5)
+            for warning in w:
+                msg = str(warning.message).lower()
+                if "no visible gpu" in msg or "changed from gpu to cpu" in msg:
+                    return False
+        return True
+    except Exception:
+        return False
+
+
+def detect_xgboost_device(prefer_gpu: bool = True) -> str:
+    """Auto-detectar GPU CUDA; respetar XGBOOST_DEVICE si está seteada."""
+    env = os.getenv("XGBOOST_DEVICE", "auto").lower()
+    if env == "cpu":
+        return "cpu"
+    if env == "cuda":
+        return "cuda"
+    if not prefer_gpu:
+        return "cpu"
+    return "cuda" if _xgboost_can_run_cuda() else "cpu"
+
+
+def default_n_jobs(device: str) -> int:
+    """n_jobs recomendado: 1 en GPU para evitar contención, -1 en CPU."""
+    return 1 if device == "cuda" else -1
 
 
 def _fillna(x: pd.DataFrame) -> pd.DataFrame:
@@ -101,6 +154,10 @@ class XGBoostFootballPredictor:
         reg_lambda: float = 1.0,
         reg_alpha: float = 0.1,
         calibrate: bool = True,
+        device: str | None = None,
+        tree_method: str = "hist",
+        max_bin: int = 256,
+        n_jobs: int | None = None,
     ):
         self.random_state = random_state
         self.n_estimators = n_estimators
@@ -111,6 +168,10 @@ class XGBoostFootballPredictor:
         self.reg_lambda = reg_lambda
         self.reg_alpha = reg_alpha
         self.calibrate = calibrate
+        self.device = device if device is not None else detect_xgboost_device()
+        self.tree_method = tree_method
+        self.max_bin = max_bin
+        self.n_jobs = n_jobs if n_jobs is not None else default_n_jobs(self.device)
         self.outcome_model: xgb.XGBClassifier | None = None
         self.home_goals_model: xgb.XGBRegressor | None = None
         self.away_goals_model: xgb.XGBRegressor | None = None
@@ -147,8 +208,10 @@ class XGBoostFootballPredictor:
             reg_alpha=self.reg_alpha,
             random_state=self.random_state,
             eval_metric="mlogloss",
-            n_jobs=-1,
-            device=_xgboost_device(),
+            n_jobs=self.n_jobs,
+            device=self.device,
+            tree_method=self.tree_method,
+            max_bin=self.max_bin,
         )
 
         clf.fit(x, y_outcome, verbose=False)
@@ -166,8 +229,10 @@ class XGBoostFootballPredictor:
             learning_rate=0.05,
             random_state=self.random_state,
             objective="reg:squarederror",
-            n_jobs=-1,
-            device=_xgboost_device(),
+            n_jobs=self.n_jobs,
+            device=self.device,
+            tree_method=self.tree_method,
+            max_bin=self.max_bin,
         )
         self.away_goals_model = xgb.XGBRegressor(
             n_estimators=200,
@@ -175,8 +240,10 @@ class XGBoostFootballPredictor:
             learning_rate=0.05,
             random_state=self.random_state,
             objective="reg:squarederror",
-            n_jobs=-1,
-            device=_xgboost_device(),
+            n_jobs=self.n_jobs,
+            device=self.device,
+            tree_method=self.tree_method,
+            max_bin=self.max_bin,
         )
         self.home_goals_model.fit(x, train_df["home_score"])
         self.away_goals_model.fit(x, train_df["away_score"])

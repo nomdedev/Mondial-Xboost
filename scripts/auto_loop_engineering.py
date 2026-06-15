@@ -377,6 +377,12 @@ def run_auto_loop(
     walk_forward: bool = True,
     aggressive: bool = False,
     label_smoothing: bool = False,
+    cv: bool = True,
+    cv_folds: int = 3,
+    cv_embargo: int = 60,
+    cv_lambda: float = 2.0,
+    use_gpu: bool = True,
+    study_name: str = "xgboost_loop",
 ) -> dict[str, Any]:
     """Run the full auto-loop engineering cycle."""
     _print_header("Mondial-Xboost — Auto Loop Engineering")
@@ -388,12 +394,26 @@ def run_auto_loop(
     print(f"{C['dim']}Experimento:{C['reset']} {experiment_name}")
     print(f"{C['dim']}Trials:{C['reset']} {n_trials}")
     print(f"{C['dim']}Walk-forward:{C['reset']} {walk_forward}")
+    print(f"{C['dim']}CV temporal:{C['reset']} {cv} ({cv_folds} folds, {cv_embargo}d embargo)")
+    print(f"{C['dim']}GPU:{C['reset']} {use_gpu}")
 
     # 1. Tuning
     batch_num = next_batch_number()
     print(f"\n{C['bold']}1) Loop Engineering (Optuna){C['reset']}")
     print(f"  Agresivo: {aggressive} | Label Smoothing: {label_smoothing}")
-    run_batch(batch_num=batch_num, n_trials=n_trials, walk_forward=walk_forward, aggressive=aggressive, label_smoothing=label_smoothing)
+    run_batch(
+        batch_num=batch_num,
+        n_trials=n_trials,
+        walk_forward=walk_forward,
+        aggressive=aggressive,
+        label_smoothing=label_smoothing,
+        cv=cv,
+        cv_folds=cv_folds,
+        cv_embargo=cv_embargo,
+        cv_lambda=cv_lambda,
+        use_gpu=use_gpu,
+        study_name=study_name,
+    )
     monitor.set_phase("analysis")
 
     # 2. Analysis
@@ -485,6 +505,12 @@ def main() -> int:
     parser.add_argument("--no-walk-forward", action="store_true", help="Deshabilitar walk-forward validation")
     parser.add_argument("--aggressive", action="store_true", help="Espacio de búsqueda agresivo (riesgo alto)")
     parser.add_argument("--label-smoothing", action="store_true", help="Usa label smoothing con prior Elo")
+    parser.add_argument("--no-cv", action="store_true", help="Desactiva CV temporal en el objetivo de Optuna")
+    parser.add_argument("--cv-folds", type=int, default=3, help="Folds para purged CV")
+    parser.add_argument("--cv-embargo", type=int, default=60, help="Días de embargo entre train y test en CV")
+    parser.add_argument("--cv-lambda", type=float, default=2.0, help="Peso de la penalización por std en CV")
+    parser.add_argument("--no-gpu", action="store_true", help="Forzar entrenamiento en CPU")
+    parser.add_argument("--study-name", type=str, default="xgboost_loop", help="Nombre del study de Optuna")
     args = parser.parse_args()
 
     try:
@@ -496,6 +522,12 @@ def main() -> int:
             walk_forward=not args.no_walk_forward,
             aggressive=args.aggressive,
             label_smoothing=args.label_smoothing,
+            cv=not args.no_cv,
+            cv_folds=args.cv_folds,
+            cv_embargo=args.cv_embargo,
+            cv_lambda=args.cv_lambda,
+            use_gpu=not args.no_gpu,
+            study_name=args.study_name,
         )
         _complete_monitor(result)
         print(f"\n{C['green']}[OK] Auto Loop Engineering completado: {result['experiment_name']}{C['reset']}")
