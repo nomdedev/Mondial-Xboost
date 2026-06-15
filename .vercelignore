@@ -1,0 +1,23 @@
+# Exclude heavy/non-essential dirs from Vercel build
+data/
+models/
+scripts/
+tests/
+docs/
+backtest/
+scrapers/
+.git/
+.venv/
+venv/
+__pycache__/
+.ruff_cache/
+*.parquet
+*.csv
+*.pkl
+Makefile
+requirements-lock.txt
+requirements-dev.txt
+requirements_uvicorn.txt
+.cursorrules
+CLAUDE.md
+AGENTS.md
