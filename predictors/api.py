@@ -10,10 +10,13 @@ Endpoints:
 from __future__ import annotations
 
 import os
+from pathlib import Path
 from typing import Any
 
 import pandas as pd
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from predictors.feature_engineering import build_features, load_historical_results
@@ -21,6 +24,16 @@ from predictors.random_forest_engine import RandomForestFootballPredictor
 from predictors.xgboost_engine import XGBoostFootballPredictor, train_and_save
 
 app = FastAPI(title="Mondial-Xboost ML Bridge")
+
+# Serve dashboard static files
+_DASHBOARD_DIR = Path(__file__).resolve().parent.parent / "dashboard"
+app.mount("/static", StaticFiles(directory=str(_DASHBOARD_DIR)), name="static")
+
+
+@app.get("/", include_in_schema=False)
+async def root():
+    return FileResponse(str(_DASHBOARD_DIR / "index.html"))
+
 
 # Cache the latest trained model in memory
 _predictors: dict[str, XGBoostFootballPredictor | RandomForestFootballPredictor] = {}
