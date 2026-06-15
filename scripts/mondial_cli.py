@@ -24,6 +24,10 @@ import os
 import shutil
 import subprocess
 import sys
+import threading
+import time
+import urllib.request
+import webbrowser
 from pathlib import Path
 
 # Force UTF-8 on Windows terminals so box-drawing and accented chars render
@@ -56,12 +60,19 @@ def _color(text: str, color: str) -> str:
 
 
 def _run(cmd: list[str], env: dict[str, str] | None = None) -> int:
-    """Run a command inside the project root."""
+    """Run a command inside the project root, tracking elapsed time."""
     run_env = os.environ.copy()
     run_env["PYTHONPATH"] = str(ROOT)
     if env:
         run_env.update(env)
-    return subprocess.call(cmd, cwd=ROOT, env=run_env)
+    start = time.time()
+    code = subprocess.call(cmd, cwd=ROOT, env=run_env)
+    elapsed = time.time() - start
+    if elapsed > 1:
+        m, s = divmod(int(elapsed), 60)
+        time_str = f"{m}m {s}s" if m else f"{s}s"
+        print(f"\n  {_color(f'Completado en {time_str}', 'dim')}")
+    return code
 
 
 def _run_shell(cmd: str, env: dict[str, str] | None = None) -> int:
@@ -248,6 +259,129 @@ def cmd_auto_loop(args: argparse.Namespace) -> int:
     return _run(command)
 
 
+def _is_training_server_running(host: str, port: int) -> bool:
+    """Return True if the training dashboard server is responding."""
+    try:
+        with urllib.request.urlopen(f"http://{host}:{port}/health", timeout=1) as resp:
+            return resp.status == 200
+    except Exception:
+        return False
+
+
+def _wait_for_training_server(host: str, port: int, timeout: float = 10.0) -> bool:
+    """Wait until the training dashboard server is healthy."""
+    url = f"http://{host}:{port}/health"
+    deadline = time.time() + timeout
+    while time.time() < deadline:
+        try:
+            with urllib.request.urlopen(url, timeout=1) as resp:
+                if resp.status == 200:
+                    return True
+        except Exception:
+            pass
+        time.sleep(0.2)
+    return False
+
+
+def _prompt_train_ui_options(args: argparse.Namespace) -> None:
+    """Prompt the user for training options when running interactively."""
+    if not sys.stdout.isatty():
+        return
+    if args.trials is None:
+        trials = input(_color("  Trials [100]: ", "cyan")).strip()
+        args.trials = int(trials) if trials else 100
+    if args.name is None:
+        name = input(_color("  Nombre del experimento [auto]: ", "cyan")).strip()
+        args.name = name or None
+    if args.walk_forward is None:
+        wf = input(_color("  ¿Walk-forward validation? (S/n): ", "cyan")).strip().lower()
+        args.walk_forward = wf not in {"n", "no"}
+    if args.backtest is None:
+        bt = input(_color("  ¿Correr backtest gate? (s/N): ", "cyan")).strip().lower()
+        args.backtest = bt in {"s", "si", "sí", "yes", "y"}
+
+
+def cmd_train_ui(args: argparse.Namespace) -> int:
+    """Launch training with live web dashboard: server + browser + auto-loop."""
+    host = args.host or "127.0.0.1"
+    port = args.port or 8765
+    url = f"http://{host}:{port}"
+
+    print()
+    print(_color("╔" + "═" * 64 + "╗", "cyan"), flush=True)
+    print(_color("║" + " Mondial-Xboost — Entrenamiento con dashboard ".center(64) + "║", "cyan"), flush=True)
+    print(_color("╚" + "═" * 64 + "╝", "cyan"), flush=True)
+    print()
+    print(f"  {C['green']}▸ Dashboard:{C['reset']}  {url}", flush=True)
+    print()
+
+    server_process: subprocess.Popen | None = None
+    if not args.no_server:
+        if _is_training_server_running(host, port):
+            print(f"  {C['yellow']}▸ El servidor de entrenamiento ya está corriendo en {url}{C['reset']}", flush=True)
+        else:
+            print(f"  {C['cyan']}▸ Levantando servidor de entrenamiento...{C['reset']}", flush=True)
+            env = {**os.environ, "PYTHONPATH": str(ROOT)}
+            server_process = subprocess.Popen(
+                [PYTHON, "scripts/training_server.py", "--host", host, "--port", str(port)],
+                cwd=ROOT,
+                env=env,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+            )
+            if not _wait_for_training_server(host, port, timeout=15):
+                print(f"  {C['red']}▸ No se pudo levantar el servidor de entrenamiento.{C['reset']}")
+                if server_process is not None:
+                    server_process.terminate()
+                return 1
+            print(f"  {C['green']}▸ Servidor listo.{C['reset']}", flush=True)
+
+    if not args.no_browser:
+        def _open_browser() -> None:
+            time.sleep(1.0)
+            webbrowser.open(url)
+        threading.Thread(target=_open_browser, daemon=True).start()
+
+    if not args.no_prompt and sys.stdout.isatty():
+        _prompt_train_ui_options(args)
+
+    # Apply defaults for non-interactive / partial usage.
+    if args.trials is None:
+        args.trials = 100
+    if args.walk_forward is None:
+        args.walk_forward = True
+    if args.backtest is None:
+        args.backtest = False
+
+    auto_argv: list[str] = ["--trials", str(args.trials)]
+    if args.name:
+        auto_argv.extend(["--name", args.name])
+    if not args.walk_forward:
+        auto_argv.append("--no-walk-forward")
+    if args.backtest:
+        auto_argv.append("--backtest")
+
+    print(f"  {C['cyan']}▸ Lanzando auto-loop:{C['reset']} mondial auto-loop {' '.join(auto_argv)}", flush=True)
+    print(f"  {C['dim']}  Presioná Ctrl+C para detener.{C['reset']}", flush=True)
+    print(flush=True)
+
+    try:
+        code = _run([PYTHON, "scripts/auto_loop_engineering.py"] + auto_argv)
+    except KeyboardInterrupt:
+        print(f"\n  {C['yellow']}▸ Entrenamiento interrumpido por el usuario.{C['reset']}")
+        code = 130
+
+    if server_process is not None:
+        print(f"  {C['dim']}▸ Cerrando servidor de entrenamiento...{C['reset']}")
+        server_process.terminate()
+        try:
+            server_process.wait(timeout=5)
+        except subprocess.TimeoutExpired:
+            server_process.kill()
+
+    return code
+
+
 def cmd_data_council(_args: argparse.Namespace) -> int:
     """Run the data council review."""
     return _run([PYTHON, "scripts/run_data_council.py"])
@@ -261,6 +395,44 @@ def cmd_dashboard(_args: argparse.Namespace) -> int:
 def cmd_serve(_args: argparse.Namespace) -> int:
     """Start the FastAPI bridge server."""
     return _run([PYTHON, "-m", "predictors.api"])
+
+
+def cmd_start(args: argparse.Namespace) -> int:
+    """Start the full platform: API + dashboard, open browser."""
+    import threading
+    import time
+    import webbrowser
+
+    port = args.port
+    host = args.host
+    url = f"http://{host}:{port}" if host != "0.0.0.0" else f"http://localhost:{port}"
+
+    print()
+    print(_color("╔" + "═" * 60 + "╗", "cyan"))
+    print(_color("║" + " Mondial-Xboost — Plataforma completa ".center(60) + "║", "cyan"))
+    print(_color("╚" + "═" * 60 + "╝", "cyan"))
+    print()
+    print(f"  {C['green']}▸ Dashboard:{C['reset']}  {url}")
+    print(f"  {C['green']}▸ API docs:{C['reset']}   {url}/docs")
+    print(f"  {C['green']}▸ Health:{C['reset']}     {url}/health")
+    print()
+    print(f"  {C['dim']}Presioná Ctrl+C para detener.{C['reset']}")
+    print()
+
+    # Open browser after a short delay
+    def _open_browser():
+        time.sleep(1.5)
+        webbrowser.open(url)
+
+    if not args.no_browser:
+        threading.Thread(target=_open_browser, daemon=True).start()
+
+    env = {"PYTHONPATH": str(ROOT)}
+    return subprocess.call(
+        [PYTHON, "-m", "uvicorn", "predictors.api:app", "--host", host, "--port", str(port), "--reload"],
+        cwd=ROOT,
+        env={**os.environ, **env},
+    )
 
 
 def cmd_training_server(args: argparse.Namespace) -> int:
@@ -530,6 +702,7 @@ MENU_ITEMS: list[tuple[str, str, list[str]]] = [
     ("Auditar leakage temporal", "auditar", []),
     ("Loop engineering (Optuna)", "loop", []),
     ("Auto Loop Engineering", "auto-loop", []),
+    ("Entrenar con dashboard web", "entrenar-ui", []),
     ("Data council", "data-council", []),
     ("Dashboard de entrenamiento", "dashboard", []),
     ("Levantar servidor", "servidor", []),
@@ -582,6 +755,18 @@ def _prompt_for_args(command: str) -> list[str]:
     elif command == "loop":
         trials = input(_color("  Trials [50]: ", "cyan")).strip()
         args.extend(["--trials", trials or "50"])
+    elif command == "entrenar-ui":
+        trials = input(_color("  Trials [100]: ", "cyan")).strip()
+        args.extend(["--trials", trials or "100"])
+        name = input(_color("  Nombre del experimento [auto]: ", "cyan")).strip()
+        if name:
+            args.extend(["--name", name])
+        wf = input(_color("  ¿Walk-forward validation? (S/n): ", "cyan")).strip().lower()
+        if wf in {"n", "no"}:
+            args.append("--no-walk-forward")
+        bt = input(_color("  ¿Correr backtest gate? (s/N): ", "cyan")).strip().lower()
+        if bt in {"s", "si", "sí", "yes", "y"}:
+            args.append("--backtest")
     return args
 
 
@@ -794,6 +979,38 @@ def build_parser() -> argparse.ArgumentParser:
     auto_loop_parser.add_argument("--backtest", action="store_true", help="Correr World Cup backtest gate al final")
     auto_loop_parser.add_argument("--no-walk-forward", action="store_true", help="Deshabilitar walk-forward validation")
     auto_loop_parser.set_defaults(func=cmd_auto_loop)
+
+    # entrenar-ui
+    train_ui_parser = subparsers.add_parser(
+        "entrenar-ui",
+        aliases=["train-ui", "tu"],
+        help="Entrena con dashboard web: levanta servidor, abre navegador y corre auto-loop",
+        description=(
+            "Orquesta una corrida de entrenamiento completa: levanta el dashboard web de "
+            "monitoreo, abre el navegador y ejecuta `mondial auto-loop`. Permite seguir el "
+            "progreso, métricas, gráficos y comparación con el modelo canónico en tiempo real."
+        ),
+        epilog=(
+            "Ejemplos:\n"
+            "  mondial entrenar-ui\n"
+            "  mondial entrenar-ui --trials 100\n"
+            "  mondial entrenar-ui --trials 50 --name exp-06 --backtest\n"
+            "  mondial entrenar-ui --no-browser --no-server --trials 20"
+        ),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    train_ui_parser.add_argument("--trials", type=int, default=None, help="Trials de Optuna (default: 100)")
+    train_ui_parser.add_argument("--name", type=str, default=None, help="Nombre del experimento y modelo")
+    train_ui_parser.add_argument("--backtest", action="store_true", default=None, help="Correr World Cup backtest gate al final")
+    train_ui_parser.add_argument("--no-backtest", dest="backtest", action="store_false", default=None, help="No correr backtest gate")
+    train_ui_parser.add_argument("--walk-forward", dest="walk_forward", action="store_true", default=None, help="Habilitar walk-forward validation (default)")
+    train_ui_parser.add_argument("--no-walk-forward", dest="walk_forward", action="store_false", default=None, help="Deshabilitar walk-forward validation")
+    train_ui_parser.add_argument("--port", type=int, default=None, help="Puerto del dashboard (default: 8765)")
+    train_ui_parser.add_argument("--host", type=str, default=None, help="Host del dashboard (default: 127.0.0.1)")
+    train_ui_parser.add_argument("--no-browser", action="store_true", help="No abrir el navegador")
+    train_ui_parser.add_argument("--no-server", action="store_true", help="No levantar el servidor de entrenamiento")
+    train_ui_parser.add_argument("--no-prompt", action="store_true", help="No preguntar opciones interactivamente")
+    train_ui_parser.set_defaults(func=cmd_train_ui)
 
     # data-council
     council_parser = subparsers.add_parser("data-council", aliases=["council"], help="Ejecuta el data council", description="Revisión del data council sobre calidad de datos.")

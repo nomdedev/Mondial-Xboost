@@ -223,6 +223,34 @@
         "overfit_gap": 0.4327
       },
       "timestamp": "2026-06-15T00:05:35.234857"
+    },
+    {
+      "batch": 8,
+      "total_runs": 2,
+      "best": {
+        "batch": 8,
+        "trial": 2,
+        "timestamp": "2026-06-15T11:18:44.528758",
+        "params": {
+          "n_estimators": 301,
+          "max_depth": 3,
+          "learning_rate": 0.028328424914589728,
+          "subsample": 0.5822124406006448,
+          "colsample_bytree": 0.6298338215169499,
+          "reg_alpha": 0.878518309179024,
+          "reg_lambda": 0.05934707709328658,
+          "min_child_weight": 5,
+          "gamma": 0.6227399143792597
+        },
+        "val_accuracy": 60.8159,
+        "walk_forward_acc": 59.1213,
+        "test_accuracy": 60.2462,
+        "log_loss": 0.8747,
+        "brier": 0.1714,
+        "train_accuracy": 61.0931,
+        "overfit_gap": 0.8468
+      },
+      "timestamp": "2026-06-15T11:18:44.534098"
     }
   ],
   "all_runs": [
@@ -2916,6 +2944,52 @@
       "brier": 0.1934,
       "train_accuracy": 100.0,
       "overfit_gap": 41.66
+    },
+    {
+      "batch": 8,
+      "trial": 1,
+      "timestamp": "2026-06-15T11:18:41.236435",
+      "params": {
+        "n_estimators": 421,
+        "max_depth": 8,
+        "learning_rate": 0.011619991637374235,
+        "subsample": 0.9500461984632492,
+        "colsample_bytree": 0.7804588948873166,
+        "reg_alpha": 0.0005339719887493028,
+        "reg_lambda": 0.016876724285563017,
+        "min_child_weight": 1,
+        "gamma": 0.08924891943185931
+      },
+      "val_accuracy": 59.7723,
+      "walk_forward_acc": 58.285,
+      "test_accuracy": 59.6902,
+      "log_loss": 0.8862,
+      "brier": 0.1733,
+      "train_accuracy": 86.1878,
+      "overfit_gap": 26.4975
+    },
+    {
+      "batch": 8,
+      "trial": 2,
+      "timestamp": "2026-06-15T11:18:44.528758",
+      "params": {
+        "n_estimators": 301,
+        "max_depth": 3,
+        "learning_rate": 0.028328424914589728,
+        "subsample": 0.5822124406006448,
+        "colsample_bytree": 0.6298338215169499,
+        "reg_alpha": 0.878518309179024,
+        "reg_lambda": 0.05934707709328658,
+        "min_child_weight": 5,
+        "gamma": 0.6227399143792597
+      },
+      "val_accuracy": 60.8159,
+      "walk_forward_acc": 59.1213,
+      "test_accuracy": 60.2462,
+      "log_loss": 0.8747,
+      "brier": 0.1714,
+      "train_accuracy": 61.0931,
+      "overfit_gap": 0.8468
     }
   ],
   "best": {
