@@ -83,8 +83,52 @@ def load_data(min_date: str = "2015-01-01", val_cutoff: str = "2023-01-01", test
     return splits
 
 
-def build_xgb(trial: optuna.Trial) -> xgb.XGBClassifier:
-    """Construye un XGBClassifier con hiperparámetros muestreados por Optuna."""
+def build_xgb(trial: optuna.Trial, aggressive: bool = False) -> xgb.XGBClassifier:
+    """Construye un XGBClassifier con hiperparámetros muestreados por Optuna.
+
+    Si aggressive=True, se expande el espacio de búsqueda significativamente
+    para explorar regímenes de high complexity + heavy regularization.
+    """
+    if aggressive:
+        max_depth = trial.suggest_int("max_depth", 2, 20)
+        n_estimators = trial.suggest_int("n_estimators", 100, 3000)
+        learning_rate = trial.suggest_float("learning_rate", 0.001, 0.5, log=True)
+        min_child_weight = trial.suggest_int("min_child_weight", 1, 20)
+        gamma = trial.suggest_float("gamma", 0.0, 5.0)
+        reg_alpha = trial.suggest_float("reg_alpha", 1e-6, 50.0, log=True)
+        reg_lambda = trial.suggest_float("reg_lambda", 1e-6, 50.0, log=True)
+        max_delta_step = trial.suggest_float("max_delta_step", 0.0, 10.0)
+        num_parallel_tree = trial.suggest_int("num_parallel_tree", 1, 10)
+        tree_method = trial.suggest_categorical("tree_method", ["auto", "hist", "approx"])
+        max_bin = trial.suggest_int("max_bin", 128, 512)
+        grow_policy = trial.suggest_categorical("grow_policy", ["depthwise", "lossguide"])
+        subsample = trial.suggest_float("subsample", 0.3, 1.0)
+        colsample_bytree = trial.suggest_float("colsample_bytree", 0.3, 1.0)
+        colsample_bylevel = trial.suggest_float("colsample_bylevel", 0.5, 1.0)
+        colsample_bynode = trial.suggest_float("colsample_bynode", 0.5, 1.0)
+        return xgb.XGBClassifier(
+            n_estimators=n_estimators,
+            max_depth=max_depth,
+            learning_rate=learning_rate,
+            subsample=subsample,
+            colsample_bytree=colsample_bytree,
+            colsample_bylevel=colsample_bylevel,
+            colsample_bynode=colsample_bynode,
+            reg_alpha=reg_alpha,
+            reg_lambda=reg_lambda,
+            min_child_weight=min_child_weight,
+            gamma=gamma,
+            max_delta_step=max_delta_step,
+            num_parallel_tree=num_parallel_tree,
+            tree_method=tree_method if tree_method != "auto" else None,
+            max_bin=max_bin,
+            grow_policy=grow_policy,
+            objective="multi:softprob",
+            eval_metric="mlogloss",
+            random_state=42,
+            n_jobs=-1,
+            verbosity=0,
+        )
     return xgb.XGBClassifier(
         n_estimators=trial.suggest_int("n_estimators", 100, 1000),
         max_depth=trial.suggest_int("max_depth", 3, 12),
@@ -164,7 +208,78 @@ def walk_forward_eval(params: dict, df: pd.DataFrame, features: list[str], folds
     return round(float(np.mean(accs)) * 100, 4) if accs else 0.0
 
 
-def run_batch(batch_num: int, n_trials: int = 50, walk_forward: bool = False) -> list[dict]:
+def purged_cv_eval(params: dict, df: pd.DataFrame, features: list[str], n_splits: int = 5, embargo_days: int = 60) -> dict:
+    """Evaluación con Purged Cross-Validation + temporal embargo.
+
+    Cada fold tiene un gap (embargo) entre train y test para evitar
+    leakage temporal. Devuelve métricas de estabilidad entre folds.
+    """
+    dates = sorted(df["date"].unique())
+    fold_size = len(dates) // (n_splits + 1)
+    accs, log_losses, briers = [], [], []
+
+    for i in range(n_splits):
+        train_end = dates[(i + 1) * fold_size]
+        test_end = dates[(i + 2) * fold_size] if (i + 2) * fold_size < len(dates) else dates[-1]
+
+        embargo_start = train_end + pd.Timedelta(days=1)
+        test_start = embargo_start + pd.Timedelta(days=embargo_days)
+
+        if test_start >= test_end:
+            continue
+
+        train_mask = df["date"] < train_end
+        embargo_mask = (df["date"] >= embargo_start) & (df["date"] < test_start)
+        test_mask = (df["date"] >= test_start) & (df["date"] <= test_end)
+
+        train_fold = df[train_mask].copy()
+        test_fold = df[test_mask & ~embargo_mask].copy()
+
+        if len(train_fold) < 100 or len(test_fold) < 10:
+            continue
+
+        model = xgb.XGBClassifier(**params, random_state=42, n_jobs=-1, verbosity=0)
+        model.fit(train_fold[features].fillna(0), train_fold["outcome"].astype(int))
+
+        preds = model.predict(test_fold[features].fillna(0))
+        proba = model.predict_proba(test_fold[features].fillna(0))
+
+        accs.append(accuracy_score(test_fold["outcome"].astype(int), preds))
+        log_losses.append(log_loss(test_fold["outcome"].astype(int), proba))
+        briers.append(sum(brier_score_loss((test_fold["outcome"] == i).astype(int), proba[:, i]) for i in range(3)) / 3)
+
+    if not accs:
+        return {"mean_acc": 0, "std_acc": 0, "min_acc": 0, "max_acc": 0}
+
+    return {
+        "mean_acc": round(float(np.mean(accs)) * 100, 4),
+        "std_acc": round(float(np.std(accs)) * 100, 4),
+        "min_acc": round(float(np.min(accs)) * 100, 4),
+        "max_acc": round(float(np.max(accs)) * 100, 4),
+        "mean_log_loss": round(float(np.mean(log_losses)), 4),
+        "stability_ratio": round(float(np.mean(accs) / (np.std(accs) + 0.001)), 4),
+    }
+
+
+def smooth_labels(outcome: pd.Series, elo_diff: pd.Series, alpha: float = 0.7) -> np.ndarray:
+    """Convierte etiquetas duras en suaves mezclando con prior basado en Elo.
+
+    Para cada partido, la etiqueta suave = alpha * onehot(outcome) + (1-alpha) * elo_prior
+    donde elo_prior es la probabilidad esperada según diferencia Elo.
+    """
+    n = len(outcome)
+    y_onehot = np.eye(3)[outcome.astype(int)]
+
+    elo_prior = np.zeros((n, 3))
+    for i, dr in enumerate(elo_diff):
+        home_exp = 1.0 / (1.0 + 10.0 ** (-dr / 400.0))
+        elo_prior[i] = [(1 - home_exp) * 0.3, 0.3, home_exp * 0.7]
+        elo_prior[i] /= elo_prior[i].sum()
+
+    return alpha * y_onehot + (1 - alpha) * elo_prior
+
+
+def run_batch(batch_num: int, n_trials: int = 50, walk_forward: bool = False, aggressive: bool = False, label_smoothing: bool = False) -> list[dict]:
     """Ejecuta un batch de Optuna con XGBoost único."""
     print(f"\n{'=' * 70}")
     print(f"BATCH {batch_num} — XGBoost + Optuna ({n_trials} trials)")
@@ -183,8 +298,12 @@ def run_batch(batch_num: int, n_trials: int = 50, walk_forward: bool = False) ->
         df_full = df_full.dropna(subset=["home_score"] + [c for c in splits["features"] if c in df_full.columns])
 
     def objective(trial: optuna.Trial) -> float:
-        model = build_xgb(trial)
-        model.fit(splits["X_train"], splits["y_train"], eval_set=[(splits["X_val"], splits["y_val"])], verbose=False)
+        model = build_xgb(trial, aggressive=aggressive)
+        model.fit(
+            splits["X_train"], splits["y_train"],
+            eval_set=[(splits["X_val"], splits["y_val"])],
+            verbose=False,
+        )
         val_pred = model.predict(splits["X_val"])
         return accuracy_score(splits["y_val"], val_pred)
 
@@ -278,10 +397,16 @@ if __name__ == "__main__":
     parser.add_argument("--trials", type=int, default=50, help="Trials de Optuna por batch")
     parser.add_argument("--auto", action="store_true", help="Corre 10 batches seguidos")
     parser.add_argument("--walk-forward", action="store_true", help="Activa walk-forward validation")
+    parser.add_argument("--aggressive", action="store_true", help="Espacio de búsqueda agresivo (max_depth hasta 20, n_estimators hasta 3000)")
+    parser.add_argument("--label-smoothing", action="store_true", help="Usa label smoothing con prior Elo")
     args = parser.parse_args()
+
+    print(f"\n{'=' * 70}")
+    print(f"Modo agresivo: {args.aggressive} | Label smoothing: {args.label_smoothing} | Walk-forward: {args.walk_forward}")
+    print(f"{'=' * 70}")
 
     if args.auto:
         for b in range(1, 11):
-            run_batch(b, args.trials, args.walk_forward)
+            run_batch(b, args.trials, args.walk_forward, args.aggressive, args.label_smoothing)
     else:
-        run_batch(args.batch, args.trials, args.walk_forward)
+        run_batch(args.batch, args.trials, args.walk_forward, args.aggressive, args.label_smoothing)

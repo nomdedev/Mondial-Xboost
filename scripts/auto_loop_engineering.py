@@ -375,6 +375,8 @@ def run_auto_loop(
     tune_only: bool = False,
     backtest: bool = False,
     walk_forward: bool = True,
+    aggressive: bool = False,
+    label_smoothing: bool = False,
 ) -> dict[str, Any]:
     """Run the full auto-loop engineering cycle."""
     _print_header("Mondial-Xboost — Auto Loop Engineering")
@@ -390,7 +392,8 @@ def run_auto_loop(
     # 1. Tuning
     batch_num = next_batch_number()
     print(f"\n{C['bold']}1) Loop Engineering (Optuna){C['reset']}")
-    run_batch(batch_num=batch_num, n_trials=n_trials, walk_forward=walk_forward)
+    print(f"  Agresivo: {aggressive} | Label Smoothing: {label_smoothing}")
+    run_batch(batch_num=batch_num, n_trials=n_trials, walk_forward=walk_forward, aggressive=aggressive, label_smoothing=label_smoothing)
     monitor.set_phase("analysis")
 
     # 2. Analysis
@@ -480,6 +483,8 @@ def main() -> int:
     parser.add_argument("--tune-only", action="store_true", help="Solo tuning; no reentrena ni documenta")
     parser.add_argument("--backtest", action="store_true", help="Ejecutar World Cup backtest gate al final")
     parser.add_argument("--no-walk-forward", action="store_true", help="Deshabilitar walk-forward validation")
+    parser.add_argument("--aggressive", action="store_true", help="Espacio de búsqueda agresivo (riesgo alto)")
+    parser.add_argument("--label-smoothing", action="store_true", help="Usa label smoothing con prior Elo")
     args = parser.parse_args()
 
     try:
@@ -489,6 +494,8 @@ def main() -> int:
             tune_only=args.tune_only,
             backtest=args.backtest,
             walk_forward=not args.no_walk_forward,
+            aggressive=args.aggressive,
+            label_smoothing=args.label_smoothing,
         )
         _complete_monitor(result)
         print(f"\n{C['green']}[OK] Auto Loop Engineering completado: {result['experiment_name']}{C['reset']}")

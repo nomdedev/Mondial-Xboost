@@ -50,6 +50,14 @@ FEATURE_COLS = [
     "h2h_last_result",
     "h2h_years_since",
     "neutral",
+    # New features
+    "home_momentum_3",
+    "away_momentum_3",
+    "home_sos_5",
+    "away_sos_5",
+    "home_points_weighted_10",
+    "away_points_weighted_10",
+    "tournament_importance",
 ]
 
 
@@ -247,7 +255,12 @@ def _build_team_history(df: pd.DataFrame) -> pd.DataFrame:
     Convert results into a long-format team history where each row is one team's
     perspective of a match. This makes rolling computations vectorized.
     """
-    home = df[["date", "home_team", "away_team", "home_score", "away_score", "neutral"]].copy()
+    home_cols = ["date", "home_team", "away_team", "home_score", "away_score", "neutral"]
+    elo_cols = ["home_elo_before", "away_elo_before"]
+    if all(c in df.columns for c in elo_cols):
+        home_cols.extend(elo_cols)
+
+    home = df[home_cols].copy()
     home["team"] = home["home_team"]
     home["opponent"] = home["away_team"]
     home["goals_scored"] = home["home_score"]
@@ -255,8 +268,11 @@ def _build_team_history(df: pd.DataFrame) -> pd.DataFrame:
     home["is_home"] = True
     home["points"] = np.where(home["home_score"] > home["away_score"], 3,
                               np.where(home["home_score"] == home["away_score"], 1, 0))
+    if "home_elo_before" in home.columns:
+        home["team_elo_before"] = home["home_elo_before"]
+        home["opponent_elo_before"] = home["away_elo_before"]
 
-    away = df[["date", "home_team", "away_team", "home_score", "away_score", "neutral"]].copy()
+    away = df[home_cols].copy() if all(c in df.columns for c in elo_cols) else df[["date", "home_team", "away_team", "home_score", "away_score", "neutral"]].copy()
     away["team"] = away["away_team"]
     away["opponent"] = away["home_team"]
     away["goals_scored"] = away["away_score"]
@@ -264,6 +280,9 @@ def _build_team_history(df: pd.DataFrame) -> pd.DataFrame:
     away["is_home"] = False
     away["points"] = np.where(away["away_score"] > away["home_score"], 3,
                               np.where(away["away_score"] == away["home_score"], 1, 0))
+    if "home_elo_before" in away.columns:
+        away["team_elo_before"] = away["away_elo_before"]
+        away["opponent_elo_before"] = away["home_elo_before"]
 
     long = pd.concat([home, away], ignore_index=True)
     long = long.sort_values(["team", "date"]).reset_index(drop=True)
@@ -297,6 +316,104 @@ def _compute_team_rolling(long: pd.DataFrame, windows: list[int] = (5, 10)) -> p
         )
 
     long["matches_played"] = long.groupby("team").cumcount()
+    return long
+
+
+def _add_entropy_weighted_points(long: pd.DataFrame, windows: list[int] = (10,)) -> pd.DataFrame:
+    """
+    Añade rolling averages ponderadas por entropía del resultado esperado.
+    
+    Resultados más sorprendentes (un underdog ganando al favorito) pesan MÁS
+    porque señalizan cambios reales en la calidad del equipo.
+    El peso se calcula como: 1 / p_elo(resultado_observado)
+    """
+    if "team_elo_before" not in long.columns:
+        return long
+
+    long = long.copy()
+    long = long.sort_values(["team", "date"]).reset_index(drop=True)
+
+    # Calcular probabilidad Elo de cada resultado para cada fila
+    team_elo = long["team_elo_before"].values
+    opponent_elo = long["opponent_elo_before"].values
+    is_home = long["is_home"].values
+    outcome = long["points"].values.copy()
+    outcome[outcome == 3] = 2
+
+    elo_probs = np.zeros((len(long), 3))
+    dr = team_elo - opponent_elo
+    home_adj = np.where(is_home, 100, 0)
+    dr_adj = dr + home_adj
+    for i in range(len(long)):
+        home_exp = 1.0 / (1.0 + 10.0 ** (-dr_adj[i] / 400.0))
+        elo_probs[i] = [1 - home_exp, 0.0, home_exp]
+        elo_probs[i, 1] = 0.15 * (1 - abs(2 * home_exp - 1))
+        elo_probs[i, 0] -= elo_probs[i, 1] / 2
+        elo_probs[i, 2] -= elo_probs[i, 1] / 2
+        elo_probs[i] = np.maximum(elo_probs[i], 0.01)
+        elo_probs[i] /= elo_probs[i].sum()
+
+    long["_surprise_weight"] = 1.0 / (elo_probs[np.arange(len(long)), outcome.astype(int)] + 0.05)
+    long["_surprise_weight"] = long["_surprise_weight"].clip(0.5, 5.0)
+
+    for w in windows:
+        def _weighted_rolling(series, weights, ww):
+            result = np.full(len(series), np.nan)
+            for i in range(len(series)):
+                start = max(0, i - ww)
+                vals = series.values[max(0, i - ww):i]
+                wts = weights.values[max(0, i - ww):i]
+                if len(vals) == 0:
+                    result[i] = np.nan
+                else:
+                    result[i] = np.average(vals, weights=wts) / 3.0
+            return result
+
+        long[f"points_weighted_{w}"] = long.groupby("team").apply(
+            lambda g: pd.Series(_weighted_rolling(g["points"], g["_surprise_weight"], w), index=g.index)
+        ).reset_index(level=0, drop=True)
+
+    long = long.drop(columns=["_surprise_weight"])
+    return long
+
+
+def _add_sos_features(long: pd.DataFrame, windows: list[int] = (5,)) -> pd.DataFrame:
+    """
+    Añade Strength of Schedule (SOS): el Elo promedio de los oponentes recientes.
+    Captura si un equipo viene de jugar contra rivales fuertes o débiles.
+    """
+    if "opponent_elo_before" not in long.columns:
+        return long
+
+    long = long.copy()
+    long = long.sort_values(["team", "date"]).reset_index(drop=True)
+
+    for w in windows:
+        long[f"sos_{w}"] = long.groupby("team")["opponent_elo_before"].transform(
+            lambda s: s.shift(1).rolling(window=w, min_periods=1).mean()
+        )
+
+    return long
+
+
+def _add_momentum_features(long: pd.DataFrame) -> pd.DataFrame:
+    """
+    Añade momentum: diferencia entre forma reciente (últimos 3) y forma histórica (últimos 20).
+    Un valor positivo indica que el equipo está en racha.
+    """
+    long = long.copy()
+    long = long.sort_values(["team", "date"]).reset_index(drop=True)
+
+    short_window = 3
+    long_window = 15
+
+    def _rolling_mean(series, w):
+        return series.shift(1).rolling(window=w, min_periods=1).mean()
+
+    points_norm = long["points"] / 3.0
+    long["momentum"] = _rolling_mean(points_norm, short_window) - _rolling_mean(points_norm, long_window)
+    long["momentum"] = long["momentum"].fillna(0.0)
+
     return long
 
 
@@ -432,6 +549,9 @@ def build_features(
     # Team rolling stats from long-format history
     long = _build_team_history(historical)
     long = _compute_team_rolling(long)
+    long = _add_entropy_weighted_points(long)
+    long = _add_sos_features(long)
+    long = _add_momentum_features(long)
 
     # H2H stats
     historical = _compute_h2h(historical)
@@ -472,15 +592,18 @@ def build_features(
     # Merge home team rolling stats
     home_cols = ["date", "team", "points_avg_5", "points_avg_10",
                  "goals_scored_avg_10", "goals_conceded_avg_10",
-                 "win_rate_10", "draw_rate_10", "loss_rate_10", "matches_played"]
+                 "win_rate_10", "draw_rate_10", "loss_rate_10", "matches_played",
+                 "momentum", "points_weighted_10", "sos_5"]
+    available_home = [c for c in home_cols if c in home_stats.columns]
     fixtures = fixtures.merge(
-        home_stats[home_cols].rename(columns={"team": "home_team"}),
+        home_stats[available_home].rename(columns={"team": "home_team"}),
         on=["date", "home_team"],
         how="left",
     )
     # Merge away team rolling stats
+    available_away = [c + "_away" if c not in ("date", "team") else c for c in available_home]
     fixtures = fixtures.merge(
-        away_stats[home_cols].rename(columns={"team": "away_team"}),
+        away_stats[list(set(available_home) | {"date", "team"})].rename(columns={"team": "away_team"}),
         on=["date", "away_team"],
         how="left",
         suffixes=("", "_away"),
@@ -496,6 +619,9 @@ def build_features(
         "draw_rate_10": "home_draw_rate_10",
         "loss_rate_10": "home_loss_rate_10",
         "matches_played": "home_matches_played",
+        "momentum": "home_momentum_3",
+        "points_weighted_10": "home_points_weighted_10",
+        "sos_5": "home_sos_5",
         "points_avg_5_away": "away_points_avg_5",
         "points_avg_10_away": "away_points_avg_10",
         "goals_scored_avg_10_away": "away_goals_scored_avg_10",
@@ -504,6 +630,9 @@ def build_features(
         "draw_rate_10_away": "away_draw_rate_10",
         "loss_rate_10_away": "away_loss_rate_10",
         "matches_played_away": "away_matches_played",
+        "momentum_away": "away_momentum_3",
+        "points_weighted_10_away": "away_points_weighted_10",
+        "sos_5_away": "away_sos_5",
     })
 
     # Compute elo_diff from before-match ratings
@@ -529,6 +658,36 @@ def build_features(
     fixtures["away_recent_matches"] = fixtures["away_recent_matches"].fillna(0).astype(int)
     fixtures["h2h_wins_diff"] = fixtures["h2h_wins_diff"].fillna(0.0)
     fixtures["h2h_years_since"] = fixtures["h2h_years_since"].fillna(20.0)
+
+    # Fill new features
+    for col in ["home_momentum_3", "away_momentum_3"]:
+        if col in fixtures.columns:
+            fixtures[col] = fixtures[col].fillna(0.0)
+    for col in ["home_sos_5", "away_sos_5"]:
+        if col in fixtures.columns:
+            fixtures[col] = fixtures[col].fillna(1500.0)
+    for col in ["home_points_weighted_10", "away_points_weighted_10"]:
+        if col in fixtures.columns:
+            fixtures[col] = fixtures[col].fillna(0.5)
+
+    # Tournament importance feature
+    IMPORTANCE_MAP = {
+        "FIFA World Cup": 5.0, "UEFA Euro": 4.5, "Copa America": 4.5,
+        "African Cup of Nations": 4.0, "AFC Asian Cup": 4.0,
+        "FIFA World Cup qualification": 3.5, "UEFA Euro qualification": 3.0,
+        "Copa America qualification": 3.0,
+        "UEFA Nations League": 2.5, "CONCACAF Nations League": 2.5,
+        "African Cup of Nations qualification": 2.5,
+        "Gold Cup": 2.5, "AFC Asian Cup qualification": 2.0,
+        "Friendly": 0.5,
+    }
+    if "tournament" in fixtures.columns:
+        fixtures["tournament_importance"] = fixtures["tournament"].map(
+            lambda t: next((v for k, v in IMPORTANCE_MAP.items() if k.lower() in str(t).lower()), 1.0)
+        )
+    else:
+        fixtures["tournament_importance"] = 1.0
+    fixtures["tournament_importance"] = fixtures["tournament_importance"].fillna(1.0)
 
     # Targets
     if "home_score" in fixtures and "away_score" in fixtures:

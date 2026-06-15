@@ -55,6 +55,19 @@ def _fillna(x: pd.DataFrame) -> pd.DataFrame:
     x["h2h_wins_diff"] = x["h2h_wins_diff"].fillna(0.0)
     x["h2h_years_since"] = x["h2h_years_since"].fillna(20.0)
     x["neutral"] = x["neutral"].fillna(False).astype(bool)
+    # New features
+    for col in ["home_momentum_3", "away_momentum_3"]:
+        if col in x.columns:
+            x[col] = x[col].fillna(0.0)
+    for col in ["home_sos_5", "away_sos_5"]:
+        if col in x.columns:
+            x[col] = x[col].fillna(1500.0)
+    for col in ["home_points_weighted_10", "away_points_weighted_10"]:
+        if col in x.columns:
+            x[col] = x[col].fillna(0.5)
+    for col in ["tournament_importance"]:
+        if col in x.columns:
+            x[col] = x[col].fillna(1.0)
     return x
 
 
