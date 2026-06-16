@@ -300,6 +300,46 @@
   }
 
   // -------------------------------------------------------------------------
+  // Internal subtabs (inside panels)
+  // -------------------------------------------------------------------------
+
+  function switchSubtab(button) {
+    const parent = button.closest('.mx-subtabs');
+    if (!parent) return;
+    const targetId = button.dataset.subtab;
+    if (!targetId) return;
+
+    parent.querySelectorAll('[role="tab"]').forEach(btn => {
+      const isTarget = btn === button;
+      btn.classList.toggle('active', isTarget);
+      btn.setAttribute('aria-selected', isTarget ? 'true' : 'false');
+    });
+
+    const container = document.getElementById(targetId)?.parentElement;
+    if (!container) return;
+    container.querySelectorAll('.mx-subpanel').forEach(panel => {
+      const isTarget = panel.id === targetId;
+      panel.classList.toggle('active', isTarget);
+      panel.setAttribute('aria-hidden', isTarget ? 'false' : 'true');
+    });
+  }
+
+  function handleSubtabClick(e) {
+    const btn = e.target.closest('.mx-subtab');
+    if (!btn) return;
+    switchSubtab(btn);
+  }
+
+  function initSubtabs() {
+    document.querySelectorAll('.mx-subtabs').forEach(tablist => {
+      tablist.addEventListener('click', handleSubtabClick);
+      // Ensure only the active subpanel is visible within each container.
+      const activeBtn = tablist.querySelector('.mx-subtab.active');
+      if (activeBtn) switchSubtab(activeBtn);
+    });
+  }
+
+  // -------------------------------------------------------------------------
   // Health / status
   // -------------------------------------------------------------------------
 
@@ -339,6 +379,7 @@
 
   function init() {
     initTabs();
+    initSubtabs();
     initDrawer();
     updateApiStatus();
     setInterval(updateApiStatus, MXConfig.pollIntervalMs);

@@ -21,6 +21,14 @@ const { chromium } = require('playwright');
 
     const champion = await page.textContent('#tournament-champion-name');
     console.log('Champion rendered:', champion);
+
+    // Open the Final subtab so the final match card is visible.
+    const finalSubtab = await page.$('button[data-subtab="tournament-final-panel"]');
+    if (finalSubtab) {
+      await finalSubtab.click();
+      await page.waitForTimeout(300);
+    }
+
     const finalVisible = await page.isVisible('#tournament-final');
     console.log('Final visible:', finalVisible);
 

@@ -9,9 +9,30 @@
   let predictions = [];
   let lastGroupsHtml = '';
 
+  const ROUND_LABELS = {
+    group_stage: 'Fase de grupos',
+    round_of_32: '32avos de final',
+    round_of_16: 'Octavos de final',
+    quarter_finals: 'Cuartos de final',
+    semi_finals: 'Semifinales',
+    final: 'Final',
+    third_place: 'Tercer puesto',
+  };
+
+  // A small seeded palette for team shields.
+  const SHIELD_COLORS = [
+    '#126a5a', '#315a9f', '#c98926', '#7c3aed', '#db2777',
+    '#dc2626', '#059669', '#2563eb', '#d97706', '#0891b2',
+  ];
+
   function formatPct(value) {
     if (value === undefined || value === null || Number.isNaN(value)) return '-';
     return `${(Number(value) * 100).toFixed(1)}%`;
+  }
+
+  function formatGoals(value) {
+    if (value === undefined || value === null || Number.isNaN(value)) return '-';
+    return Number(value).toFixed(1);
   }
 
   function pickClass(pick) {
@@ -45,30 +66,128 @@
     );
   }
 
-  function renderMatchRow(fixture, pred) {
-    const home = MXEscape(fixture.home_team);
-    const away = MXEscape(fixture.away_team);
-    const date = MXEscape(fixture.date);
-    if (!pred) {
-      return `<tr class="border-b border-[var(--border)]">
-        <td class="py-2">${date}</td>
-        <td class="py-2">${home}</td>
-        <td class="py-2">${away}</td>
-        <td colspan="5" class="py-2 text-[var(--muted)]">Sin predicción</td>
-      </tr>`;
+  function stringHash(str) {
+    let h = 0;
+    for (let i = 0; i < str.length; i++) {
+      h = (h << 5) - h + str.charCodeAt(i);
+      h |= 0;
     }
-    const pick = pred.top_pick || '-';
+    return Math.abs(h);
+  }
+
+  function teamShield(name) {
+    const words = name.trim().split(/\s+/);
+    let initials = words[0][0];
+    if (words.length > 1) initials += words[words.length - 1][0];
+    initials = initials.slice(0, 2).toUpperCase();
+    const color = SHIELD_COLORS[stringHash(name) % SHIELD_COLORS.length];
+    return `<div class="mx-match__shield" style="background:${color};" aria-hidden="true">${MXEscape(initials)}</div>`;
+  }
+
+  function determineWinner(pred) {
+    if (pred.winner) return pred.winner;
+    if (pred.top_pick === 'Home') return pred.home_team;
+    if (pred.top_pick === 'Away') return pred.away_team;
+    return null;
+  }
+
+  function roundLabel(round, fallback) {
+    if (round && ROUND_LABELS[round]) return ROUND_LABELS[round];
+    return fallback || '';
+  }
+
+  function renderProbabilityBar(label, value, type) {
+    const pct = formatPct(value);
+    const width = value === undefined || value === null || Number.isNaN(value) ? 0 : Math.max(0, Math.min(100, Number(value) * 100));
     return `
-      <tr class="border-b border-[var(--border)]">
-        <td class="py-2">${date}</td>
-        <td class="py-2 font-medium">${home}</td>
-        <td class="py-2 font-medium">${away}</td>
-        <td class="py-2 text-right">${formatPct(pred.prob_home_win)}</td>
-        <td class="py-2 text-right">${formatPct(pred.prob_draw)}</td>
-        <td class="py-2 text-right">${formatPct(pred.prob_away_win)}</td>
-        <td class="py-2 text-right">${pred.expected_home_goals ?? '-'}-${pred.expected_away_goals ?? '-'}</td>
-        <td class="py-2 ${pickClass(pick)} font-semibold">${pickLabel(pick)}</td>
-      </tr>
+      <div class="mx-match__prob-row">
+        <span>${MXEscape(label)}</span>
+        <div class="mx-match__prob-bar" aria-hidden="true">
+          <div class="mx-match__prob-fill mx-match__prob-fill--${type}" style="width: ${width.toFixed(1)}%"></div>
+        </div>
+        <span class="num">${pct}</span>
+      </div>
+    `;
+  }
+
+  /**
+   * Render a match card. `match` can be a flat prediction object or a knockout
+   * object with a nested `prediction` property.
+   */
+  function renderMatchCard(match, opts = {}) {
+    const pred = match.prediction || match;
+    const home = MXEscape(pred.home_team);
+    const away = MXEscape(pred.away_team);
+    const winner = determineWinner(match);
+    const homeWinner = winner === pred.home_team;
+    const awayWinner = winner === pred.away_team;
+    const pick = pred.top_pick || '-';
+    const date = pred.date ? MXFormat.date(pred.date) : '';
+    const subtitle = opts.subtitle || roundLabel(match.round, pred.group ? `Grupo ${pred.group}` : '');
+
+    return `
+      <div class="mx-match">
+        <div class="mx-match__header">
+          <span class="flex items-center gap-1">
+            <span class="material-symbols-outlined" style="font-size:1rem">event</span>
+            ${date ? `<span>${date}</span>` : ''}
+            ${date && subtitle ? '<span aria-hidden="true">·</span>' : ''}
+            ${subtitle ? `<span>${MXEscape(subtitle)}</span>` : ''}
+          </span>
+          ${homeWinner || awayWinner ? '<span class="material-symbols-outlined mx-match__winner-icon" title="Ganador predicho">emoji_events</span>' : ''}
+        </div>
+        <div class="mx-match__teams">
+          <div class="mx-match__team ${homeWinner ? 'mx-match__team--winner' : ''}">
+            ${teamShield(pred.home_team)}
+            <span class="mx-match__name">${home}</span>
+            <span class="mx-match__score">${formatGoals(pred.expected_home_goals)}</span>
+          </div>
+          <div class="mx-match__team ${awayWinner ? 'mx-match__team--winner' : ''}">
+            ${teamShield(pred.away_team)}
+            <span class="mx-match__name">${away}</span>
+            <span class="mx-match__score">${formatGoals(pred.expected_away_goals)}</span>
+          </div>
+        </div>
+        <div class="mx-match__probabilities">
+          ${renderProbabilityBar('Local', pred.prob_home_win, 'home')}
+          ${renderProbabilityBar('Empate', pred.prob_draw, 'draw')}
+          ${renderProbabilityBar('Visit.', pred.prob_away_win, 'away')}
+        </div>
+        <div class="mx-match__footer">
+          <span class="mx-match__pick ${pickClass(pick) ? `mx-match__pick--${pick === 'Home' ? 'home' : pick === 'Draw' ? 'draw' : 'away'}` : ''}">
+            Pick: ${pickLabel(pick)}
+          </span>
+          <span class="text-xs text-[var(--muted)]">xG ${formatGoals(pred.expected_home_goals)} - ${formatGoals(pred.expected_away_goals)}</span>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderGroupTable(teams) {
+    if (!teams || teams.length === 0) return '';
+    return `
+      <table class="mx-mini-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Equipo</th>
+            <th class="num">Pts</th>
+            <th class="num">GF</th>
+            <th class="num">DG</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${teams.map((t, i) => `
+            <tr>
+              <td class="text-[var(--muted)]">${i + 1}</td>
+              <td>${MXEscape(t.team)}</td>
+              <td class="num font-semibold">${t.points}</td>
+              <td class="num">${Number(t.goals_for).toFixed(1)}</td>
+              <td class="num">${t.goal_diff > 0 ? '+' : ''}${Number(t.goal_diff).toFixed(1)}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
     `;
   }
 
@@ -77,7 +196,7 @@
     if (!container) return;
 
     if (fixtures.length === 0 || predictions.length === 0) {
-      container.innerHTML = `<div class="mx-state mx-state--empty"><span class="material-symbols-outlined" aria-hidden="true">info</span><p>No hay fixtures o predicciones cargadas.</p></div>`;
+      container.innerHTML = `<div class="mx-state mx-state--empty col-span-full"><span class="material-symbols-outlined" aria-hidden="true">info</span><p>No hay fixtures o predicciones cargadas.</p></div>`;
       lastGroupsHtml = '';
       return;
     }
@@ -87,30 +206,15 @@
 
     let html = '';
     for (const group of groupNames) {
+      const groupFixtures = fixtureGroups[group];
       html += `
-        <div class="mx-card">
-          <div class="flex justify-between items-center mb-4">
-            <h3 class="text-xl font-bold">Grupo ${MXEscape(group)}</h3>
-            <span class="text-sm text-[var(--muted)]">${fixtureGroups[group].length} partidos</span>
+        <div class="mx-group-card">
+          <div class="mx-group-card__title">
+            <span>Grupo ${MXEscape(group)}</span>
+            <span class="text-xs text-[var(--muted)] font-normal">${groupFixtures.length} partidos</span>
           </div>
-          <div class="overflow-x-auto">
-            <table class="mx-table">
-              <thead>
-                <tr>
-                  <th>Fecha</th>
-                  <th>Local</th>
-                  <th>Visitante</th>
-                  <th class="num">Local</th>
-                  <th class="num">Empate</th>
-                  <th class="num">Visitante</th>
-                  <th class="num">xG</th>
-                  <th>Pick</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${fixtureGroups[group].map(fx => renderMatchRow(fx, findPrediction(fx))).join('')}
-              </tbody>
-            </table>
+          <div class="mx-group-card__matches">
+            ${groupFixtures.map(fx => renderMatchCard(findPrediction(fx) || fx, { subtitle: `Grupo ${group}` })).join('')}
           </div>
         </div>
       `;
@@ -165,29 +269,7 @@
         return;
       }
 
-      resultDiv.innerHTML = `
-        <div class="mx-card" style="background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, transparent 100%);">
-          <h4 class="font-semibold mb-4 text-lg">${MXEscape(home)} vs ${MXEscape(away)}</h4>
-          <div class="grid grid-cols-3 gap-4 text-center mb-4">
-            <div>
-              <p class="text-sm text-[var(--muted)]">Local</p>
-              <p class="text-3xl font-bold mx-pick--home">${formatPct(data.prob_home_win)}</p>
-            </div>
-            <div>
-              <p class="text-sm text-[var(--muted)]">Empate</p>
-              <p class="text-3xl font-bold mx-pick--draw">${formatPct(data.prob_draw)}</p>
-            </div>
-            <div>
-              <p class="text-sm text-[var(--muted)]">Visitante</p>
-              <p class="text-3xl font-bold mx-pick--away">${formatPct(data.prob_away_win)}</p>
-            </div>
-          </div>
-          <div class="flex flex-wrap gap-3 text-sm">
-            <span class="mx-badge mx-badge--info">Pick: <span class="${pickClass(data.top_pick)}">${pickLabel(data.top_pick)}</span></span>
-            <span class="mx-badge mx-badge--info">xG: ${data.expected_home_goals ?? '-'} - ${data.expected_away_goals ?? '-'}</span>
-          </div>
-        </div>
-      `;
+      resultDiv.innerHTML = renderMatchCard({ ...data, date });
     } catch (err) {
       resultDiv.innerHTML = `<p class="text-red-400">Error: ${MXEscape(err.message)}</p>`;
     }
@@ -339,102 +421,45 @@
     });
   }
 
-  function renderTournamentMatch(pred) {
-    const home = MXEscape(pred.home_team);
-    const away = MXEscape(pred.away_team);
-    const winner = pred.winner || pred.top_pick;
-    const winnerClass = winner === 'Home' ? 'mx-pick--home' : winner === 'Away' ? 'mx-pick--away' : 'mx-pick--draw';
-    return `
-      <div class="flex items-center justify-between p-3 rounded-lg border border-[var(--border)] bg-[var(--surface)]">
-        <div class="flex-1">
-          <div class="flex items-center justify-between mb-1">
-            <span class="font-medium ${pred.winner === pred.home_team ? 'text-emerald-400' : ''}">${home}</span>
-            <span class="text-sm font-variant-numeric">${pred.expected_home_goals ?? '-'}</span>
-          </div>
-          <div class="flex items-center justify-between">
-            <span class="font-medium ${pred.winner === pred.away_team ? 'text-emerald-400' : ''}">${away}</span>
-            <span class="text-sm font-variant-numeric">${pred.expected_away_goals ?? '-'}</span>
-          </div>
-        </div>
-        <div class="ml-4 text-right">
-          <p class="text-xs text-[var(--muted)]">Pick</p>
-          <p class="font-semibold ${winnerClass}">${pickLabel(pred.top_pick)}</p>
-        </div>
-      </div>
-    `;
-  }
-
-  function renderGroupStandings(standings) {
+  function renderGroupStandings(standings, fixtures) {
     const container = document.getElementById('tournament-groups');
     if (!container) return;
 
     const groups = Object.keys(standings).sort();
+    if (groups.length === 0) {
+      container.innerHTML = `<div class="mx-state mx-state--empty col-span-full"><span class="material-symbols-outlined" aria-hidden="true">info</span><p>Sin posiciones de grupos.</p></div>`;
+      return;
+    }
+
+    const fixturesByGroup = groupBy(fixtures || [], 'group');
+
     container.innerHTML = groups.map(group => {
       const teams = standings[group];
+      const groupFixtures = fixturesByGroup[group] || [];
       return `
-        <div class="mx-card" style="padding: 1rem;">
-          <h4 class="font-semibold mb-3">Grupo ${MXEscape(group)}</h4>
-          <table class="mx-table" style="font-size: 0.8125rem;">
-            <thead>
-              <tr>
-                <th>Equipo</th>
-                <th class="num">Pts</th>
-                <th class="num">GF</th>
-                <th class="num">DG</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${teams.map((t, i) => `
-                <tr class="border-b border-[var(--border)]">
-                  <td class="py-2">
-                    <span class="inline-block w-5 text-[var(--muted)]">${i + 1}.</span>
-                    ${MXEscape(t.team)}
-                  </td>
-                  <td class="py-2 text-right font-semibold">${t.points}</td>
-                  <td class="py-2 text-right">${t.goals_for.toFixed(1)}</td>
-                  <td class="py-2 text-right">${t.goal_diff > 0 ? '+' : ''}${t.goal_diff.toFixed(1)}</td>
-                </tr>
-              `).join('')}
-            </tbody>
-          </table>
+        <div class="mx-group-card">
+          <div class="mx-group-card__title">Grupo ${MXEscape(group)}</div>
+          <div class="mx-group-card__matches">
+            ${groupFixtures.map(fx => renderMatchCard(fx, { subtitle: `Grupo ${group}` })).join('')}
+          </div>
+          ${renderGroupTable(teams)}
         </div>
       `;
     }).join('');
   }
 
-  function renderKnockoutRound(matches, title, containerId) {
+  function renderKnockoutRound(matches, containerId, gridClass) {
     const container = document.getElementById(containerId);
     if (!container) return;
     if (!matches || matches.length === 0) {
-      container.innerHTML = `<div class="mx-state mx-state--empty"><span class="material-symbols-outlined" aria-hidden="true">info</span><p>Sin datos</p></div>`;
+      container.innerHTML = `<div class="mx-state mx-state--empty col-span-full"><span class="material-symbols-outlined" aria-hidden="true">info</span><p>Sin datos</p></div>`;
       return;
     }
     container.innerHTML = `
-      <div class="space-y-3">
-        ${matches.map(m => renderTournamentMatch(m.prediction || m)).join('')}
+      <div class="${gridClass}">
+        ${matches.map(m => renderMatchCard(m)).join('')}
       </div>
     `;
-  }
-
-  function renderBracket(knockout) {
-    const container = document.getElementById('tournament-bracket');
-    if (!container) return;
-
-    const rounds = [
-      { key: 'round_of_32', label: 'Octavos de final' },
-      { key: 'round_of_16', label: 'Octavos de final' },
-      { key: 'quarter_finals', label: 'Cuartos de final' },
-      { key: 'semi_finals', label: 'Semifinales' },
-    ].filter(r => knockout[r.key] && knockout[r.key].length > 0);
-
-    container.innerHTML = rounds.map(r => `
-      <div>
-        <h4 class="text-sm font-semibold text-[var(--muted)] uppercase tracking-wider mb-2">${r.label}</h4>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-          ${knockout[r.key].map(m => renderTournamentMatch(m.prediction || m)).join('')}
-        </div>
-      </div>
-    `).join('');
   }
 
   function renderTournament(data) {
@@ -450,16 +475,37 @@
       const final = data.knockout?.final?.[0];
       if (final) {
         const pred = final.prediction || final;
-        championDetailEl.textContent = `Final: ${MXEscape(pred.home_team)} ${pred.expected_home_goals ?? '-'} - ${pred.expected_away_goals ?? '-'} ${MXEscape(pred.away_team)}`;
+        championDetailEl.innerHTML = `Final: <strong>${MXEscape(pred.home_team)} ${formatGoals(pred.expected_home_goals)} - ${formatGoals(pred.expected_away_goals)} ${MXEscape(pred.away_team)}</strong>`;
       } else {
         championDetailEl.textContent = 'Simulación completa del Mundial 2026';
       }
     }
 
-    renderKnockoutRound(data.knockout?.final, 'Final', 'tournament-final');
-    renderKnockoutRound(data.knockout?.third_place, 'Tercer puesto', 'tournament-third');
-    renderBracket(data.knockout || {});
-    renderGroupStandings(data.group_stage?.standings || {});
+    const knockout = data.knockout || {};
+    renderKnockoutRound(knockout.round_of_32, 'tournament-round-of-32', 'mx-round-grid mx-round-grid--4');
+    renderKnockoutRound(knockout.round_of_16, 'tournament-round-of-16', 'mx-round-grid mx-round-grid--4');
+    renderKnockoutRound(knockout.quarter_finals, 'tournament-quarter', 'mx-round-grid mx-round-grid--2');
+    renderKnockoutRound(knockout.semi_finals, 'tournament-semi', 'mx-round-grid mx-round-grid--2');
+
+    const finalContainer = document.getElementById('tournament-final');
+    if (finalContainer) {
+      if (knockout.final && knockout.final.length > 0) {
+        finalContainer.innerHTML = renderMatchCard(knockout.final[0]);
+      } else {
+        finalContainer.innerHTML = `<div class="mx-state mx-state--empty"><span class="material-symbols-outlined" aria-hidden="true">info</span><p>Sin datos</p></div>`;
+      }
+    }
+
+    const thirdContainer = document.getElementById('tournament-third');
+    if (thirdContainer) {
+      if (knockout.third_place && knockout.third_place.length > 0) {
+        thirdContainer.innerHTML = renderMatchCard(knockout.third_place[0]);
+      } else {
+        thirdContainer.innerHTML = `<div class="mx-state mx-state--empty"><span class="material-symbols-outlined" aria-hidden="true">info</span><p>Sin datos</p></div>`;
+      }
+    }
+
+    renderGroupStandings(data.group_stage?.standings || {}, data.group_stage?.fixtures || []);
   }
 
   async function loadTournament() {
@@ -499,6 +545,9 @@
       loadTournament();
     }
   }
+
+  // Expose reusable helpers for lab.js and other panels.
+  window.MXMatchCard = { render: renderMatchCard };
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);

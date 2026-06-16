@@ -197,13 +197,17 @@
       const homePicks = pr.filter(p => p.top_pick === 'Home').length;
       const drawPicks = pr.filter(p => p.top_pick === 'Draw').length;
       const awayPicks = pr.filter(p => p.top_pick === 'Away').length;
+      const recentMatches = pr.slice(0, 4).map(p =>
+        window.MXMatchCard ? window.MXMatchCard.render(p, { subtitle: `Grupo ${p.group || '?'}` }) : ''
+      ).join('');
       container.innerHTML = `
-        <div class="grid grid-cols-3 gap-3 mb-3">
+        <div class="grid grid-cols-3 gap-3 mb-4">
           <div class="p-3 rounded-lg border border-[var(--border)] bg-[var(--surface)] text-center"><p class="text-xs text-[var(--muted)]">Local</p><p class="text-xl font-bold mx-pick--home">${homePicks}</p></div>
           <div class="p-3 rounded-lg border border-[var(--border)] bg-[var(--surface)] text-center"><p class="text-xs text-[var(--muted)]">Empate</p><p class="text-xl font-bold mx-pick--draw">${drawPicks}</p></div>
           <div class="p-3 rounded-lg border border-[var(--border)] bg-[var(--surface)] text-center"><p class="text-xs text-[var(--muted)]">Visitante</p><p class="text-xl font-bold mx-pick--away">${awayPicks}</p></div>
         </div>
-        <p class="text-sm text-[var(--muted)]">Grupos con predicciones: ${Object.keys(groups).sort().join(', ')}</p>
+        <p class="text-sm text-[var(--muted)] mb-4">Grupos con predicciones: ${Object.keys(groups).sort().join(', ')}</p>
+        ${recentMatches ? `<div class="grid grid-cols-1 sm:grid-cols-2 gap-3"><h4 class="text-xs font-semibold uppercase tracking-wider text-[var(--muted)] col-span-full">Últimas predicciones</h4>${recentMatches}</div>` : ''}
       `;
     } catch (err) {
       const statusEl = document.getElementById('lab-wc-status');

@@ -315,6 +315,243 @@
         }
 
         .mx-skip:focus { top: 0; }
+
+        /* Internal tabs (inside panels) */
+        .mx-subtabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 1.25rem;
+        }
+
+        .mx-subtab {
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid transparent;
+            color: var(--muted);
+            padding: 0.5rem 0.875rem;
+            font-size: 0.9375rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: color 0.15s, border-color 0.15s;
+        }
+
+        .mx-subtab:hover,
+        .mx-subtab:focus-visible {
+            color: var(--ink);
+            outline: none;
+        }
+
+        .mx-subtab.active {
+            color: var(--primary-light);
+            border-bottom-color: var(--primary-light);
+        }
+
+        .mx-subpanel { display: none; }
+        .mx-subpanel.active { display: block; animation: mx-fade 0.2s ease; }
+
+        /* Match cards */
+        .mx-match {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1rem;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+
+        .mx-match:hover {
+            border-color: rgba(255,255,255,0.15);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.18);
+        }
+
+        .mx-match__header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+            margin-bottom: 0.875rem;
+            font-size: 0.8125rem;
+            color: var(--muted);
+        }
+
+        .mx-match__teams {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .mx-match__team {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 0.625rem;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.02);
+        }
+
+        .mx-match__team--winner {
+            background: rgba(18, 106, 90, 0.12);
+            border: 1px solid rgba(52, 211, 153, 0.22);
+        }
+
+        .mx-match__shield {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: white;
+            flex-shrink: 0;
+            text-transform: uppercase;
+        }
+
+        .mx-match__name {
+            flex: 1;
+            font-weight: 500;
+            font-size: 0.9375rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .mx-match__team--winner .mx-match__name {
+            font-weight: 700;
+            color: #6ee7b7;
+        }
+
+        .mx-match__score {
+            font-size: 1.125rem;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+            min-width: 1.75rem;
+            text-align: right;
+        }
+
+        .mx-match__probabilities {
+            display: grid;
+            gap: 0.375rem;
+            margin-bottom: 0.875rem;
+        }
+
+        .mx-match__prob-row {
+            display: grid;
+            grid-template-columns: 3.25rem 1fr 2.75rem;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+            color: var(--muted);
+        }
+
+        .mx-match__prob-bar {
+            height: 6px;
+            border-radius: 999px;
+            background: var(--panel);
+            overflow: hidden;
+        }
+
+        .mx-match__prob-fill {
+            height: 100%;
+            border-radius: 999px;
+        }
+
+        .mx-match__prob-fill--home { background: #34d399; }
+        .mx-match__prob-fill--draw { background: #fbbf24; }
+        .mx-match__prob-fill--away { background: #60a5fa; }
+
+        .mx-match__footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+        }
+
+        .mx-match__pick {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0.25rem 0.625rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .mx-match__pick--home { background: rgba(52, 211, 153, 0.15); color: #6ee7b7; }
+        .mx-match__pick--draw { background: rgba(251, 191, 36, 0.15); color: #fcd34d; }
+        .mx-match__pick--away { background: rgba(96, 165, 250, 0.15); color: #93c5fd; }
+
+        .mx-match__winner-icon {
+            color: #34d399;
+            font-size: 1rem;
+        }
+
+        .mx-round-grid {
+            display: grid;
+            grid-template-columns: repeat(1, 1fr);
+            gap: 1rem;
+        }
+
+        @media (min-width: 640px) {
+            .mx-round-grid--2 { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (min-width: 1024px) {
+            .mx-round-grid--2 { grid-template-columns: repeat(2, 1fr); }
+            .mx-round-grid--4 { grid-template-columns: repeat(4, 1fr); }
+            .mx-round-grid--8 { grid-template-columns: repeat(4, 1fr); }
+        }
+
+        @media (min-width: 1280px) {
+            .mx-round-grid--8 { grid-template-columns: repeat(4, 1fr); }
+        }
+
+        .mx-groups-grid {
+            display: grid;
+            grid-template-columns: repeat(1, 1fr);
+            gap: 1rem;
+        }
+
+        @media (min-width: 768px) {
+            .mx-groups-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (min-width: 1280px) {
+            .mx-groups-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        .mx-group-card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1rem;
+        }
+
+        .mx-group-card__title {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .mx-group-card__matches {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .mx-mini-table { width: 100%; border-collapse: collapse; font-size: 0.8125rem; }
+        .mx-mini-table th,
+        .mx-mini-table td { padding: 0.5rem 0.375rem; border-bottom: 1px solid var(--border); }
+        .mx-mini-table th { color: var(--muted); text-align: left; font-weight: 500; }
+        .mx-mini-table td { color: var(--ink); }
+        .mx-mini-table .num { text-align: right; font-variant-numeric: tabular-nums; }
     </style>
 </head>
 <body>
@@ -412,32 +649,61 @@
                             <p id="tournament-champion-detail" class="text-[var(--muted)]">Cargando simulación…</p>
                         </div>
 
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                            <div class="mx-card">
-                                <h3 class="font-semibold mb-4">Final</h3>
-                                <div id="tournament-final" class="space-y-3">
-                                    <div class="mx-state mx-state--empty"><span class="material-symbols-outlined" aria-hidden="true">info</span><p>Cargando final…</p></div>
+                        <div class="mx-card">
+                            <div class="mx-subtabs" role="tablist" aria-label="Etapas del torneo">
+                                <button class="mx-subtab active" data-subtab="tournament-groups-panel" role="tab" aria-selected="true">Grupos</button>
+                                <button class="mx-subtab" data-subtab="tournament-round-of-32-panel" role="tab" aria-selected="false">32avos</button>
+                                <button class="mx-subtab" data-subtab="tournament-round-of-16-panel" role="tab" aria-selected="false">Octavos</button>
+                                <button class="mx-subtab" data-subtab="tournament-quarter-panel" role="tab" aria-selected="false">Cuartos</button>
+                                <button class="mx-subtab" data-subtab="tournament-semi-panel" role="tab" aria-selected="false">Semifinales</button>
+                                <button class="mx-subtab" data-subtab="tournament-final-panel" role="tab" aria-selected="false">Final</button>
+                            </div>
+
+                            <div id="tournament-groups-panel" class="mx-subpanel active" role="tabpanel">
+                                <div id="tournament-groups" class="mx-groups-grid">
+                                    <div class="mx-state mx-state--empty"><span class="material-symbols-outlined" aria-hidden="true">info</span><p>Cargando grupos…</p></div>
                                 </div>
                             </div>
-                            <div class="mx-card">
-                                <h3 class="font-semibold mb-4">Tercer puesto</h3>
-                                <div id="tournament-third" class="space-y-3">
-                                    <div class="mx-state mx-state--empty"><span class="material-symbols-outlined" aria-hidden="true">info</span><p>Cargando tercer puesto…</p></div>
+
+                            <div id="tournament-round-of-32-panel" class="mx-subpanel" role="tabpanel">
+                                <div id="tournament-round-of-32" class="mx-round-grid mx-round-grid--4">
+                                    <div class="mx-state mx-state--empty"><span class="material-symbols-outlined" aria-hidden="true">info</span><p>Cargando 32avos de final…</p></div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="mx-card">
-                            <h3 class="font-semibold mb-4">Bracket de eliminatorias</h3>
-                            <div id="tournament-bracket" class="space-y-4">
-                                <div class="mx-state mx-state--empty"><span class="material-symbols-outlined" aria-hidden="true">info</span><p>Cargando bracket…</p></div>
+                            <div id="tournament-round-of-16-panel" class="mx-subpanel" role="tabpanel">
+                                <div id="tournament-round-of-16" class="mx-round-grid mx-round-grid--4">
+                                    <div class="mx-state mx-state--empty"><span class="material-symbols-outlined" aria-hidden="true">info</span><p>Cargando octavos de final…</p></div>
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="mx-card">
-                            <h3 class="font-semibold mb-4">Fase de grupos</h3>
-                            <div id="tournament-groups" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                                <div class="mx-state mx-state--empty"><span class="material-symbols-outlined" aria-hidden="true">info</span><p>Cargando grupos…</p></div>
+                            <div id="tournament-quarter-panel" class="mx-subpanel" role="tabpanel">
+                                <div id="tournament-quarter" class="mx-round-grid mx-round-grid--2">
+                                    <div class="mx-state mx-state--empty"><span class="material-symbols-outlined" aria-hidden="true">info</span><p>Cargando cuartos de final…</p></div>
+                                </div>
+                            </div>
+
+                            <div id="tournament-semi-panel" class="mx-subpanel" role="tabpanel">
+                                <div id="tournament-semi" class="mx-round-grid mx-round-grid--2">
+                                    <div class="mx-state mx-state--empty"><span class="material-symbols-outlined" aria-hidden="true">info</span><p>Cargando semifinales…</p></div>
+                                </div>
+                            </div>
+
+                            <div id="tournament-final-panel" class="mx-subpanel" role="tabpanel">
+                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                                    <div>
+                                        <h3 class="font-semibold mb-3">Final</h3>
+                                        <div id="tournament-final" class="space-y-3">
+                                            <div class="mx-state mx-state--empty"><span class="material-symbols-outlined" aria-hidden="true">info</span><p>Cargando final…</p></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-semibold mb-3">Tercer puesto</h3>
+                                        <div id="tournament-third" class="space-y-3">
+                                            <div class="mx-state mx-state--empty"><span class="material-symbols-outlined" aria-hidden="true">info</span><p>Cargando tercer puesto…</p></div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -560,28 +826,37 @@
 
                     <p id="wc-status" class="text-sm text-[var(--muted)] mb-4">Cargando…</p>
 
-                    <div class="mx-card mb-6">
-                        <h3 class="font-semibold mb-4">Predecir un partido</h3>
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                            <div>
-                                <label class="mx-label" for="wc-pred-home">Equipo local</label>
-                                <input type="text" id="wc-pred-home" placeholder="p. ej. Argentina" class="mx-input">
-                            </div>
-                            <div>
-                                <label class="mx-label" for="wc-pred-away">Equipo visitante</label>
-                                <input type="text" id="wc-pred-away" placeholder="p. ej. Brasil" class="mx-input">
-                            </div>
-                            <div>
-                                <label class="mx-label" for="wc-pred-date">Fecha</label>
-                                <input type="date" id="wc-pred-date" class="mx-input">
+                    <div class="mx-card">
+                        <div class="mx-subtabs" role="tablist" aria-label="Sección de predicciones">
+                            <button class="mx-subtab active" data-subtab="wc-groups-panel" role="tab" aria-selected="true">Grupos</button>
+                            <button class="mx-subtab" data-subtab="wc-predict-panel" role="tab" aria-selected="false">Predecir partido</button>
+                        </div>
+
+                        <div id="wc-groups-panel" class="mx-subpanel active" role="tabpanel">
+                            <div id="wc-groups" class="mx-groups-grid">
+                                <div class="mx-state mx-state--empty"><span class="material-symbols-outlined" aria-hidden="true">info</span><p>Cargando fixtures y predicciones…</p></div>
                             </div>
                         </div>
-                        <button id="wc-predict-btn" class="mx-btn mx-btn--secondary mt-4">Predecir</button>
-                        <div id="wc-single-result" class="mt-4"></div>
-                    </div>
 
-                    <div id="wc-groups" class="space-y-6">
-                        <div class="mx-state mx-state--empty"><span class="material-symbols-outlined" aria-hidden="true">info</span><p>Cargando fixtures y predicciones…</p></div>
+                        <div id="wc-predict-panel" class="mx-subpanel" role="tabpanel">
+                            <h3 class="font-semibold mb-4">Predecir un partido</h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                <div>
+                                    <label class="mx-label" for="wc-pred-home">Equipo local</label>
+                                    <input type="text" id="wc-pred-home" placeholder="p. ej. Argentina" class="mx-input">
+                                </div>
+                                <div>
+                                    <label class="mx-label" for="wc-pred-away">Equipo visitante</label>
+                                    <input type="text" id="wc-pred-away" placeholder="p. ej. Brasil" class="mx-input">
+                                </div>
+                                <div>
+                                    <label class="mx-label" for="wc-pred-date">Fecha</label>
+                                    <input type="date" id="wc-pred-date" class="mx-input">
+                                </div>
+                            </div>
+                            <button id="wc-predict-btn" class="mx-btn mx-btn--secondary mt-4">Predecir</button>
+                            <div id="wc-single-result" class="mt-4"></div>
+                        </div>
                     </div>
                 </section>
 
