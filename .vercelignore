@@ -1,6 +1,6 @@
 # Exclude heavy/non-essential dirs from Vercel build
 models/
-scripts/
+scripts/*
 tests/
 docs/
 backtest/
@@ -19,15 +19,38 @@ requirements_uvicorn.txt
 CLAUDE.md
 AGENTS.md
 
+# WC 2026 engine is required by predictors/api.py.
+!scripts/__init__.py
+!scripts/wc2026_engine.py
+!scripts/wc2026_tournament.py
+
+# WC fixtures, predictions and pre-computed tournament snapshot are required.
+!data/wc2026_fixtures.json
+!data/wc2026_predictions.json
+!data/wc2026_tournament.json
+
+# Exclude heavy data subdirectories; keep only what the API needs at runtime.
+data/archive/
+data/features/
+data/logs/
+data/predictions/
+data/processed/
+data/raw/
+
 # Keep only the canonical model artifacts required by predictors/api.py.
-data/*/
+# Exclude experimental and test artifacts; the canonical xgboost_football files remain included.
 !data/models/
-data/models/*
+data/models/*_exp_*
+data/models/test_*
+data/models/model_manifest_*_exp_*.json
 !data/models/xgboost_football_outcome.pkl
 !data/models/xgboost_football_home_goals.pkl
 !data/models/xgboost_football_away_goals.pkl
 !data/models/xgboost_football_meta.json
 !data/models/model_manifest.json
+
+# Pre-computed historical features used by wc2026_engine.py for fast inference.
+!data/prepared/
 
 # CSVs are excluded by default, but the canonical historical dataset is needed
 # by the prediction endpoint.

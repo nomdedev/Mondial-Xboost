@@ -99,6 +99,13 @@ data/features/*.parquet
 ## Generated JSON samples
 data/processed/train_historical_*_sample.json
 
+# Canonical model artifacts required for Vercel deployment.
+!data/models/xgboost_football_outcome.pkl
+!data/models/xgboost_football_home_goals.pkl
+!data/models/xgboost_football_away_goals.pkl
+!data/models/xgboost_football_meta.json
+!data/models/model_manifest.json
+
 ## Backup files
 *.bak
 *.orig

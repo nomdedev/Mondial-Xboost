@@ -363,19 +363,44 @@ class XGBoostFootballPredictor:
 
 
 def train_and_save(min_date: str = "2010-01-01") -> dict[str, Any]:
-    """Convenience CLI entrypoint: build features, train, save."""
+    """Convenience CLI entrypoint: build features, train, evaluate, save."""
     from predictors.feature_engineering import build_training_dataset, save_features
+    from sklearn.metrics import accuracy_score, log_loss
+    from sklearn.model_selection import train_test_split
 
     print("Building training dataset...")
-    train = build_training_dataset(min_date=min_date)
-    save_features(train, "train_historical")
+    full = build_training_dataset(min_date=min_date)
+    save_features(full, "train_historical")
+
+    print(f"Splitting {len(full)} rows into train/test...")
+    train, test = train_test_split(
+        full,
+        test_size=0.2,
+        random_state=2026,
+        stratify=full["outcome"],
+    )
 
     print(f"Training on {len(train)} rows...")
     predictor = XGBoostFootballPredictor(random_state=2026)
-    metrics = predictor.fit(train, calibrate=True)
+    fit_result = predictor.fit(train, calibrate=True)
+
+    x_test = predictor._prepare_x(test)
+    probs = predictor.outcome_model.predict_proba(x_test)
+    preds = probs.argmax(axis=1)
+    feature_importance = fit_result.get("feature_importance", {})
+    top_feature = max(feature_importance.items(), key=lambda kv: kv[1])[0] if feature_importance else None
+
+    metrics = {
+        "n_train": len(train),
+        "n_test": len(test),
+        "accuracy": float(accuracy_score(test["outcome"], preds)),
+        "log_loss": float(log_loss(test["outcome"], probs)),
+        "top_feature": top_feature,
+        "feature_importance": feature_importance,
+    }
 
     print("Saving model...")
-    paths = predictor.save()
+    paths = predictor.save(metrics=metrics)
     print(f"Saved models to {MODELS_DIR}")
 
     return {"metrics": metrics, "paths": {k: str(v) for k, v in paths.items()}}

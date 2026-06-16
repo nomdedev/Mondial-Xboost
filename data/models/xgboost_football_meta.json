@@ -22,7 +22,14 @@
     "h2h_goals_avg",
     "h2h_last_result",
     "h2h_years_since",
-    "neutral"
+    "neutral",
+    "home_momentum_3",
+    "away_momentum_3",
+    "home_sos_5",
+    "away_sos_5",
+    "home_points_weighted_10",
+    "away_points_weighted_10",
+    "tournament_importance"
   ],
   "random_state": 2026,
   "name": "xgboost_football"

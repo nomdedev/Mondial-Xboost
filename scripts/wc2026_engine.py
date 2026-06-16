@@ -25,7 +25,8 @@ from predictors.feature_engineering import (  # noqa: E402
     compute_elo_ratings,
     load_historical_results,
 )
-from scripts.predict import load_model  # noqa: E402
+from predictors.random_forest_engine import RandomForestFootballPredictor  # noqa: E402
+from predictors.xgboost_engine import XGBoostFootballPredictor  # noqa: E402
 
 FIXTURES_PATH = ROOT / "data" / "wc2026_fixtures.json"
 PREDICTIONS_PATH = ROOT / "data" / "wc2026_predictions.json"
@@ -61,12 +62,37 @@ def _serialize_predictions(predictions: list[dict]) -> list[dict]:
     return serializable
 
 
+PREPARED_DIR = ROOT / "data" / "prepared"
+
+
+def _load_prepared_historical() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame] | None:
+    """Load pre-computed historical features from data/prepared/ if available."""
+    historical_path = PREPARED_DIR / "historical.csv.gz"
+    long_path = PREPARED_DIR / "long.csv.gz"
+    h2h_path = PREPARED_DIR / "h2h.csv.gz"
+    if not all(p.exists() for p in (historical_path, long_path, h2h_path)):
+        return None
+
+    historical = pd.read_csv(historical_path, parse_dates=["date"], compression="gzip")
+    long = pd.read_csv(long_path, parse_dates=["date"], compression="gzip")
+    historical_h2h = pd.read_csv(h2h_path, parse_dates=["date"], compression="gzip")
+    return historical, long, historical_h2h
+
+
 @lru_cache(maxsize=1)
 def _prepared_historical() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     """Prepare historical data once and cache it.
 
+    In production (Vercel) we load pre-computed CSVs to avoid the ~70s cost of
+    recomputing rolling stats and H2H on every cold start. In development we
+    fall back to computing them on demand.
+
     Returns (elo_historical, rolling_long, h2h_historical).
     """
+    prepared = _load_prepared_historical()
+    if prepared is not None:
+        return prepared
+
     historical = load_historical_results()
     historical["date"] = pd.to_datetime(historical["date"])
     historical = compute_elo_ratings(historical)
@@ -225,13 +251,27 @@ def build_features_for_fixtures(fixtures: list[dict]) -> pd.DataFrame:
     return features[FEATURE_COLS + ["home_team", "away_team", "date"]]
 
 
+# In-memory cache for the loaded predictor to avoid repeated pickle reads.
+_predictor_cache: dict[str, Any] = {}
+
+
+def _load_predictor(model_name: str = "xgboost_football"):
+    """Load the requested predictor engine (cached)."""
+    if model_name not in _predictor_cache:
+        if model_name.startswith("random_forest"):
+            _predictor_cache[model_name] = RandomForestFootballPredictor.load(model_name)
+        else:
+            _predictor_cache[model_name] = XGBoostFootballPredictor.load(model_name)
+    return _predictor_cache[model_name]
+
+
 def predict_fixture_list(fixtures: list[dict], model_name: str = "xgboost_football") -> list[dict]:
     """Predict a list of fixtures using the chosen model."""
     if not fixtures:
         return []
 
     features = build_features_for_fixtures(fixtures)
-    predictor = load_model(model_name)
+    predictor = _load_predictor(model_name)
     predictions = predictor.predict(features)
 
     fixtures_df = pd.DataFrame(fixtures).copy()
@@ -297,7 +337,7 @@ def regenerate_predictions(model_name: str = "xgboost_football") -> list[dict]:
         features = build_features_for_fixtures(fixtures)
         _save_features(features)
 
-    predictor = load_model(model_name)
+    predictor = _load_predictor(model_name)
     predictions = predictor.predict(features)
 
     fixtures_df = pd.DataFrame(fixtures).copy()

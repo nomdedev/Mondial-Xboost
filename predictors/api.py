@@ -36,6 +36,7 @@ from scripts.wc2026_engine import (
     regenerate_predictions,
 )
 
+
 app = FastAPI(title="Mondial-Xboost ML Bridge")
 
 # Serve dashboard static files
@@ -46,6 +47,30 @@ app.mount("/static", StaticFiles(directory=str(_DASHBOARD_DIR)), name="static")
 @app.get("/", include_in_schema=False)
 async def root():
     return FileResponse(str(_DASHBOARD_DIR / "index.html"))
+
+
+@app.get("/debug/files")
+async def debug_files() -> dict[str, Any]:
+    """Temporary helper to inspect the deployed filesystem."""
+    cwd = Path.cwd()
+    task = Path("/var/task")
+    models_rel = Path(os.getenv("MODELS_DIR", "predictors/models"))
+    models_abs = (cwd / models_rel).resolve()
+    result: dict[str, Any] = {
+        "cwd": str(cwd),
+        "models_env": str(models_rel),
+        "models_abs": str(models_abs),
+        "models_exists": models_abs.exists(),
+        "var_task_exists": task.exists(),
+    }
+    if task.exists():
+        try:
+            result["var_task_listing"] = [str(p) for p in list(task.rglob("*")) if p.is_file()][:200]
+        except Exception as exc:
+            result["var_task_listing_error"] = str(exc)
+    if models_abs.exists():
+        result["models_files"] = [str(p.relative_to(models_abs)) for p in models_abs.iterdir()]
+    return result
 
 
 # Cache the latest trained model in memory
@@ -314,6 +339,18 @@ async def wc_regenerate(req: WCRegenerateRequest | None = None) -> dict[str, Any
         return {"predictions": predictions, "count": len(predictions)}
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc)) from exc
+
+
+@app.get("/wc_tournament")
+async def wc_tournament() -> dict[str, Any]:
+    """Return the pre-computed full 2026 World Cup simulation."""
+    try:
+        path = Path(__file__).resolve().parent.parent / "data" / "wc2026_tournament.json"
+        if not path.exists():
+            raise FileNotFoundError("Tournament snapshot not found")
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Could not load tournament snapshot: {exc}") from exc
 
 
 if __name__ == "__main__":

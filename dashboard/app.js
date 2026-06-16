@@ -40,6 +40,7 @@
     features: 'insights',
     agents: 'psychology',
     strategy: 'strategy',
+    lab: 'science',
     menu: 'menu',
     close: 'close',
     check: 'check_circle',
@@ -208,6 +209,7 @@
     { id: 'predictions', label: 'Predicciones', icon: ICONS.predictions },
     { id: 'models', label: 'Modelos', icon: ICONS.models },
     { id: 'features', label: 'Features', icon: ICONS.features },
+    { id: 'lab', label: 'Lab', icon: ICONS.lab },
   ];
 
   function renderNav() {

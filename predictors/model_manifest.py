@@ -10,6 +10,7 @@ from __future__ import annotations
 import hashlib
 import json
 import math
+import os
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -27,7 +28,9 @@ def _sanitize(value: Any) -> Any:
         return [_sanitize(v) for v in value]
     return value
 
-MODELS_DIR = Path(__file__).parent.parent / "data" / "models"
+MODELS_DIR = Path(
+    os.getenv("MODELS_DIR", str(Path(__file__).parent.parent / "data" / "models"))
+)
 MANIFEST_PATH = MODELS_DIR / "model_manifest.json"
 
 

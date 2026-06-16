@@ -339,6 +339,140 @@
     });
   }
 
+  function renderTournamentMatch(pred) {
+    const home = MXEscape(pred.home_team);
+    const away = MXEscape(pred.away_team);
+    const winner = pred.winner || pred.top_pick;
+    const winnerClass = winner === 'Home' ? 'mx-pick--home' : winner === 'Away' ? 'mx-pick--away' : 'mx-pick--draw';
+    return `
+      <div class="flex items-center justify-between p-3 rounded-lg border border-[var(--border)] bg-[var(--surface)]">
+        <div class="flex-1">
+          <div class="flex items-center justify-between mb-1">
+            <span class="font-medium ${pred.winner === pred.home_team ? 'text-emerald-400' : ''}">${home}</span>
+            <span class="text-sm font-variant-numeric">${pred.expected_home_goals ?? '-'}</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="font-medium ${pred.winner === pred.away_team ? 'text-emerald-400' : ''}">${away}</span>
+            <span class="text-sm font-variant-numeric">${pred.expected_away_goals ?? '-'}</span>
+          </div>
+        </div>
+        <div class="ml-4 text-right">
+          <p class="text-xs text-[var(--muted)]">Pick</p>
+          <p class="font-semibold ${winnerClass}">${pickLabel(pred.top_pick)}</p>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderGroupStandings(standings) {
+    const container = document.getElementById('tournament-groups');
+    if (!container) return;
+
+    const groups = Object.keys(standings).sort();
+    container.innerHTML = groups.map(group => {
+      const teams = standings[group];
+      return `
+        <div class="mx-card" style="padding: 1rem;">
+          <h4 class="font-semibold mb-3">Grupo ${MXEscape(group)}</h4>
+          <table class="mx-table" style="font-size: 0.8125rem;">
+            <thead>
+              <tr>
+                <th>Equipo</th>
+                <th class="num">Pts</th>
+                <th class="num">GF</th>
+                <th class="num">DG</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${teams.map((t, i) => `
+                <tr class="border-b border-[var(--border)]">
+                  <td class="py-2">
+                    <span class="inline-block w-5 text-[var(--muted)]">${i + 1}.</span>
+                    ${MXEscape(t.team)}
+                  </td>
+                  <td class="py-2 text-right font-semibold">${t.points}</td>
+                  <td class="py-2 text-right">${t.goals_for.toFixed(1)}</td>
+                  <td class="py-2 text-right">${t.goal_diff > 0 ? '+' : ''}${t.goal_diff.toFixed(1)}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function renderKnockoutRound(matches, title, containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    if (!matches || matches.length === 0) {
+      container.innerHTML = `<div class="mx-state mx-state--empty"><span class="material-symbols-outlined" aria-hidden="true">info</span><p>Sin datos</p></div>`;
+      return;
+    }
+    container.innerHTML = `
+      <div class="space-y-3">
+        ${matches.map(m => renderTournamentMatch(m.prediction || m)).join('')}
+      </div>
+    `;
+  }
+
+  function renderBracket(knockout) {
+    const container = document.getElementById('tournament-bracket');
+    if (!container) return;
+
+    const rounds = [
+      { key: 'round_of_32', label: 'Octavos de final' },
+      { key: 'round_of_16', label: 'Octavos de final' },
+      { key: 'quarter_finals', label: 'Cuartos de final' },
+      { key: 'semi_finals', label: 'Semifinales' },
+    ].filter(r => knockout[r.key] && knockout[r.key].length > 0);
+
+    container.innerHTML = rounds.map(r => `
+      <div>
+        <h4 class="text-sm font-semibold text-[var(--muted)] uppercase tracking-wider mb-2">${r.label}</h4>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          ${knockout[r.key].map(m => renderTournamentMatch(m.prediction || m)).join('')}
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function renderTournament(data) {
+    if (!data || data.error) {
+      MXNotify.error('No se pudo cargar la simulación del torneo.');
+      return;
+    }
+
+    const championEl = document.getElementById('tournament-champion-name');
+    const championDetailEl = document.getElementById('tournament-champion-detail');
+    if (championEl) championEl.textContent = MXEscape(data.champion || '-');
+    if (championDetailEl) {
+      const final = data.knockout?.final?.[0];
+      if (final) {
+        const pred = final.prediction || final;
+        championDetailEl.textContent = `Final: ${MXEscape(pred.home_team)} ${pred.expected_home_goals ?? '-'} - ${pred.expected_away_goals ?? '-'} ${MXEscape(pred.away_team)}`;
+      } else {
+        championDetailEl.textContent = 'Simulación completa del Mundial 2026';
+      }
+    }
+
+    renderKnockoutRound(data.knockout?.final, 'Final', 'tournament-final');
+    renderKnockoutRound(data.knockout?.third_place, 'Tercer puesto', 'tournament-third');
+    renderBracket(data.knockout || {});
+    renderGroupStandings(data.group_stage?.standings || {});
+  }
+
+  async function loadTournament() {
+    try {
+      const data = await MXApi.get('/wc_tournament');
+      renderTournament(data);
+    } catch (err) {
+      console.error('[Tournament] load error', err);
+      const container = document.getElementById('dashboard-tournament');
+      if (container) container.innerHTML = `<div class="mx-state mx-state--error" role="alert"><span class="material-symbols-outlined" aria-hidden="true">error</span><p>Error al cargar la simulación del torneo: ${MXEscape(err.message)}</p></div>`;
+    }
+  }
+
   function init() {
     loadData();
     setInterval(loadData, POLL_INTERVAL_MS);
@@ -351,7 +485,10 @@
 
     // Load dashboard tabs lazily when shown.
     window.addEventListener('mx:tab:switch', (e) => {
-      if (e.detail.tabId === 'dashboard') loadDashboardStats();
+      if (e.detail.tabId === 'dashboard') {
+        loadDashboardStats();
+        loadTournament();
+      }
       if (e.detail.tabId === 'models') loadDashboardModels();
       if (e.detail.tabId === 'features') loadDashboardFeatures();
     });
@@ -359,6 +496,7 @@
     // If dashboard is the initial tab, load it.
     if (document.querySelector('#mx-panel-dashboard.active')) {
       loadDashboardStats();
+      loadTournament();
     }
   }
 

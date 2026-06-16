@@ -371,23 +371,23 @@
                     <div id="dashboard-metrics" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                         <div class="mx-metric">
                             <div class="mx-metric__label">Partidos históricos</div>
-                            <div class="mx-metric__value mx-skeleton" style="height:2rem;width:60%;">&nbsp;</div>
+                            <div id="total-matches" class="mx-metric__value mx-skeleton" style="height:2rem;width:60%;">&nbsp;</div>
                         </div>
                         <div class="mx-metric">
                             <div class="mx-metric__label">Equipos</div>
-                            <div class="mx-metric__value mx-skeleton" style="height:2rem;width:50%;">&nbsp;</div>
+                            <div id="total-teams" class="mx-metric__value mx-skeleton" style="height:2rem;width:50%;">&nbsp;</div>
                         </div>
                         <div class="mx-metric">
                             <div class="mx-metric__label">Accuracy canónica</div>
-                            <div class="mx-metric__value mx-skeleton" style="height:2rem;width:70%;">&nbsp;</div>
+                            <div id="best-accuracy" class="mx-metric__value mx-skeleton" style="height:2rem;width:70%;">&nbsp;</div>
                         </div>
                         <div class="mx-metric">
-                            <div class="mx-metric__label">Modelos entrenados</div>
-                            <div class="mx-metric__value mx-skeleton" style="height:2rem;width:40%;">&nbsp;</div>
+                            <div class="mx-metric__label">Features del modelo</div>
+                            <div id="models-count" class="mx-metric__value mx-skeleton" style="height:2rem;width:40%;">&nbsp;</div>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                         <div class="mx-card">
                             <h3 class="font-semibold mb-4">Distribución de resultados</h3>
                             <div id="dashboard-outcome-chart-wrap" style="max-height: 260px;">
@@ -397,6 +397,48 @@
                         <div class="mx-card">
                             <h3 class="font-semibold mb-4">Rango temporal</h3>
                             <div id="dashboard-date-range" class="text-[var(--muted)]">Cargando…</div>
+                        </div>
+                    </div>
+
+                    <div id="dashboard-tournament" class="space-y-6">
+                        <div class="mb-6">
+                            <h2 class="text-2xl font-bold mb-1">Mundial 2026 — Simulación completa</h2>
+                            <p class="text-[var(--muted)]">Predicciones del modelo canónico sobre toda la competición, desde la fase de grupos hasta el campeón.</p>
+                        </div>
+
+                        <div id="tournament-champion" class="mx-card text-center" style="background: linear-gradient(180deg, rgba(18,106,90,0.15) 0%, transparent 100%); border-color: var(--primary);">
+                            <p class="text-sm text-[var(--muted)] uppercase tracking-wider mb-2">Campeón predicho</p>
+                            <div id="tournament-champion-name" class="text-4xl md:text-5xl font-bold mb-2">-</div>
+                            <p id="tournament-champion-detail" class="text-[var(--muted)]">Cargando simulación…</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <div class="mx-card">
+                                <h3 class="font-semibold mb-4">Final</h3>
+                                <div id="tournament-final" class="space-y-3">
+                                    <div class="mx-state mx-state--empty"><span class="material-symbols-outlined" aria-hidden="true">info</span><p>Cargando final…</p></div>
+                                </div>
+                            </div>
+                            <div class="mx-card">
+                                <h3 class="font-semibold mb-4">Tercer puesto</h3>
+                                <div id="tournament-third" class="space-y-3">
+                                    <div class="mx-state mx-state--empty"><span class="material-symbols-outlined" aria-hidden="true">info</span><p>Cargando tercer puesto…</p></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mx-card">
+                            <h3 class="font-semibold mb-4">Bracket de eliminatorias</h3>
+                            <div id="tournament-bracket" class="space-y-4">
+                                <div class="mx-state mx-state--empty"><span class="material-symbols-outlined" aria-hidden="true">info</span><p>Cargando bracket…</p></div>
+                            </div>
+                        </div>
+
+                        <div class="mx-card">
+                            <h3 class="font-semibold mb-4">Fase de grupos</h3>
+                            <div id="tournament-groups" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                                <div class="mx-state mx-state--empty"><span class="material-symbols-outlined" aria-hidden="true">info</span><p>Cargando grupos…</p></div>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -566,6 +608,92 @@
                         </div>
                     </div>
                 </section>
+
+                <!-- Lab Panel -->
+                <section id="mx-panel-lab" class="mx-tab-panel" role="tabpanel" aria-labelledby="mx-tab-lab">
+                    <div class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div>
+                            <h2 class="text-2xl font-bold mb-1">Laboratorio</h2>
+                            <p class="text-[var(--muted)]">Vista unificada: datos, entrenamiento, modelos y predicciones en un solo lugar.</p>
+                        </div>
+                        <span class="mx-badge mx-badge--info">Modo operador</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                        <div class="mx-metric"><div class="mx-metric__label">Partidos históricos</div><div id="lab-total-matches" class="mx-metric__value">-</div></div>
+                        <div class="mx-metric"><div class="mx-metric__label">Equipos</div><div id="lab-total-teams" class="mx-metric__value">-</div></div>
+                        <div class="mx-metric"><div class="mx-metric__label">Accuracy canónica</div><div id="lab-best-accuracy" class="mx-metric__value">-</div></div>
+                        <div class="mx-metric"><div class="mx-metric__label">Features</div><div id="lab-features-count" class="mx-metric__value">-</div></div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                        <div class="mx-card">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="font-semibold">Entrenamiento en vivo</h3>
+                                <span id="lab-train-status" class="mx-badge mx-badge--warning">Inactivo</span>
+                            </div>
+                            <p class="text-sm text-[var(--muted)] mb-4">Entrená un modelo canónico desde cero usando el dataset histórico. En Vercel el proceso puede cortarse por el límite de 10s; para entrenamientos largos usá el servidor local.</p>
+                            <div class="flex flex-wrap gap-3 mb-4">
+                                <button id="lab-train-xgboost" class="mx-btn mx-btn--primary">
+                                    <span class="material-symbols-outlined" aria-hidden="true">model_training</span>
+                                    Entrenar XGBoost
+                                </button>
+                                <button id="lab-train-rf" class="mx-btn mx-btn--secondary">
+                                    <span class="material-symbols-outlined" aria-hidden="true">forest</span>
+                                    Entrenar Random Forest
+                                </button>
+                            </div>
+                            <div class="mx-progress mb-2">
+                                <div id="lab-train-progress" class="mx-progress__bar" style="width: 0%"></div>
+                            </div>
+                            <div class="flex justify-between text-xs text-[var(--muted)] mb-4">
+                                <span id="lab-train-progress-text">Esperando inicio…</span>
+                                <span id="lab-train-eta">-</span>
+                            </div>
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4">
+                                <div><p class="text-xs text-[var(--muted)]">Accuracy</p><p id="lab-train-acc" class="text-lg font-semibold">-</p></div>
+                                <div><p class="text-xs text-[var(--muted)]">Log loss</p><p id="lab-train-loss" class="text-lg font-semibold">-</p></div>
+                                <div><p class="text-xs text-[var(--muted)]">Top feature</p><p id="lab-train-top" class="text-lg font-semibold truncate">-</p></div>
+                                <div><p class="text-xs text-[var(--muted)]">Modelo</p><p id="lab-train-model" class="text-lg font-semibold truncate">-</p></div>
+                            </div>
+                            <div class="mx-card" style="background: var(--bg);">
+                                <h4 class="text-sm font-semibold mb-2">Log del lab</h4>
+                                <div id="lab-log" class="h-40 overflow-auto font-mono text-sm space-y-1">
+                                    <p class="text-[var(--muted)]">Listo para entrenar.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mx-card">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="font-semibold">Mundial 2026</h3>
+                                <button id="lab-regenerate-btn" class="mx-btn mx-btn--secondary">
+                                    <span class="material-symbols-outlined" aria-hidden="true">refresh</span>
+                                    Regenerar
+                                </button>
+                            </div>
+                            <p id="lab-wc-status" class="text-sm text-[var(--muted)] mb-4">Cargando predicciones…</p>
+                            <div id="lab-wc-summary" class="space-y-3">
+                                <div class="mx-state mx-state--empty"><span class="material-symbols-outlined" aria-hidden="true">info</span><p>Sin predicciones cargadas.</p></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                        <div class="mx-card">
+                            <h3 class="font-semibold mb-4">Modelos disponibles</h3>
+                            <div id="lab-models-list" class="space-y-3">
+                                <div class="mx-state mx-state--empty"><span class="material-symbols-outlined" aria-hidden="true">info</span><p>Cargando modelos…</p></div>
+                            </div>
+                        </div>
+                        <div class="mx-card">
+                            <h3 class="font-semibold mb-4">Top features</h3>
+                            <div id="lab-feature-bars" class="space-y-3">
+                                <div class="mx-state mx-state--empty"><span class="material-symbols-outlined" aria-hidden="true">info</span><p>Cargando importancia…</p></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
             </div>
         </main>
     </div>
@@ -573,5 +701,6 @@
     <script src="/static/app.js"></script>
     <script src="/static/training.js"></script>
     <script src="/static/wc2026.js"></script>
+    <script src="/static/lab.js"></script>
 </body>
 </html>
