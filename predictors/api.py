@@ -138,14 +138,21 @@ async def health(engine: str = "xgboost") -> HealthResponse:
 
 
 @app.post("/train", response_model=TrainResponse)
-async def train(min_date: str = "2010-01-01", engine: str = "xgboost") -> TrainResponse:
+async def train(
+    min_date: str = "2010-01-01",
+    engine: str = "xgboost",
+    temporal_decay_halflife_years: float | None = None,
+) -> TrainResponse:
     try:
         if engine == "random_forest":
             from predictors.random_forest_engine import train_and_save as rf_train
             result = rf_train(min_date=min_date)
             _predictors["random_forest"] = RandomForestFootballPredictor.load()
         else:
-            result = train_and_save(min_date=min_date)
+            result = train_and_save(
+                min_date=min_date,
+                temporal_decay_halflife_years=temporal_decay_halflife_years,
+            )
             _predictors["xgboost"] = XGBoostFootballPredictor.load()
         return TrainResponse(status="trained", metrics=result["metrics"], paths=result["paths"])
     except Exception as exc:
@@ -246,26 +253,52 @@ async def dashboard_metrics() -> dict[str, Any]:
 async def dashboard_models() -> dict[str, Any]:
     """List trained model artifacts in data/models."""
     try:
+        manifest = load_manifest()
+        manifest_metrics = manifest.get("metrics", {}) if manifest else {}
+        manifest_model_name = manifest.get("model_name") if manifest else None
+
         models = []
         for path in sorted(MODELS_DIR.glob("*_outcome.pkl")):
             meta_path = path.with_name(path.name.replace("_outcome.pkl", "_meta.json"))
             name = path.name.replace("_outcome.pkl", "")
             created = datetime.fromtimestamp(path.stat().st_mtime).isoformat()
             meta = {}
+            metrics = {}
             if meta_path.exists():
                 try:
                     meta = json.loads(meta_path.read_text(encoding="utf-8"))
                     created = meta.get("trained_at", created)
+                    metrics = meta.get("metrics", {})
                 except Exception:
                     pass
+
+            # Look for an experiment-specific manifest (e.g. model_manifest_<name>.json).
+            exp_manifest_path = path.with_name(f"model_manifest_{name}.json")
+            if exp_manifest_path.exists():
+                try:
+                    exp_manifest = json.loads(exp_manifest_path.read_text(encoding="utf-8"))
+                    metrics = {**metrics, **exp_manifest.get("metrics", {})}
+                    created = exp_manifest.get("trained_at", created)
+                except Exception:
+                    pass
+
+            # If this model is the canonical one, enrich with the main manifest metrics.
+            if name == manifest_model_name and manifest_metrics:
+                metrics = {**metrics, **manifest_metrics}
+
             size_mb = round(path.stat().st_size / (1024 * 1024), 2)
             models.append({
                 "name": name,
                 "size_mb": size_mb,
                 "created": created,
                 "feature_cols": meta.get("feature_cols", []),
+                "metrics": {
+                    "accuracy": metrics.get("accuracy"),
+                    "log_loss": metrics.get("log_loss"),
+                    "top_feature": metrics.get("top_feature"),
+                },
             })
-        return {"models": models}
+        return {"models": models, "canonical": manifest_model_name}
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc)) from exc
 

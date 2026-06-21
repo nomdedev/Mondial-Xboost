@@ -2,11 +2,11 @@
   "framework": null,
   "installCommand": "pip install -r requirements-vercel.txt",
   "env": {
-    "MODELS_DIR": "predictors/models"
+    "MODELS_DIR": "data/models"
   },
   "functions": {
     "api/*.py": {
-      "includeFiles": "predictors/models/**,data/prepared/**,data/wc2026_fixtures.json,data/wc2026_predictions.json,data/wc2026_tournament.json",
+      "includeFiles": "data/models/**,data/prepared/**,data/wc2026_fixtures.json,data/wc2026_predictions.json,data/wc2026_tournament.json",
       "memory": 2048,
       "maxDuration": 300
     }

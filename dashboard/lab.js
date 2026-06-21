@@ -131,15 +131,23 @@
         container.innerHTML = `<div class="mx-state mx-state--empty"><span class="material-symbols-outlined" aria-hidden="true">info</span><p>No hay modelos entrenados.</p></div>`;
         return;
       }
-      container.innerHTML = models.slice(0, 6).map(m => `
-        <div class="flex items-center justify-between p-3 rounded-lg border border-[var(--border)] bg-[var(--surface)]">
-          <div class="min-w-0">
-            <p class="font-medium truncate" title="${MXEscape(m.name)}">${MXEscape(m.name)}</p>
-            <p class="text-xs text-[var(--muted)]">${MXFormat.date(m.created)} · ${m.feature_cols?.length || 0} features</p>
+      const canonicalName = data.canonical;
+      container.innerHTML = models.slice(0, 6).map(m => {
+        const isCanonical = m.name === canonicalName;
+        const metrics = m.metrics || {};
+        return `
+          <div class="flex items-center justify-between p-3 rounded-lg border ${isCanonical ? 'border-[var(--primary)]' : 'border-[var(--border)]'} bg-[var(--surface)]">
+            <div class="min-w-0">
+              <p class="font-medium truncate ${isCanonical ? 'text-emerald-400' : ''}" title="${MXEscape(m.name)}">${MXEscape(m.name)} ${isCanonical ? '<span class="material-symbols-outlined align-text-bottom text-emerald-400" style="font-size:0.875rem">verified</span>' : ''}</p>
+              <p class="text-xs text-[var(--muted)]">${MXFormat.date(m.created)} · ${m.feature_cols?.length || 0} features · ${m.size_mb} MB</p>
+            </div>
+            <div class="text-right">
+              <p class="text-sm font-semibold ${metrics.accuracy ? 'text-emerald-400' : 'text-[var(--muted)]'}">${metrics.accuracy ? MXFormat.pct(metrics.accuracy, 2) : '-'}</p>
+              <p class="text-xs text-[var(--muted)]">acc</p>
+            </div>
           </div>
-          <span class="mx-badge mx-badge--info">${m.size_mb} MB</span>
-        </div>
-      `).join('');
+        `;
+      }).join('');
     } catch (err) {
       const container = document.getElementById('lab-models-list');
       if (container) MXUI.setError('lab-models-list', err.message);

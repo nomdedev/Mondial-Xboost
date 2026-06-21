@@ -552,6 +552,92 @@
         .mx-mini-table th { color: var(--muted); text-align: left; font-weight: 500; }
         .mx-mini-table td { color: var(--ink); }
         .mx-mini-table .num { text-align: right; font-variant-numeric: tabular-nums; }
+
+        /* Model cards */
+        .mx-model-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1rem;
+            transition: border-color 0.15s, box-shadow 0.15s;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .mx-model-card:hover {
+            border-color: rgba(255,255,255,0.15);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.18);
+        }
+
+        .mx-model-card__header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 0.75rem;
+        }
+
+        .mx-model-card__name {
+            font-weight: 700;
+            font-size: 1rem;
+            word-break: break-word;
+        }
+
+        .mx-model-card__meta {
+            font-size: 0.8125rem;
+            color: var(--muted);
+        }
+
+        .mx-model-card__metrics {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+        }
+
+        .mx-model-card__metric {
+            background: rgba(255,255,255,0.03);
+            border-radius: 8px;
+            padding: 0.5rem;
+            text-align: center;
+        }
+
+        .mx-model-card__metric-value {
+            font-size: 0.9375rem;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .mx-model-card__metric-label {
+            font-size: 0.6875rem;
+            color: var(--muted);
+            margin-top: 0.125rem;
+        }
+
+        .mx-model-card--canonical {
+            border-color: var(--primary);
+            background: linear-gradient(180deg, rgba(18,106,90,0.12) 0%, var(--surface) 100%);
+        }
+
+        .mx-model-card__canonical-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.125rem 0.5rem;
+            border-radius: 999px;
+            font-size: 0.6875rem;
+            font-weight: 700;
+            background: rgba(18, 106, 90, 0.2);
+            color: #6ee7b7;
+        }
+
+        @keyframes mx-spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .animate-spin {
+            animation: mx-spin 1s linear infinite;
+        }
     </style>
 </head>
 <body>
@@ -867,7 +953,7 @@
                         <p class="text-[var(--muted)]">Artefactos entrenados y metadatos.</p>
                     </div>
                     <div id="models-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <div class="mx-state mx-state--empty"><span class="material-symbols-outlined" aria-hidden="true">info</span><p>Cargando modelos…</p></div>
+                        <div class="mx-state mx-state--empty col-span-full"><span class="material-symbols-outlined animate-spin" aria-hidden="true">refresh</span><p>Cargando modelos…</p></div>
                     </div>
                 </section>
 

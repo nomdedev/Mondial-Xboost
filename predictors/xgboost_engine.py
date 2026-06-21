@@ -83,6 +83,29 @@ def default_n_jobs(device: str) -> int:
     return 1 if device == "cuda" else -1
 
 
+def _compute_temporal_weights(
+    dates: pd.Series,
+    halflife_years: float | None,
+    reference_date: pd.Timestamp | None = None,
+) -> np.ndarray | None:
+    """Return sample weights decaying exponentially with match age.
+
+    A match exactly ``halflife_years`` old gets half the weight of the most
+    recent match. If ``halflife_years`` is None, all weights are equal (None).
+    """
+    if halflife_years is None or halflife_years <= 0:
+        return None
+
+    reference = reference_date or dates.max()
+    days = (reference - pd.to_datetime(dates)).dt.days.astype(float)
+    # Clip at 0 to avoid future-dated fixtures receiving weight > 1
+    days = np.maximum(days, 0.0)
+    halflife_days = halflife_years * 365.25
+    # Normalize so the most recent match has weight 1.0
+    weights = np.exp(-np.log(2) * days / halflife_days)
+    return weights.astype(np.float32)
+
+
 def _fillna(x: pd.DataFrame) -> pd.DataFrame:
     """Fill missing values with sensible defaults; create missing columns."""
     x = x.copy()
@@ -193,8 +216,13 @@ class XGBoostFootballPredictor:
         self,
         train_df: pd.DataFrame,
         calibrate: bool | None = None,
+        temporal_decay_halflife_years: float | None = None,
     ) -> dict[str, Any]:
-        """Train models on the supplied feature dataframe."""
+        """Train models on the supplied feature dataframe.
+
+        If ``temporal_decay_halflife_years`` is set, older matches receive
+        exponentially lower sample weights (half weight at the given age).
+        """
         if calibrate is None:
             calibrate = self.calibrate
 
@@ -203,6 +231,9 @@ class XGBoostFootballPredictor:
 
         x = self._prepare_x(train_df)
         y_outcome = train_df["outcome"].astype(int)
+        sample_weight = _compute_temporal_weights(
+            train_df["date"], temporal_decay_halflife_years
+        )
 
         clf = xgb.XGBClassifier(
             objective="multi:softprob",
@@ -222,11 +253,11 @@ class XGBoostFootballPredictor:
             max_bin=self.max_bin,
         )
 
-        clf.fit(x, y_outcome, verbose=False)
+        clf.fit(x, y_outcome, sample_weight=sample_weight, verbose=False)
 
         if calibrate:
             self.outcome_model = CalibratedClassifierCV(clf, method="isotonic", cv=3)
-            self.outcome_model.fit(x, y_outcome)
+            self.outcome_model.fit(x, y_outcome, sample_weight=sample_weight)
         else:
             self.outcome_model = clf
 
@@ -362,7 +393,10 @@ class XGBoostFootballPredictor:
         return predictor
 
 
-def train_and_save(min_date: str = "2010-01-01") -> dict[str, Any]:
+def train_and_save(
+    min_date: str = "2010-01-01",
+    temporal_decay_halflife_years: float | None = None,
+) -> dict[str, Any]:
     """Convenience CLI entrypoint: build features, train, evaluate, save."""
     from predictors.feature_engineering import build_training_dataset, save_features
     from sklearn.metrics import accuracy_score, log_loss
@@ -381,8 +415,14 @@ def train_and_save(min_date: str = "2010-01-01") -> dict[str, Any]:
     )
 
     print(f"Training on {len(train)} rows...")
+    if temporal_decay_halflife_years:
+        print(f"Temporal decay half-life: {temporal_decay_halflife_years} years")
     predictor = XGBoostFootballPredictor(random_state=2026)
-    fit_result = predictor.fit(train, calibrate=True)
+    fit_result = predictor.fit(
+        train,
+        calibrate=True,
+        temporal_decay_halflife_years=temporal_decay_halflife_years,
+    )
 
     x_test = predictor._prepare_x(test)
     probs = predictor.outcome_model.predict_proba(x_test)
@@ -397,15 +437,27 @@ def train_and_save(min_date: str = "2010-01-01") -> dict[str, Any]:
         "log_loss": float(log_loss(test["outcome"], probs)),
         "top_feature": top_feature,
         "feature_importance": feature_importance,
+        "temporal_decay_halflife_years": temporal_decay_halflife_years,
     }
 
     print("Saving model...")
-    paths = predictor.save(metrics=metrics)
+    name = "xgboost_football"
+    if temporal_decay_halflife_years:
+        name = f"xgboost_football_decay{temporal_decay_halflife_years}y"
+    paths = predictor.save(name=name, metrics=metrics)
     print(f"Saved models to {MODELS_DIR}")
 
     return {"metrics": metrics, "paths": {k: str(v) for k, v in paths.items()}}
 
 
 if __name__ == "__main__":
-    result = train_and_save()
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--min-date", default="2010-01-01")
+    parser.add_argument("--temporal-decay-halflife-years", type=float, default=None)
+    args = parser.parse_args()
+    result = train_and_save(
+        min_date=args.min_date,
+        temporal_decay_halflife_years=args.temporal_decay_halflife_years,
+    )
     print(json.dumps(result, indent=2, default=str))

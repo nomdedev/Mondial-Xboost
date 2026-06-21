@@ -1,21 +1,25 @@
 {
-  "status": "running",
-  "phase": "tuning",
-  "batch": 12,
-  "total_trials": 200,
+  "status": "completed",
+  "phase": "completed",
+  "batch": 1,
+  "total_trials": 100,
   "completed_trials": 0,
   "best_test_accuracy": 0.0,
   "best_log_loss": 99.0,
   "best_overfit_gap": 0.0,
   "best_brier": 1.0,
-  "elapsed_seconds": 0,
+  "elapsed_seconds": 343,
   "eta_seconds": 0,
   "recent_events": [
     {
-      "time": "2026-06-15T19:04:44.022081+00:00",
-      "message": "Batch 12 iniciado: 200 trials"
+      "time": "2026-06-17T22:51:10.444283+00:00",
+      "message": "Batch 1 iniciado: 100 trials"
+    },
+    {
+      "time": "2026-06-17T22:56:53.977880+00:00",
+      "message": "Batch 1 completado. Mejor test accuracy: 60.80%"
     }
   ],
   "runs": [],
-  "last_update": "2026-06-15T19:04:44.022097+00:00"
+  "last_update": "2026-06-17T22:56:53.977898+00:00"
 }

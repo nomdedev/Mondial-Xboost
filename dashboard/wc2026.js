@@ -206,7 +206,7 @@
 
     let html = '';
     for (const group of groupNames) {
-      const groupFixtures = fixtureGroups[group];
+      const groupFixtures = fixtureGroups[group].slice().sort((a, b) => (a.date || '').localeCompare(b.date || ''));
       html += `
         <div class="mx-group-card">
           <div class="mx-group-card__title">
@@ -313,30 +313,51 @@
   }
 
   async function loadDashboardModels() {
+    const container = document.getElementById('models-list');
+    if (!container) return;
+
     try {
       const data = await MXApi.get('/dashboard/models');
-      const container = document.getElementById('models-list');
-      if (!container) return;
-
       const models = data.models || [];
       if (models.length === 0) {
-        container.innerHTML = `<div class="mx-state mx-state--empty"><span class="material-symbols-outlined" aria-hidden="true">info</span><p>No hay modelos entrenados.</p></div>`;
+        container.innerHTML = `<div class="mx-state mx-state--empty col-span-full"><span class="material-symbols-outlined" aria-hidden="true">info</span><p>No hay modelos entrenados.</p></div>`;
         return;
       }
 
-      container.innerHTML = models.map(m => `
-        <div class="mx-card">
-          <div class="flex items-center justify-between mb-2">
-            <h4 class="font-semibold truncate" title="${MXEscape(m.name)}">${MXEscape(m.name)}</h4>
-            <span class="mx-badge mx-badge--info">${m.size_mb} MB</span>
+      // Heuristic: the canonical model is the one loaded by the API.
+      const canonicalName = data.canonical || 'xgboost_football';
+
+      container.innerHTML = models.map(m => {
+        const isCanonical = m.name === canonicalName;
+        const metrics = m.metrics || {};
+        return `
+          <div class="mx-model-card ${isCanonical ? 'mx-model-card--canonical' : ''}">
+            <div class="mx-model-card__header">
+              <div>
+                <div class="mx-model-card__name" title="${MXEscape(m.name)}">${MXEscape(m.name)}</div>
+                <div class="mx-model-card__meta">${MXFormat.date(m.created)} · ${m.size_mb} MB · ${m.feature_cols?.length || 0} features</div>
+              </div>
+              ${isCanonical ? `<span class="mx-model-card__canonical-badge"><span class="material-symbols-outlined" style="font-size:0.875rem">verified</span>Canónico</span>` : `<span class="mx-badge mx-badge--info">${m.size_mb} MB</span>`}
+            </div>
+            <div class="mx-model-card__metrics">
+              <div class="mx-model-card__metric">
+                <div class="mx-model-card__metric-value ${metrics.accuracy ? 'text-emerald-400' : 'text-[var(--muted)]'}">${metrics.accuracy ? MXFormat.pct(metrics.accuracy, 2) : '-'}</div>
+                <div class="mx-model-card__metric-label">Accuracy</div>
+              </div>
+              <div class="mx-model-card__metric">
+                <div class="mx-model-card__metric-value ${metrics.log_loss ? 'text-amber-400' : 'text-[var(--muted)]'}">${metrics.log_loss ? metrics.log_loss.toFixed(4) : '-'}</div>
+                <div class="mx-model-card__metric-label">Log loss</div>
+              </div>
+              <div class="mx-model-card__metric" title="${MXEscape(metrics.top_feature || '')}">
+                <div class="mx-model-card__metric-value text-[var(--ink)] truncate">${metrics.top_feature ? MXEscape(metrics.top_feature.split('_').slice(0, 2).join('_')) : '-'}</div>
+                <div class="mx-model-card__metric-label">Top feature</div>
+              </div>
+            </div>
           </div>
-          <p class="text-sm text-[var(--muted)] mb-2">Creado: ${MXFormat.date(m.created)}</p>
-          <p class="text-xs text-[var(--muted)]">${m.feature_cols?.length || 0} features</p>
-        </div>
-      `).join('');
+        `;
+      }).join('');
     } catch (err) {
-      const container = document.getElementById('models-list');
-      if (container) MXUI.setError('models-list', err.message);
+      MXUI.setError('models-list', err.message);
     }
   }
 
@@ -435,7 +456,7 @@
 
     container.innerHTML = groups.map(group => {
       const teams = standings[group];
-      const groupFixtures = fixturesByGroup[group] || [];
+      const groupFixtures = (fixturesByGroup[group] || []).slice().sort((a, b) => (a.date || '').localeCompare(b.date || ''));
       return `
         <div class="mx-group-card">
           <div class="mx-group-card__title">Grupo ${MXEscape(group)}</div>
